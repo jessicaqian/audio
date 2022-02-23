@@ -59,18 +59,18 @@
             <div class="row">
                 <div class="col-md-8">
                     <label>1通道1</label>
-                    <div class="row channel_in">
+                    <div class="row channel_in" id="channel1">
 
                     </div>
 
                 </div>
                 <div class="col-md-1 col-md-offset-1">
-                    <a class="btn btn-danger record" disabled="disabled">
+                    <a class="btn btn-danger record" disabled="disabled" id="record1">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
                 <div class="col-md-2 ">
-                    <a class="btn btn-default stop" >
+                    <a class="btn btn-default stop" id="stop1">
                             <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -83,18 +83,18 @@
         <div class="row">
             <div class="col-md-8">
                 <label>2通道2</label>
-                <div class="row channel_in">
+                <div class="row channel_in" id="channel2">
 
                 </div>
 
             </div>
             <div class="col-md-1 col-md-offset-1">
-                <a class="btn btn-danger record" >
+                <a class="btn btn-danger record" id="record2">
                         <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                 </a>
             </div>
             <div class="col-md-2 ">
-                <a class="btn btn-default stop" disabled="disabled">
+                <a class="btn btn-default stop" disabled="disabled" id="stop2">
                         <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                 </a>
             </div>
@@ -107,18 +107,18 @@
             <div class="row">
                 <div class="col-md-8">
                     <label>3通道3</label>
-                    <div class="row channel_in" id="channel1">
+                    <div class="row channel_in" id="channel3">
 
                     </div>
 
                 </div>
                 <div class="col-md-1 col-md-offset-1">
-                    <a class="btn btn-danger record" >
+                    <a class="btn btn-danger record" id="record3">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
                 <div class="col-md-2 ">
-                    <a class="btn btn-default stop" >
+                    <a class="btn btn-default stop" id="stop3">
                             <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -131,18 +131,18 @@
         <div class="row">
             <div class="col-md-8">
                 <label>4通道4</label>
-                <div class="row channel_in">
+                <div class="row channel_in_off" id="channel4">
 
                 </div>
 
             </div>
             <div class="col-md-1 col-md-offset-1">
-                <a class="btn btn-danger record" >
+                <a class="btn btn-danger record" id="record4">
                         <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                 </a>
             </div>
             <div class="col-md-2 ">
-                <a class="btn btn-default stop" >
+                <a class="btn btn-default stop" id="stop4">
                         <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                 </a>
             </div>
@@ -168,16 +168,67 @@
                 no = info.no
             }
 
-
-
-
-
-
         }).fail(function () {
 
         })
     }
     setInterval(getdiskStatus,3000)
+
+    $('#record1').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#stop1').removeAttr('disabled')
+        $('#channel1').attr('class','row channel_in')
+
+    })
+
+    $('#stop1').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#record1').removeAttr('disabled')
+        $('#channel1').attr('class','row channel_in_off')
+
+    })
+
+    $('#record2').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#stop2').removeAttr('disabled')
+        $('#channel2').attr('class','row channel_in')
+
+    })
+
+    $('#stop2').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#record2').removeAttr('disabled')
+        $('#channel2').attr('class','row channel_in_off')
+
+    })
+
+    $('#record3').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#stop3').removeAttr('disabled')
+        $('#channel3').attr('class','row channel_in')
+
+    })
+
+    $('#stop3').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#record3').removeAttr('disabled')
+        $('#channel3').attr('class','row channel_in_off')
+
+    })
+
+    $('#record4').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#stop4').removeAttr('disabled')
+        $('#channel4').attr('class','row channel_in')
+
+    })
+
+    $('#stop4').click(function () {
+        $(this).attr('disabled','disabled')
+        $('#record4').removeAttr('disabled')
+        $('#channel4').attr('class','row channel_in_off')
+
+    })
 </script>
 {% endblock %}
 
