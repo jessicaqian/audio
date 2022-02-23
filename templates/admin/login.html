@@ -1,0 +1,49 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>用户登录</title>
+	<link href="{% static "bootstrap-3.3.7-dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static  "admin/css/login.css" %}" rel="stylesheet">
+    <link rel="shortcut icon" href="#" />
+	<script src="{% static "jquery-1.9.1/jquery.min.js" %}"></script>
+	<script src="{% static "bootstrap-3.3.7-dist/js/bootstrap.min.js" %}"></script>
+</head>
+<body>
+    <div class="logo"></div>
+    <div class="middle">
+        <div ID="appName">
+            <p>数字音频录音软件</p>
+
+        </div>
+        <div ID="title">
+            <p>用户登录</p>
+
+        </div>
+        <form method="post">
+        {% csrf_token %}
+            {{ error_msg }}
+            <div class="fieldWrapper">
+                <div class="left">
+                {{ form.usrname.label_tag }}
+                </div>
+                <div class="formRow">
+                {{ form.usrname}}
+                </div>
+            </div>
+            <div class="fieldWrapper">
+                <div class="left">
+                {{ form.password.label_tag }}
+                </div>
+                <div class="formRow">
+                {{ form.password}}
+                </div>
+            </div>
+                {{form.non_field_errors}}
+            <input type="submit" value="登录" id="submit">
+        </form>
+    </div>
+</body>
+</html>

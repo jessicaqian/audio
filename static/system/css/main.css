@@ -1,0 +1,53 @@
+div#system{
+    height: 200px;
+    border-right: #ccc7c7 solid 1px;
+}
+
+div.row1{
+    margin: 30px 0 0 30px;
+    line-height: 30px;
+    font-size: 15px;
+
+}
+
+label.disk-info{
+    padding: 0 8px;
+    background-color: #5cb85c;
+    color: white;
+    border-radius: 4px;
+}
+
+div.channel{
+    height: 55px;
+    margin-top: 30px;
+    background-color: #cecece;
+    border-radius: 6px;
+}
+
+div.channel_in{
+    margin-left: 15px;
+    height: 25px;
+    font-size: 15px;
+    background:url("../image/28754.gif") center left;
+    background-color: white;
+    background-size: 50%;
+    border-radius: 4px;
+}
+
+a.record,a.stop{
+    margin-top: 13px;
+    height: 30px;
+    width: 30px;
+    padding: 3px 5px;
+    font-size: 16px;
+}
+
+.btn[disabled]{
+    background-color: #a9a9a9;
+}
+
+.btn[disabled]:hover{
+    background-color: #a9a9a9;
+}
+
+

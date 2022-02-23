@@ -1,0 +1,183 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}设备配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/main.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-5" id="system">
+            <div class="row tips">
+                <label>系统状态</label>
+            </div>
+            <div class="row1 row" >
+                <div class="col-md-5">
+                    当前录音模式:<label>自动</label>
+
+                </div>
+                <div class="col-md-6 col-md-offset-1">
+                    <button class="btn btn-success" id="">
+                        <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 修改录音模式</button>
+
+                </div>
+
+
+            </div>
+            <div class="row1 row">
+                <div class="col-md-5">
+                    当前用户:<label>管理员</label>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-7" id="disk">
+            <div class="row tips">
+                <label>磁盘状态</label>
+
+            </div>
+            <div class="row1 row">
+                <div class="col-md-5">
+                    磁盘剩余空间:<label class="disk-info" id="space">....G</label>
+
+                </div>
+            </div>
+            <div class="row1 row">
+                <div class="col-md-6">
+                    磁盘剩余可录制时间(单通道):<label class="disk-info"> 20h</label>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-1 channel">
+            <div class="row">
+                <div class="col-md-8">
+                    <label>1通道1</label>
+                    <div class="row channel_in">
+
+                    </div>
+
+                </div>
+                <div class="col-md-1 col-md-offset-1">
+                    <a class="btn btn-danger record" disabled="disabled">
+                            <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div class="col-md-2 ">
+                    <a class="btn btn-default stop" >
+                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+    <div class="col-md-6 col-md-offset-1 channel">
+        <div class="row">
+            <div class="col-md-8">
+                <label>2通道2</label>
+                <div class="row channel_in">
+
+                </div>
+
+            </div>
+            <div class="col-md-1 col-md-offset-1">
+                <a class="btn btn-danger record" >
+                        <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+                </a>
+            </div>
+            <div class="col-md-2 ">
+                <a class="btn btn-default stop" disabled="disabled">
+                        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-1 channel">
+            <div class="row">
+                <div class="col-md-8">
+                    <label>3通道3</label>
+                    <div class="row channel_in" id="channel1">
+
+                    </div>
+
+                </div>
+                <div class="col-md-1 col-md-offset-1">
+                    <a class="btn btn-danger record" >
+                            <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div class="col-md-2 ">
+                    <a class="btn btn-default stop" >
+                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+    <div class="col-md-6 col-md-offset-1 channel">
+        <div class="row">
+            <div class="col-md-8">
+                <label>4通道4</label>
+                <div class="row channel_in">
+
+                </div>
+
+            </div>
+            <div class="col-md-1 col-md-offset-1">
+                <a class="btn btn-danger record" >
+                        <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+                </a>
+            </div>
+            <div class="col-md-2 ">
+                <a class="btn btn-default stop" >
+                        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+    var no = 0
+
+    function getdiskStatus(){
+        $.get('getdiskStatus').done(function (info) {
+            if(no == info.no){
+
+            }else{
+                $('label#space').html(info.no + 'G')
+                no = info.no
+            }
+
+
+
+
+
+
+        }).fail(function () {
+
+        })
+    }
+    setInterval(getdiskStatus,3000)
+</script>
+{% endblock %}
+

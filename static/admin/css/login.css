@@ -1,0 +1,106 @@
+body{
+	height: 100%;
+    background:url(../img/bg2.jpg) no-repeat fixed top;
+}
+
+form{
+	width: 300px;
+	margin-left: 50px;
+}
+
+label{
+	font-size: 15px;
+}
+
+ul.errorlist{
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+	color: red;
+}
+
+div.formRow{
+	margin-bottom: 15px;
+
+}
+
+div.left{
+	text-align: left;
+}
+
+div#appName{
+	text-align: center;
+	font-size: 26px;
+	color: black;
+	padding-top: 25px;
+}
+
+div#title{
+	margin-top:10px;
+	margin-bottom: 15px;
+	height: 50px;
+	font-size: 18px;
+	color:black;
+}
+
+div.middle{
+    height:450px;
+    width: 400px;
+    position: absolute;
+    left:50%;
+    top:20%;
+    margin-left: -200px;
+    text-align: center;
+	background-color: rgba(255,255,255,0.8);
+	box-shadow:rgba(0,0,0,0.2) 1px 1px 3px 1px;
+	border-radius: 3px;
+
+}
+
+div.title-box{
+	height: 40px;
+	background:#417690;
+	text-align:center;
+	font-size: 26px;
+	color:rgb(255,255,255);
+}
+
+input#id_usrname,#id_password{
+	width: 100%;
+	height: 35px;
+	font-size: 18px;
+	border-radius: 2px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: rgb(100,100,100);
+}
+
+input#submit{
+	width: 300px;
+	height: 35px;
+	color: white;
+	background-color:#3697f5;
+	margin-top: 15px;
+	margin-bottom: 30px;
+	border-color:#3697f5 ;
+	border-style: solid;
+	border-radius: 2px;
+	font-size: 16px;
+}
+
+input#submit:hover{
+	background-color:#1b4192;
+	color: white;
+	border-color:#1b4192;
+
+}
+input#submit{
+	margin-top: 30px;
+}
+
+div.logo{
+	height: 100px;
+
+	background: url("../img/logo.png") top left fixed no-repeat;
+	background-size: 30%;
+}
