@@ -57,4 +57,9 @@ a.record,a.stop{
     background-color: #a9a9a9;
 }
 
+li#main>a{
+    background-color: #eee;
+    color: #23527c;
+}
+
 

@@ -6,6 +6,7 @@ app_name ='system'
 urlpatterns = [
     path('main.html', views.main),
     path('getdiskStatus', views.get_diskstatus),
+    path('sysconfig.html', views.system_config),
 
 
 ]

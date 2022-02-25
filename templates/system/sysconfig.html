@@ -1,0 +1,35 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}设备配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/sysconfig.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="row sparse"><label class="head">系统配置&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row tips">
+        <label>音频配置</label>
+    </div>
+    <div class="row1 row" id="selebox">
+            {{ form.audiotype.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotype}}
+    </div>
+    <div class="row tips">
+        <label>通道名称配置</label>
+    </div>
+    <div class="row1 row">
+        <div class="col-md-6"></div>
+        <div class="col-md-6"></div>
+
+    </div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+
+</script>
+{% endblock %}
+

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from .forms import SysconfigForm
 import os
 
 
@@ -18,3 +19,11 @@ def get_diskstatus(request):
     no = round(status,2)
 
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
+
+def system_config(request):
+    if request.method == 'POST':
+        pass
+
+    else:
+        form = SysconfigForm()
+        return render(request, 'system/sysconfig.html',{'form': form})
