@@ -7,6 +7,7 @@ urlpatterns = [
     path('main.html', views.main),
     path('getdiskStatus', views.get_diskstatus),
     path('sysconfig.html', views.system_config),
+    path('usrconfig.html', views.usr_config)
 
 
 ]

@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}设备配置{% endblock %}
+{% block title %}系统配置{% endblock %}
 
 {% block css %}
 <link href="{% static  "system/css/sysconfig.css" %}" rel="stylesheet">
@@ -19,15 +19,26 @@
     <div class="row tips">
         <label>通道名称配置</label>
     </div>
-    <div class="row1 row">
-        <div class="col-md-6"></div>
-        <div class="col-md-6"></div>
+    <div class="row1 row channel_name">
+        <div class="col-md-5">{{ form.channel1.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel1}}</div>
+        <div class="col-md-5">{{ form.channel2.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel2}}</div>
+    </div>
+    <div class="row1 row channel_name">
+        <div class="col-md-5">{{ form.channel3.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel3}}</div>
+        <div class="col-md-5">{{ form.channel4.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel4}}</div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 col-md-offset-8">
+            <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
+        </div>
 
     </div>
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample').attr('class','collapse in');
 
 
 </script>

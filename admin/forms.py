@@ -17,16 +17,19 @@ class NameForm(forms.Form):
 
         conn = sqlite3.connect('db.sqlite3')
         cursor = conn.cursor()
-        sql = " SELECT str FROM usradmin "
+        sql = " SELECT usrname,psword FROM usradmin WHERE usrname='"+username+"'"
         cursor.execute(sql)
-        val = cursor.fetchall()
-        muser = val[0]
-        mpw = val[1]
-
-        if (muser[0] == username)&(mpw[0] == pw.hexdigest()):
-            pass
+        val = cursor.fetchone()
+        if val == None:
+            raise forms.ValidationError(u"用户名或密码错误，请重新输入")
         else:
-             raise forms.ValidationError(u"用户名或密码错误，请重新输入")
+            muser = val[0]
+            mpw = val[1]
+
+            if (muser == username)&(mpw == pw.hexdigest()):
+                pass
+            else:
+                 raise forms.ValidationError(u"用户名或密码错误，请重新输入")
 
         conn.close()
 

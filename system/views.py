@@ -27,3 +27,11 @@ def system_config(request):
     else:
         form = SysconfigForm()
         return render(request, 'system/sysconfig.html',{'form': form})
+
+def usr_config(request):
+    if request.method == 'POST':
+        pass
+
+    else:
+
+        return render(request, 'system/usrconfig.html')
