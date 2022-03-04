@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .forms import SysconfigForm
-import os
+import os,sqlite3
 
 
 # Create your views here.
@@ -11,7 +11,11 @@ def main(request):
         pass
 
     else:
-        return render(request, 'system/main.html',)
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        print(permiss)
+
+        return render(request, 'system/main.html',{'name':name,'permiss':permiss})
 
 def get_diskstatus(request):
     st = os.statvfs('/home')

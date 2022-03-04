@@ -19,6 +19,7 @@ class NameForm(forms.Form):
         cursor = conn.cursor()
         sql = " SELECT usrname,psword FROM usradmin WHERE usrname='"+username+"'"
         cursor.execute(sql)
+
         val = cursor.fetchone()
         if val == None:
             raise forms.ValidationError(u"用户名或密码错误，请重新输入")
@@ -28,9 +29,11 @@ class NameForm(forms.Form):
 
             if (muser == username)&(mpw == pw.hexdigest()):
                 pass
+
+
             else:
                  raise forms.ValidationError(u"用户名或密码错误，请重新输入")
 
         conn.close()
 
-        return self
+        return self.cleaned_data
