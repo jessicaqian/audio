@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">用户配置&nbsp&nbsp&nbsp&nbsp</label></div>
-    <div class="row sparse" id="head_bar">
+<div class="row sparse"><label class="head">用户配置&nbsp&nbsp&nbsp&nbsp</label></div>
+<div class="row sparse" id="head_bar">
     <div class="col-md-3">
         <label>用户列表</label>
 
@@ -38,7 +38,7 @@
 <div id="configed_table_body">
     <table class="table table-hover table-condensed table-striped" id="table_body">
         <colgroup>
-            <col style="width: 40px"><col style="width: 30%"><col style="width: 15%"><col style="width: 25%"><col style="width: 70px"><col style="width: 70px"><col style="width: 70px">
+            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px"><col style="width: 70px">
         </colgroup>
     <tbody>
 
@@ -47,12 +47,6 @@
             <td>{{ forloop.counter }}</td>
             <td  id="name_{{ forloop.counter }}">{{form.0}}</td>
             <td>{{form.1}}</td>
-            <td>{{form.2}}</td>
-            <td class="download">
-                <a class="btn config scan"  id="{{ form.3 }}" type="button" data-toggle="modal" data-target="#myModal" >
-                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                </a>
-            </td>
             <td class="download">
                 <a class="btn config" href="/system/config.html?id={{ form.3 }}&status=edit">
                     <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
@@ -69,6 +63,11 @@
     </tbody>
     </table>
 
+</div>
+<div class="col-md-2 col-md-offset-10">
+    <a class="btn btn-primary" id="new" href="newusr.html?name={{ name }}&permiss={{ permiss }}">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新建用户
+    </a>
 </div>
 
 {% endblock %}

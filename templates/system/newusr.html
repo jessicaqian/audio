@@ -1,0 +1,91 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}用户配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/newusr.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+ <div class="alert alert-danger" role="alert" id="myalter" style="display: none">
+    <button type="button" class="close" id="close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  <strong>两次输入密码不一致</strong> 请重新输入。
+</div>
+
+<div class="row sparse"><label class="head">新建用户&nbsp&nbsp&nbsp&nbsp</label></div>
+<div class="col-md-10 col-md-offset-1">
+    <form method="post" onsubmit="return checkInfo()">
+    {% csrf_token %}
+        {{ error_msg }}
+        <div class="row sparse_min">
+            <div class="col-md-6">
+            {{ form.usrname.label_tag }}&nbsp&nbsp
+            {{ form.usrname}}
+            </div>
+            <div class="col-md-6">
+            {{ form.password_one.label_tag }}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            {{ form.password_one}}
+            </div>
+
+        </div>
+        <div class="row sparse_min">
+           <div class="col-md-6">
+            {{ form.usr_perssions.label_tag }}&nbsp&nbsp
+            {{ form.usr_perssions}}
+            </div>
+            <div class="col-md-6">
+            {{ form.password_two.label_tag }}&nbsp&nbsp
+            {{ form.password_two}}
+            </div>
+        </div>
+        <div class="hidden">{{ form.usrname_n}}</div>
+        <div class="hidden">{{ form.usr_perssions_n}}</div>
+            {{form.non_field_errors}}
+        <div class="row sparse">
+            <div class="col-md-3 col-md-offset-9">
+                <input type="submit" value="提&nbsp&nbsp交" id="submit" class="btn btn-primary">
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample').attr('class','collapse in');
+    $('input#id_usrname_n').val("{{ name }}")
+    $('input#id_usr_perssions_n').val("{{ permiss }}")
+    $('button#close').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
+    var pswd1='pswd1'
+    var pswd2='pswd2'
+    function checkInfo() {
+        pswd1 =$('#id_password_one').val()
+        pswd2 =$('#id_password_two').val()
+        if(pswd1==pswd2){
+            return true
+        }
+        else{
+            $('#myalter').attr('style','display:block')
+            return false;
+
+        }
+
+
+    }
+
+
+
+</script>
+{% endblock %}
+

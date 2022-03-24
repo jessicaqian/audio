@@ -1,0 +1,19 @@
+input.single_line{
+    width: 300px;
+}
+
+li#config>a{
+    background-color: #eee;
+    color: #23527c;
+}
+
+li#usr_config> a{
+    color: #efb041;
+    padding-left: 30px;
+}
+
+div#myalter{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+}

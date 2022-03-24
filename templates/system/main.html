@@ -176,10 +176,16 @@
     setInterval(getdiskStatus,3000)
 
     $('#record1').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#stop1').removeAttr('disabled')
-        $('#channel1').attr('class','row channel_in')
+        var data = {"cmdCheck":0x02,"Seq":0x15,"audioPara":{"audioFunc":1,"audioType":1,"recordType":1,"recordTime":2,"nDevNo":0,"nCapNo":0,
+                                                    "mp3Bps":128,"sampleRate":48000,"timeInterval":10,"fileName":"new.mp3","isStereoSaveFlag":0}}
+        $.post('sendData',{'mes':data}).done(function (info) {
+            $('#record1').attr('disabled','disabled')
+            $('#stop1').removeAttr('disabled')
+            $('#channel1').attr('class','row channel_in')
 
+        }).fail(function () {
+
+        })
     })
 
     $('#stop1').click(function () {

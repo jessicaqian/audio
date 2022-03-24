@@ -7,3 +7,29 @@ li#usr_config> a{
     color: #efb041;
     padding-left: 30px;
 }
+
+td,th{
+    text-align: center;
+
+}
+
+td{
+    font-size: 13px;
+}
+
+table#configed_table>tbody>tr>td{
+    vertical-align:middle;
+}
+
+table#table_body>tbody>tr>td{
+    vertical-align:middle;
+}
+
+table#configed_table{
+
+    margin-bottom: 0px;
+}
+
+a#new{
+    margin-top: 30px;
+}
