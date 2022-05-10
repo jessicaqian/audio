@@ -12,8 +12,7 @@ urlpatterns = [
     path('sendData',views.send_data),
     path('heartbeat',views.heartbeat),
     path('searchmid.html',views.search_mid),
-    path('searchtime.html',views.search_time),
-    path('audiofile',views.audiofile)
+    path('searchtime.html',views.search_time)
 
 
 ]

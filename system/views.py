@@ -146,17 +146,17 @@ def search_mid(request):
                 pass
             else:
                 i = 1
-
+                mark = False
                 while i < 5:
                     path = 'static/record/' + start_date + '/' + str(i)
                     if not os.listdir(path):
                         pass
 
                     else:
-                        lists.append(start_date+ '/' + str(i))
+                        mark = True
                     i = i + 1
-
-
+                if mark:
+                    lists.append(start_date)
         else:
             path0 = 'static/record/' + start_date
             if not os.path.exists(path0):
@@ -181,7 +181,7 @@ def search_mid(request):
                     pass
                 else:
                     i = 1
-
+                    mark = False
                     while i < 5:
                         path = 'static/record/' + startdate + '/' + str(i)
                         if not os.listdir(path):
@@ -189,10 +189,10 @@ def search_mid(request):
 
 
                         else:
-                            lists.append(startdate+ '/' + str(i))
+                            mark = True
                         i = i + 1
-
-
+                    if mark:
+                        lists.append(startdate)
             else:
                 path0 = 'static/record/' + startdate
                 if not os.path.exists(path0):
@@ -320,11 +320,5 @@ def heartbeat(request):
 
     return JsonResponse({'msg': 'success'})
 
-def audiofile(request):
-    name = request.GET.get('name', default='10000000')
-    path = 'static/record/' + name
-    list = os.listdir(path)
-    print(list)
-    return render(request, 'system/audiofile.html',{'list':list})
 
 
