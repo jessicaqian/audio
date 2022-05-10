@@ -146,17 +146,17 @@ def search_mid(request):
                 pass
             else:
                 i = 1
-                mark = False
+
                 while i < 5:
                     path = 'static/record/' + start_date + '/' + str(i)
                     if not os.listdir(path):
                         pass
 
                     else:
-                        mark = True
+                        lists.append(start_date + '/' + str(i))
+
                     i = i + 1
-                if mark:
-                    lists.append(start_date)
+
         else:
             path0 = 'static/record/' + start_date
             if not os.path.exists(path0):
@@ -181,7 +181,7 @@ def search_mid(request):
                     pass
                 else:
                     i = 1
-                    mark = False
+
                     while i < 5:
                         path = 'static/record/' + startdate + '/' + str(i)
                         if not os.listdir(path):
@@ -189,10 +189,11 @@ def search_mid(request):
 
 
                         else:
-                            mark = True
+                            lists.append(startdate + '/' + str(i))
+
                         i = i + 1
-                    if mark:
-                        lists.append(startdate)
+
+
             else:
                 path0 = 'static/record/' + startdate
                 if not os.path.exists(path0):
@@ -213,91 +214,6 @@ def search_mid(request):
     else:
 
         return render(request, 'system/searchmid.html')
-
-
-def search_time(request):
-    lists = []
-    start = request.POST['start']
-    start_date = datetime.datetime.strptime(start,'%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
-
-    start_time = datetime.datetime.strptime(start,'%Y-%m-%dT%H:%M').strftime('%H-%M-00')
-    end = request.POST['end']
-    end_date = datetime.datetime.strptime(end,'%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
-    end_time = datetime.datetime.strptime(end,'%Y-%m-%dT%H:%M').strftime('%H-%M-00')
-    channel_no = request.POST['no']
-
-    if channel_no=='all':
-        path0 = 'static/record/' + start_date
-        if not os.path.exists(path0):
-            pass
-        else:
-            i=1
-            mark = False
-            while i<5:
-                path = 'static/record/' + start_date + '/' + str(i)
-                if not os.listdir(path):
-                    pass
-
-                else:
-                    mark = True
-                i = i + 1
-            if mark:
-                lists.append(start_date)
-    else:
-        path0 = 'static/record/' + start_date
-        if not os.path.exists(path0):
-            pass
-        else:
-            path = 'static/record/' + start_date + '/' + channel_no
-            if not os.listdir(path):
-                pass
-
-
-            else:
-                lists.append(start_date+ '/' + channel_no)
-
-    datestart = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-    dateend = datetime.datetime.strptime(end_date, '%Y-%m-%d')
-    while datestart < dateend:
-        datestart += datetime.timedelta(days=1)
-        startdate = datetime.datetime.strftime(datestart,'%Y-%m-%d')
-        if channel_no == 'all':
-            path0 = 'static/record/' + startdate
-            if not os.path.exists(path0):
-                pass
-            else:
-                i = 1
-                mark = False
-                while i < 5:
-                    path = 'static/record/' + startdate + '/' + str(i)
-                    if not os.listdir(path):
-                        pass
-
-
-                    else:
-                        mark = True
-                    i = i + 1
-                if mark:
-                    lists.append(startdate)
-        else:
-            path0 = 'static/record/' + startdate
-            if not os.path.exists(path0):
-                pass
-            else:
-                path = 'static/record/' + startdate + '/' + channel_no
-                if not os.listdir(path):
-                    pass
-
-                else:
-                    lists.append(startdate + '/' + channel_no)
-
-
-    print(lists)
-
-
-    return render(request, 'system/searchtime.html',
-                      {'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no})
-
 
 
 def send_data(request):
