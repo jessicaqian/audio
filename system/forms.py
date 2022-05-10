@@ -24,3 +24,6 @@ class UsrForm(forms.Form):
     usr_perssions_n = forms.CharField(widget=forms.TextInput)
 
 
+
+
+
