@@ -1,0 +1,43 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}系统配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/searchmid.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
+    <h5 class="modal-title" >文件列表</h5>
+
+    <table class="table table-hover table-condensed table-striped" id="key_table_body">
+        <tbody>
+        {% for list in list %}
+            <tr id="id{{ forloop.counter }}">
+                <td><a href="audiofile?name={{ list }}">{{list}}</a></td>
+
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <audio controls="controls" src=""></audio>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample1').attr('class','collapse in');
+    $('#start').val('{{ start_a }}')
+    $('#end').val('{{ end_a }}')
+    $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
+
+
+
+
+</script>
+{% endblock %}
+
