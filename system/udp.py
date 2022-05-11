@@ -3,7 +3,7 @@ import json
 def senddata(data):
     udp_send = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     jsondata = json.dumps(data)
-    udp_send.sendto(jsondata.encode('gbk'),("10.25.16.177",8666))
+    udp_send.sendto(jsondata.encode('gbk'),("10.25.15.177",8666))
     udp_send.close()
 
 def getdata(info):
@@ -32,7 +32,7 @@ def heartbeat():
     udp_send = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     data = {"msg_type":"AudioPing","seq":1}
     jsondata = json.dumps(data)
-    udp_send.sendto(jsondata.encode('gbk'),("10.25.16.177",8707))
+    udp_send.sendto(jsondata.encode('gbk'),("10.25.15.177",8707))
     udp_send.close()
 
     udp_get = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

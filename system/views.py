@@ -114,20 +114,6 @@ def new_usr(request):
 
         return render(request, 'system/newusr.html', { 'form':form,'name': name, 'permiss': permiss})
 
-def dele_usr():
-
-        conn = sqlite3.connect('db.sqlite3')
-        cursor = conn.cursor()
-        sql = " SELECT usrname,usrpermiss FROM usradmin"
-        cursor.execute(sql)
-        form = cursor.fetchall()
-        conn.close()
-
-        name = request.GET.get('name', default='10000000')
-        permiss = request.GET.get('permiss', default='10000000')
-
-        return render(request, 'system/usrconfig.html',{'form': form,'name':name,'permiss':permiss})
-
 def search_mid(request):
     if request.method == 'POST':
         lists = []
@@ -209,11 +195,22 @@ def search_mid(request):
         print(lists)
 
         return render(request, 'system/searchmid.html',
-                      {'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no})
+                      {'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post'})
 
     else:
 
         return render(request, 'system/searchmid.html')
+
+def audio_file(request):
+    if request.method == 'POST':
+        pass
+
+    else:
+        dir = request.GET.get('dir', default='10000000')
+        path = 'static/record/' + dir
+        lists =  os.listdir(path)
+        print(lists)
+        return render(request, 'system/audiofile.html',{'lists': lists,'path':path})
 
 
 def send_data(request):

@@ -10,20 +10,21 @@
 
 {% block content %}
     <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
+    <audio controls="controls" src="" id="audio"></audio>
     <h5 class="modal-title" >文件列表</h5>
 
     <table class="table table-hover table-condensed table-striped" id="key_table_body">
         <tbody>
-        {% for list in list %}
+        {% for list in lists %}
             <tr id="id{{ forloop.counter }}">
-                <td><a href="audiofile?name={{ list }}">{{list}}</a></td>
+                <td><a href="#"  class="file" id="{{ list }}">{{list}}</a></td>
 
 
             </tr>
         {% endfor %}
         </tbody>
     </table>
-    <audio controls="controls" src=""></audio>
+
 
 {% endblock %}
 
@@ -31,9 +32,17 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample1').attr('class','collapse in');
-    $('#start').val('{{ start_a }}')
-    $('#end').val('{{ end_a }}')
-    $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
+    $('a.file').click(function () {
+        var filename = $(this).attr('id')
+        var src ='../' + '{{ path }}'+'/' + filename
+        console.log(src)
+        $('#audio').attr('src',src)
+        audio = document.getElementById("audio");
+        audio.play()
+
+    })
+
+
 
 
 

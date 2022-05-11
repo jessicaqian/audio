@@ -12,7 +12,7 @@ urlpatterns = [
     path('sendData',views.send_data),
     path('heartbeat',views.heartbeat),
     path('searchmid.html',views.search_mid),
-
+    path('audiofile.html', views.audio_file),
 
 
 ]
