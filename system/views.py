@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.http import JsonResponse,HttpResponseRedirect
 from .forms import SysconfigForm,UsrForm
-import os,sqlite3,hashlib,json,threading
+import os,sqlite3,hashlib,json,threading,re
 import time,datetime
 from . import udp
+
 
 # Create your views here.
 # data = {"cmdCheck": 0x02, "Seq": 0x15,
@@ -117,20 +118,24 @@ def new_usr(request):
 def search_mid(request):
     if request.method == 'POST':
         lists = []
+        f_lists = {}
+
         start = request.POST['start']
         start_date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
 
-        start_time = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%H-%M-00')
+        start_time = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%H%M00')
         end = request.POST['end']
         end_date = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
-        end_time = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%H-%M-00')
+        end_time = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%H%M00')
         channel_no = request.POST['no']
 
+#处理start_date
         if channel_no == 'all':
             path0 = 'static/record/' + start_date
             if not os.path.exists(path0):
                 pass
             else:
+
                 i = 1
 
                 while i < 5:
@@ -139,7 +144,25 @@ def search_mid(request):
                         pass
 
                     else:
-                        lists.append(start_date + '/' + str(i))
+                        mark = False
+                        F_lists = []
+                        Flists = os.listdir(path)
+                        for Flist in Flists:
+                            Flist1 = re.sub('.mp3','',Flist)
+                            Flist2 = re.sub('-', '', Flist1)
+                            Flist_str = list(Flist2)
+                            j = 0
+                            while j<10:
+                                Flist_str.pop(0)
+                                j = j + 1
+                            Flist3 = ''.join(Flist_str)
+
+                            if (int(start_time)-int(Flist3))<=0:
+                                F_lists.append(Flist)
+                                f_lists[start_date + '/' + str(i)] = F_lists
+                                mark = True
+                        if mark == True:
+                            lists.append(start_date + '/' + str(i))
 
                     i = i + 1
 
@@ -154,43 +177,135 @@ def search_mid(request):
 
 
                 else:
-                    lists.append(start_date + '/' + channel_no)
 
+                    F_lists = []
+                    Flists = os.listdir(path)
+                    for Flist in Flists:
+                        Flist1 = re.sub('.mp3', '', Flist)
+                        Flist2 = re.sub('-', '', Flist1)
+                        Flist_str = list(Flist2)
+                        j = 0
+                        while j < 10:
+                            Flist_str.pop(0)
+                            j = j + 1
+                        Flist3 = ''.join(Flist_str)
+
+                        if (int(start_time) - int(Flist3)) <= 0:
+                            F_lists.append(Flist)
+                            f_lists[start_date + '/' + channel_no] = F_lists
+                            lists.append(start_date + '/' + channel_no)
+
+#处理既不是start_date也不是end_date的中间日期
         datestart = datetime.datetime.strptime(start_date, '%Y-%m-%d')
         dateend = datetime.datetime.strptime(end_date, '%Y-%m-%d')
-        while datestart < dateend:
-            datestart += datetime.timedelta(days=1)
-            startdate = datetime.datetime.strftime(datestart, '%Y-%m-%d')
-            if channel_no == 'all':
-                path0 = 'static/record/' + startdate
-                if not os.path.exists(path0):
-                    pass
-                else:
-                    i = 1
 
-                    while i < 5:
-                        path = 'static/record/' + startdate + '/' + str(i)
+        if dateend > datestart + datetime.timedelta(days=1):
+
+            while datestart < (dateend + datetime.timedelta(days=-1)):
+                datestart += datetime.timedelta(days=1)
+                startdate = datetime.datetime.strftime(datestart, '%Y-%m-%d')
+                if channel_no == 'all':
+                    path0 = 'static/record/' + startdate
+                    if not os.path.exists(path0):
+                        pass
+                    else:
+                        i = 1
+
+                        while i < 5:
+                            path = 'static/record/' + startdate + '/' + str(i)
+                            if not os.listdir(path):
+                                pass
+
+
+                            else:
+                                lists.append(startdate + '/' + str(i))
+
+                            i = i + 1
+
+
+                else:
+                    path0 = 'static/record/' + startdate
+                    if not os.path.exists(path0):
+                        pass
+                    else:
+                        path = 'static/record/' + startdate + '/' + channel_no
                         if not os.listdir(path):
                             pass
 
-
                         else:
-                            lists.append(startdate + '/' + str(i))
+                            lists.append(startdate + '/' + channel_no)
 
-                        i = i + 1
+#处理end_data
+        datestart = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        dateend = datetime.datetime.strptime(end_date, '%Y-%m-%d')
 
-
-            else:
-                path0 = 'static/record/' + startdate
+        if dateend >= datestart + datetime.timedelta(days=1):
+            if channel_no == 'all':
+                path0 = 'static/record/' + end_date
                 if not os.path.exists(path0):
                     pass
                 else:
-                    path = 'static/record/' + startdate + '/' + channel_no
+
+                    i = 1
+
+                    while i < 5:
+                        path = 'static/record/' + end_date + '/' + str(i)
+                        if not os.listdir(path):
+                            pass
+
+                        else:
+                            mark = False
+                            F_lists = []
+                            Flists = os.listdir(path)
+                            for Flist in Flists:
+                                Flist1 = re.sub('.mp3', '', Flist)
+                                Flist2 = re.sub('-', '', Flist1)
+                                Flist_str = list(Flist2)
+                                j = 0
+                                while j < 10:
+                                    Flist_str.pop(0)
+                                    j = j + 1
+                                Flist3 = ''.join(Flist_str)
+
+                                if (int(end_time) - int(Flist3)) >= 0:
+                                    F_lists.append(Flist)
+                                    f_lists[end_date + '/' + str(i)] = F_lists
+                                    mark = True
+                            if mark == True:
+                                lists.append(end_date + '/' + str(i))
+
+                        i = i + 1
+
+            else:
+                path0 = 'static/record/' + end_date
+                if not os.path.exists(path0):
+                    pass
+                else:
+                    path = 'static/record/' + end_date + '/' + channel_no
                     if not os.listdir(path):
                         pass
 
+
                     else:
-                        lists.append(startdate + '/' + channel_no)
+
+                        F_lists = []
+                        Flists = os.listdir(path)
+                        for Flist in Flists:
+                            Flist1 = re.sub('.mp3', '', Flist)
+                            Flist2 = re.sub('-', '', Flist1)
+                            Flist_str = list(Flist2)
+                            j = 0
+                            while j < 10:
+                                Flist_str.pop(0)
+                                j = j + 1
+                            Flist3 = ''.join(Flist_str)
+
+                            if (int(end_time) - int(Flist3)) >= 0:
+                                F_lists.append(Flist)
+                                f_lists[end_date + '/' + channel_no] = F_lists
+                                lists.append(end_date + '/' + channel_no)
+
+
 
         print(lists)
 
@@ -209,7 +324,6 @@ def audio_file(request):
         dir = request.GET.get('dir', default='10000000')
         path = 'static/record/' + dir
         lists =  os.listdir(path)
-        print(lists)
         return render(request, 'system/audiofile.html',{'lists': lists,'path':path})
 
 
