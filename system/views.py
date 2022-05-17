@@ -15,6 +15,8 @@ from . import udp
 # res = udp.getdata(data)
 # print(res["audioAckValue"]["funcResult"])
 
+f_lists={}
+
 def mkdir():
     threading.Timer(43200,mkdir).start()
     current_time = time.strftime("%Y-%m-%d", time.localtime())
@@ -118,7 +120,7 @@ def new_usr(request):
 def search_mid(request):
     if request.method == 'POST':
         lists = []
-        f_lists = {}
+        f_lists.clear()
 
         start = request.POST['start']
         start_date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
@@ -157,10 +159,17 @@ def search_mid(request):
                                 j = j + 1
                             Flist3 = ''.join(Flist_str)
 
-                            if (int(start_time)-int(Flist3))<=0:
-                                F_lists.append(Flist)
-                                f_lists[start_date + '/' + str(i)] = F_lists
-                                mark = True
+                            if start_date == end_date:
+                                if (int(start_time)-int(Flist3))<=0 and (int(end_time)-int(Flist3))>=0:
+                                    F_lists.append(Flist)
+                                    f_lists[start_date + '/' + str(i)] = F_lists
+                                    mark = True
+                            else:
+
+                                if (int(start_time)-int(Flist3))<=0:
+                                    F_lists.append(Flist)
+                                    f_lists[start_date + '/' + str(i)] = F_lists
+                                    mark = True
                         if mark == True:
                             lists.append(start_date + '/' + str(i))
 
@@ -193,7 +202,8 @@ def search_mid(request):
                         if (int(start_time) - int(Flist3)) <= 0:
                             F_lists.append(Flist)
                             f_lists[start_date + '/' + channel_no] = F_lists
-                            lists.append(start_date + '/' + channel_no)
+                    lists.append(start_date + '/' + channel_no)
+
 
 #处理既不是start_date也不是end_date的中间日期
         datestart = datetime.datetime.strptime(start_date, '%Y-%m-%d')
@@ -303,14 +313,14 @@ def search_mid(request):
                             if (int(end_time) - int(Flist3)) >= 0:
                                 F_lists.append(Flist)
                                 f_lists[end_date + '/' + channel_no] = F_lists
-                                lists.append(end_date + '/' + channel_no)
+                        lists.append(end_date + '/' + channel_no)
 
 
 
-        print(lists)
+
 
         return render(request, 'system/searchmid.html',
-                      {'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post'})
+                      {'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date})
 
     else:
 
@@ -321,10 +331,17 @@ def audio_file(request):
         pass
 
     else:
+
+
         dir = request.GET.get('dir', default='10000000')
-        path = 'static/record/' + dir
-        lists =  os.listdir(path)
-        return render(request, 'system/audiofile.html',{'lists': lists,'path':path})
+        try:
+            print(f_lists[dir])
+            path = 'static/record/' + dir
+            lists = f_lists[dir]
+        except:
+            path = 'static/record/' + dir
+            lists =  os.listdir(path)
+        return render(request, 'system/audiofile.html', {'lists': lists, 'path': path})
 
 
 def send_data(request):
