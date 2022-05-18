@@ -13,6 +13,7 @@ urlpatterns = [
     path('heartbeat',views.heartbeat),
     path('searchmid.html',views.search_mid),
     path('audiofile.html', views.audio_file),
-
+    path('free_log', views.free),
+    path('free.html', views.free_count),
 
 ]

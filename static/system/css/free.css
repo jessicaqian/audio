@@ -1,0 +1,14 @@
+li#usr>a{
+    background-color: #eee;
+    color: #23527c;
+}
+
+li#dev_free > a{
+    color: #efb041;
+    padding-left: 30px;
+}
+
+
+label.time{
+    margin-left: 40px;
+}

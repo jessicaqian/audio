@@ -1,0 +1,124 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}系统配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/free.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
+        <div class="row sparse">
+            <div class="col-md-6">
+                <label class="time" >查询起始时间&nbsp&nbsp</label><input id="start" name="start" type="datetime-local" value="2022-01-01 00:00:00"/>
+            </div>
+            <div class="col-md-6">
+                <label class="time">查询截止时间&nbsp&nbsp</label><input type="datetime-local" id="end" name="end" value="2022-01-01T00:00"/>
+            </div>
+        </div>
+        <div class="row sparse">
+            <div class="col-md-12">
+                <label class="time">按通道名(通道号)查询&nbsp&nbsp
+                    <select id="sel" name="no">
+                        <option value="all" selected="selected">全部 </option>
+                        <option value="1" >1通道1</option>
+                        <option value="2">2通道2</option>
+                        <option value="3">3通道3</option>
+                        <option value="4">4通道4</option>
+                    </select>
+                </label>
+            </div>
+             <div class="col-md-3 col-md-offset-9">
+                 <input type="submit" value="搜索" class="btn btn-primary" id="submit">
+
+             </div>
+        </div>
+
+
+
+        <table class="table table-hover table-condensed table-striped" id="key_table_body">
+            <tbody>
+            {% for list in lists %}
+                <tr id="id{{ forloop.counter }}">
+                    <td><a href="audiofile.html?dir={{ list }}">{{list.0}}</a></td>
+                <td><a href="audiofile.html?dir={{ list }}">{{list.1}}</a></td>
+                <td><a href="audiofile.html?dir={{ list }}">{{list.2}}</a></td>
+                <td><a href="audiofile.html?dir={{ list }}">{{list.3}}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+<ul class="pagination">
+
+        {% if c_page.has_previous %}
+        <li></li><a href="#" id="up">上一页</a></li>
+
+        {# 若没有上一页，则显示为普通的字符即可 #}
+    {% else %}
+        <li>上一页</li>
+    {% endif %}
+
+ {% for p_num in paginator.page_range %}
+        {#若是当前页，则显示为普通的一个数字#}
+        {% if p_num == c_page_number %}
+            {{ p_num }}
+            {# 若不是当前页面，则显示为一个超链接 #}
+        {% else  %}
+            <a href="/test_page?page={{ p_num }}">{{ p_num }}</a>
+
+        {% endif %}
+
+    {% endfor %}
+
+
+  {% if c_page.has_next %}
+        <a href="#" id ="down">下一页</a>
+    {% else %}
+        <li>下一页</li>
+    {% endif %}
+
+</ul>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample1').attr('class','collapse in');
+    if('{{ mark }}'=='post'){
+        $('#start').val('{{ start_a }}')
+        $('#end').val('{{ end_a }}')
+    }
+    else{
+        var timestamp = Date.parse(new Date());
+        var timestamp = timestamp / 1000;
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes());
+        var time = Y+M+D+" "+h+m
+        $('#start').val(time)
+        $('#end').val(time)
+    }
+
+    $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
+    $('#submit').click(function () {
+
+        {#var jsonstr = JSON.stringify(data);#}
+        $.get('free.html',{'limit':1},function (data,status) {
+
+
+        })
+
+    })
+
+
+
+</script>
+{% endblock %}
+

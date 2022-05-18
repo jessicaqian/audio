@@ -366,4 +366,69 @@ def heartbeat(request):
 
 
 
-# ces
+#
+# """
+# 日志信息
+# yxy
+# """
+def free(request):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    if request.method == 'POST':
+        data =json.loads(request.POST['mes'])
+        start_time = data.get('start_time')
+        print(start_time)
+        # time_local = time.localtime(start_time)
+        # dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
+        # print(dt)
+        end_time = data.get("end_time")
+        user_name = data.get("name")
+        channel_name = data.get("channel_name")
+        sql = "SELECT id FROM audio_logs limit 1 offset (select COUNT (id) -1 FROM audio_logs)"
+        cursor.execute(sql)
+        array = cursor.fetchall()
+        json_dict = {}
+        json_dict = {}
+        for i in array:
+            json_dict["id"] = i[0]
+        data = json_dict.get('id')
+
+        if end_time is None:
+            sql = "INSERT INTO audio_logs(start_time,user_name,channel_name) values ('{}','{}','{}')".format(start_time, user_name,channel_name)
+            cursor.execute(sql)
+            conn.commit()
+        else:
+            sql = f"UPDATE audio_logs SET end_time = '{end_time}' where id={data} "
+            cursor.execute(sql)
+            conn.commit()
+        conn.close()
+        return JsonResponse({"mes":"ok"})
+    else:
+        return render(request,'system/free.html')
+
+
+def free_count(request):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    if request.method == "POST":
+        pass
+    else:
+        limit = request.GET.get("limit")
+        print(limit)
+        offset = request.GET.get("offset")
+        if limit is not None:
+            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {}".format(limit)
+            cursor.execute(sql)
+        if offset is not None:
+            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {}".format(offset)
+            cursor.execute(sql)
+
+        array = cursor.fetchall()
+        conn.close()
+        status_dict = {}
+        for i in array:
+            i = list(i)
+            status_dict[i[0]] = i
+        # return JsonResponse({"mes":"ok","lists":list(status_dict.values())})
+        print(list(status_dict.values()))
+        return render(request,'system/free.html')
