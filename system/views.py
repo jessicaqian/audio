@@ -1,4 +1,5 @@
 import pytz
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from .forms import SysconfigForm,UsrForm
@@ -15,6 +16,8 @@ from . import udp
 # udp.senddata(data)
 # res = udp.getdata(data)
 # print(res["audioAckValue"]["funcResult"])
+dir = os.getcwd()
+file_path = dir + '/audio_logs.txt'
 
 f_lists={}
 
@@ -54,7 +57,10 @@ def main(request):
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
-
+        now = datetime.datetime.now()
+        time = now.strftime("%Y-%m-%d %H:%M:%S")
+        with open(file=file_path, mode="a", encoding="utf-8") as f:
+            f.write(f'{time} {name}登录\n')
         return render(request, 'system/main.html',{'name':name,'permiss':permiss})
 
 def get_diskstatus(request):
@@ -374,97 +380,45 @@ def heartbeat(request):
 #添加日志
 # """
 def free_logs(request):
-    conn = sqlite3.connect('db.sqlite3')
-    cursor = conn.cursor()
     if request.method == 'POST':
         data =json.loads(request.POST['mes'])
         start_time = data.get('start_time')
         end_time = data.get("end_time")
         user_name = data.get("name")
         channel_name = data.get("channel_name")
-        sql = "SELECT id FROM audio_logs limit 1 offset (select COUNT (id) -1 FROM audio_logs)"
-        cursor.execute(sql)
-        array = cursor.fetchall()
-        json_dict = {}
-        for i in array:
-            json_dict["id"] = i[0]
-        data = json_dict.get('id')
         if end_time is None:
-            sql = "INSERT INTO audio_logs(start_time,user_name,channel_name) values ({},'{}','{}')".format(start_time, user_name,channel_name)
-            cursor.execute(sql)
-            conn.commit()
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{start_time} {channel_name} {user_name}开始录音\n')
         else:
-            sql = f"UPDATE audio_logs SET end_time = '{end_time}' where id={data} "
-            cursor.execute(sql)
-            conn.commit()
-        conn.close()
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{end_time} {channel_name} {user_name}停止录音\n')
         return JsonResponse({'mes':"ok"})
     else:
         return render(request,'system/free.html')
 
-#获取时间戳和分页内的日志
-def free(request):
-    conn = sqlite3.connect('db.sqlite3')
-    cursor = conn.cursor()
-    if request.method == "POST":
-        pass
-    else:
-        limit = request.GET.get("limit")
-        offset = request.GET.get("offset")
-        start = request.GET.get("start_time")
-        end = request.GET.get("end_time")
-        timestrs =start.replace('T', ' ')
-        timestre =end.replace('T', ' ')
-        times = time.strptime(timestrs,"%Y-%m-%d %H:%M")
-        timee = time.strptime(timestre,"%Y-%m-%d %H:%M")
-        st = int(time.mktime(times))
-        et = int(time.mktime(timee))
 
-        if limit is not None:
-            sql = f"SELECT start_time,end_time,channel_name,user_name FROM audio_logs where start_time between {st} and {et} limit {limit} "
-            cursor.execute(sql)
-        if offset is not None:
-            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {} offset {}".format(st,et,limit,offset)
-            cursor.execute(sql)
 
-        array = cursor.fetchall()
-        conn.close()
-        status_dict = []
-        for i in array:
-            status_dict.append({
-                "start_time":i[0],
-                "ent_time":i[1],
-                'channel_name':i[2],
-                'user_name':i[3],
-            })
-        return JsonResponse({'list':status_dict})
-
-# 这个主要是返回html模板
+# 这个主要是返回html模板，暂时放弃
 def free_html(request):
     if request.method=="POST":
         pass
     else:
         return render(request,'system/free.html')
-# 这里是获取时间戳内的日志总数,用于计算分页
+# 这里现在是查询展示日志的功能，
 def free_count(request):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
     if request.method=="POST":
         pass
     else:
-        start = request.GET.get("start_time")
-        end = request.GET.get("end_time")
-        timestrs = start.replace('T', ' ')
-        timestre = end.replace('T', ' ')
-        times = time.strptime(timestrs, "%Y-%m-%d %H:%M")
-        timee = time.strptime(timestre, "%Y-%m-%d %H:%M")
-        st = int(time.mktime(times))
-        et = int(time.mktime(timee))
-        sql = "SELECT count(id) FROM audio_logs"
-        cursor.execute(sql)
 
-        array = cursor.fetchone()
-        json_count =json.dumps(array)
-        print(array)
-        conn.close()
-        return HttpResponse(json_count)
+        pages = request.GET.get('page',)
+        with open(file=file_path, mode="r", encoding="utf-8") as f:
+            data =f.read().splitlines()
+        paginator = Paginator(data, 5)
+        if pages is not None:
+            c_page = paginator.page(int(pages))
+        else:
+            c_page = paginator.page(int(2))
+
+        return render(request,'system/free.html',locals(),{"data":data})

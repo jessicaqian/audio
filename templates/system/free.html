@@ -53,13 +53,12 @@
 
 <ul class="pagination">
 
-        {% if c_page.has_previous %}
-        <li></li><a href="#" id="up">上一页</a></li>
 
-        {# 若没有上一页，则显示为普通的字符即可 #}
-    {% else %}
-        <li>上一页</li>
-    {% endif %}
+{% if c_page.has_previous %}
+<li></li><a href="free.html?page={{ page_obj.previous_page_number }}" id="up">上一页</a></li>
+{% else %}
+    <li>上一页</li>
+{% endif %}
 
  {% for p_num in paginator.page_range %}
         {#若是当前页，则显示为普通的一个数字#}
@@ -67,7 +66,7 @@
             {{ p_num }}
             {# 若不是当前页面，则显示为一个超链接 #}
         {% else  %}
-            <a href="/test_page?page={{ p_num }}">{{ p_num }}</a>
+            <a href="/free.html?page={{ p_num }}">{{ p_num }}</a>
 
         {% endif %}
 
@@ -75,7 +74,7 @@
 
 
   {% if c_page.has_next %}
-        <a href="#" id ="down">下一页</a>
+        <a href="free.html?page={{ page_obj.next_page_number}}" id ="down">下一页</a>
     {% else %}
         <li>下一页</li>
     {% endif %}
@@ -100,19 +99,6 @@
 
     $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
     $('#submit').click(function () {
-
-        {#var jsonstr = JSON.stringify(data);#}
-        $.get('free_count',{start_time : $("#start_time").val(),end_time:$("#end_time").val(),limit:'1'},function (data,status) {
-            var data =data
-            for(var i=0;i<data.length;i++){
-                alert(data.list)
-            }
-            {#alert(list.list)#}
-
-
-
-
-        })
 
     })
 

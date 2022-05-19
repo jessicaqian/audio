@@ -206,7 +206,15 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"name":"{{ permiss }}","start_time":timestamp,"channel_name":"通道一"}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
+        var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
+        var time = Y+M+D+" "+h+m+s;
+        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道一"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -235,7 +243,15 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"end_time":timestamp}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
+        var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
+        var time = Y+M+D+" "+h+m+s
+        var dict = {"end_time":time,"channel_name":"通道一","name":"{{ name }}"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -264,7 +280,15 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"name":"{{ permiss }}","start_time":timestamp,"channel_name":"通道二"}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
+        var s = (date.getSeconds() <10 ? '0'+date.getSeconds():date.getSeconds())
+        var time = Y+M+D+" "+h+m+s
+        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道二"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -293,7 +317,15 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"end_time":timestamp}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
+        var s = (date.getSeconds() <10 ? '0'+date.getSeconds():date.getSeconds());
+        var time = Y+M+D+" "+h+m+s
+        var dict = {"end_time":time,"channel_name":"通道二","name":"{{ name }}"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
@@ -320,7 +352,14 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"name":"{{ permiss }}","start_time":timestamp,"channel_name":"通道三"}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
+        var time = Y+M+D+" "+h+m+s
+        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道三"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
@@ -348,7 +387,15 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"end_time":timestamp}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
+        var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
+        var time = Y+M+D+" "+h+m+s
+        var dict = {"end_time":time,"channel_name":"通道三","name":"{{ name }}"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
@@ -375,7 +422,15 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"name":"{{ permiss }}","start_time":timestamp,"channel_name":"通道四"}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
+        var s = (date.getSeconds()<10 ? '0'+date.getSeconds():date.getSeconds())
+        var time = Y+M+D+" "+h+m+s
+        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道四"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -404,7 +459,15 @@
         })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
-        var dict = {"end_time":timestamp}
+        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
+        var s = (date.getSeconds() <10 ? '0'+date.getSeconds():date.getSeconds())
+        var time = Y+M+D+" "+h+m+s
+        var dict = {"end_time":time,"channel_name":"通道四","name":"{{ name }}"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
