@@ -12,15 +12,15 @@
     <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
         <div class="row sparse">
             <div class="col-md-6">
-                <label class="time" >查询起始时间&nbsp&nbsp</label><input id="start" name="start" type="datetime-local" value="2022-01-01 00:00:00"/>
+                <label class="time2" >查询起始时间&nbsp&nbsp</label><input id="start_time" name="start_time" type="datetime-local" value="2022-01-01T00:00"/>
             </div>
             <div class="col-md-6">
-                <label class="time">查询截止时间&nbsp&nbsp</label><input type="datetime-local" id="end" name="end" value="2022-01-01T00:00"/>
+                <label class="time2">查询截止时间&nbsp&nbsp</label><input type="datetime-local" id="end_time" name="end_time" value="2022-01-01T00:00"/>
             </div>
         </div>
         <div class="row sparse">
             <div class="col-md-12">
-                <label class="time">按通道名(通道号)查询&nbsp&nbsp
+                <label class="time2">按通道名(通道号)查询&nbsp&nbsp
                     <select id="sel" name="no">
                         <option value="all" selected="selected">全部 </option>
                         <option value="1" >1通道1</option>
@@ -42,10 +42,10 @@
             <tbody>
             {% for list in lists %}
                 <tr id="id{{ forloop.counter }}">
-                    <td><a href="audiofile.html?dir={{ list }}">{{list.0}}</a></td>
-                <td><a href="audiofile.html?dir={{ list }}">{{list.1}}</a></td>
-                <td><a href="audiofile.html?dir={{ list }}">{{list.2}}</a></td>
-                <td><a href="audiofile.html?dir={{ list }}">{{list.3}}</a></td>
+                <td>>{{list.0}}</td>
+                <td>{{list.1}}></td>
+                <td>{{list.2}}</td>
+                <td>{{list.3}}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -86,13 +86,6 @@
 
 {% block js %}
 <script type="text/javascript">
-    $('a#flow').attr('aria-expanded','true');
-    $('div#collapseExample1').attr('class','collapse in');
-    if('{{ mark }}'=='post'){
-        $('#start').val('{{ start_a }}')
-        $('#end').val('{{ end_a }}')
-    }
-    else{
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
         var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -101,16 +94,22 @@
         var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
         var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes());
-        var time = Y+M+D+" "+h+m
-        $('#start').val(time)
-        $('#end').val(time)
-    }
+        var time2 = Y+M+D+"T"+h+m
+        $('#start_time').val(time2)
+        $('#end_time').val(time2)
 
     $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
     $('#submit').click(function () {
 
         {#var jsonstr = JSON.stringify(data);#}
-        $.get('free.html',{'limit':1},function (data,status) {
+        $.get('free_count',{start_time : $("#start_time").val(),end_time:$("#end_time").val(),limit:'1'},function (data,status) {
+            var data =data
+            for(var i=0;i<data.length;i++){
+                alert(data.list)
+            }
+            {#alert(list.list)#}
+
+
 
 
         })

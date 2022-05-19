@@ -1,5 +1,6 @@
+import pytz
 from django.shortcuts import render
-from django.http import JsonResponse,HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from .forms import SysconfigForm,UsrForm
 import os,sqlite3,hashlib,json,threading,re
 import time,datetime
@@ -370,17 +371,14 @@ def heartbeat(request):
 # """
 # 日志信息
 # yxy
+#添加日志
 # """
-def free(request):
+def free_logs(request):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
     if request.method == 'POST':
         data =json.loads(request.POST['mes'])
         start_time = data.get('start_time')
-        print(start_time)
-        # time_local = time.localtime(start_time)
-        # dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
-        # print(dt)
         end_time = data.get("end_time")
         user_name = data.get("name")
         channel_name = data.get("channel_name")
@@ -388,13 +386,11 @@ def free(request):
         cursor.execute(sql)
         array = cursor.fetchall()
         json_dict = {}
-        json_dict = {}
         for i in array:
             json_dict["id"] = i[0]
         data = json_dict.get('id')
-
         if end_time is None:
-            sql = "INSERT INTO audio_logs(start_time,user_name,channel_name) values ('{}','{}','{}')".format(start_time, user_name,channel_name)
+            sql = "INSERT INTO audio_logs(start_time,user_name,channel_name) values ({},'{}','{}')".format(start_time, user_name,channel_name)
             cursor.execute(sql)
             conn.commit()
         else:
@@ -402,33 +398,73 @@ def free(request):
             cursor.execute(sql)
             conn.commit()
         conn.close()
-        return JsonResponse({"mes":"ok"})
+        return JsonResponse({'mes':"ok"})
     else:
         return render(request,'system/free.html')
 
-
-def free_count(request):
+#获取时间戳和分页内的日志
+def free(request):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
     if request.method == "POST":
         pass
     else:
         limit = request.GET.get("limit")
-        print(limit)
         offset = request.GET.get("offset")
+        start = request.GET.get("start_time")
+        end = request.GET.get("end_time")
+        timestrs =start.replace('T', ' ')
+        timestre =end.replace('T', ' ')
+        times = time.strptime(timestrs,"%Y-%m-%d %H:%M")
+        timee = time.strptime(timestre,"%Y-%m-%d %H:%M")
+        st = int(time.mktime(times))
+        et = int(time.mktime(timee))
+
         if limit is not None:
-            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {}".format(limit)
+            sql = f"SELECT start_time,end_time,channel_name,user_name FROM audio_logs where start_time between {st} and {et} limit {limit} "
             cursor.execute(sql)
         if offset is not None:
-            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {}".format(offset)
+            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {} offset {}".format(st,et,limit,offset)
             cursor.execute(sql)
 
         array = cursor.fetchall()
         conn.close()
-        status_dict = {}
+        status_dict = []
         for i in array:
-            i = list(i)
-            status_dict[i[0]] = i
-        # return JsonResponse({"mes":"ok","lists":list(status_dict.values())})
-        print(list(status_dict.values()))
+            status_dict.append({
+                "start_time":i[0],
+                "ent_time":i[1],
+                'channel_name':i[2],
+                'user_name':i[3],
+            })
+        return JsonResponse({'list':status_dict})
+
+# 这个主要是返回html模板
+def free_html(request):
+    if request.method=="POST":
+        pass
+    else:
         return render(request,'system/free.html')
+# 这里是获取时间戳内的日志总数,用于计算分页
+def free_count(request):
+    conn = sqlite3.connect('db.sqlite3')
+    cursor = conn.cursor()
+    if request.method=="POST":
+        pass
+    else:
+        start = request.GET.get("start_time")
+        end = request.GET.get("end_time")
+        timestrs = start.replace('T', ' ')
+        timestre = end.replace('T', ' ')
+        times = time.strptime(timestrs, "%Y-%m-%d %H:%M")
+        timee = time.strptime(timestre, "%Y-%m-%d %H:%M")
+        st = int(time.mktime(times))
+        et = int(time.mktime(timee))
+        sql = "SELECT count(id) FROM audio_logs"
+        cursor.execute(sql)
+
+        array = cursor.fetchone()
+        json_count =json.dumps(array)
+        print(array)
+        conn.close()
+        return HttpResponse(json_count)
