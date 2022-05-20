@@ -5,11 +5,18 @@ class SysconfigForm(forms.Form):
         ("MP3", "MP3"),
         ("WMA", "WMA"),
     )
+    CHOICES1 = (
+        ("全时段录音", "全时段录音"),
+        ("自动录音", "自动录音"),
+    )
+
     audiotype = forms.ChoiceField(label='音频存储格式',choices=CHOICES)
-    channel1 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=False,label='channel1')
-    channel2 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=False,label='channel2')
-    channel3 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=False,label='channel3')
-    channel4 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=False,label='channel4')
+    audiomode = forms.ChoiceField(label='录音模式',choices=CHOICES1)
+    audiotime = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line','value':'10'}), required=False,label='音频文件存储时间')
+    channel1 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='channel1')
+    channel2 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='channel2')
+    channel3 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='channel3')
+    channel4 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='channel4')
 
 class UsrForm(forms.Form):
     CHOICES = (

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse,HttpResponseRedirect
 from .forms import SysconfigForm,UsrForm
 import os,sqlite3,hashlib,json,threading,re
-import time,datetime
+import time,datetime,configparser
 from . import udp
 
 
@@ -16,6 +16,7 @@ from . import udp
 # print(res["audioAckValue"]["funcResult"])
 
 f_lists={}
+config = configparser.ConfigParser()
 
 def mkdir():
     threading.Timer(43200,mkdir).start()
@@ -64,14 +65,48 @@ def get_diskstatus(request):
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
 def system_config(request):
+    config.read("web.ini")
     if request.method == 'POST':
-        pass
+        form = SysconfigForm(request.POST)
+        if form.is_valid():
+            audiotype = form.cleaned_data['audiotype']
+            audiomode = form.cleaned_data['audiomode']
+            audiotime = form.cleaned_data['audiotime']
+            channel1 = form.cleaned_data['channel1']
+            channel2 = form.cleaned_data['channel2']
+            channel3 = form.cleaned_data['channel3']
+            channel4 = form.cleaned_data['channel4']
+
+            config.set("configinfo","audiotype",audiotype)
+            config.set("configinfo", "audiomode", audiomode)
+            if audiomode == '全时段录音':
+                config.set("configinfo", "audiotime", audiotime)
+            config.set("configinfo", "channel1", channel1)
+            config.set("configinfo", "channel2", channel2)
+            config.set("configinfo", "channel3", channel3)
+            config.set("configinfo", "channel4", channel4)
+            config.write(open("web.ini","r+"))
+            return HttpResponseRedirect('/system/sysconfig.html')
+        else:
+
+            return render(request, 'system/sysconfig.html', {'form': form})
+
 
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         form = SysconfigForm()
-        return render(request, 'system/sysconfig.html',{'form': form,'name':name,'permiss':permiss})
+        audiotype = config.get("configinfo","audiotype")
+        audiomode =  config.get("configinfo", "audiomode")
+        audiotime =  config.get("configinfo", "audiotime")
+        channel1 =  config.get("configinfo", "channel1")
+        channel2 =  config.get("configinfo", "channel2")
+        channel3 = config.get("configinfo", "channel3")
+        channel4 =  config.get("configinfo", "channel4")
+
+
+        return render(request, 'system/sysconfig.html',{'form': form,'name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
+                                                        'audiotime':audiotime,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4})
 
 def usr_config(request):
     if request.method == 'POST':

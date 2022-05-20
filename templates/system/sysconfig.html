@@ -13,32 +13,73 @@
     <div class="row tips">
         <label>音频配置</label>
     </div>
-    <div class="row1 row" id="selebox">
-            {{ form.audiotype.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotype}}
-    </div>
-    <div class="row tips">
-        <label>通道名称配置</label>
-    </div>
-    <div class="row1 row channel_name">
-        <div class="col-md-5">{{ form.channel1.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel1}}</div>
-        <div class="col-md-5">{{ form.channel2.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel2}}</div>
-    </div>
-    <div class="row1 row channel_name">
-        <div class="col-md-5">{{ form.channel3.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel3}}</div>
-        <div class="col-md-5">{{ form.channel4.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel4}}</div>
-    </div>
-    <div class="row">
-        <div class="col-md-2 col-md-offset-8">
-            <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
+    <form method="post">
+         <div class="row1 row" id="selebox">
+                {{ form.audiotype.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotype}}
+        </div>
+        <div class="row1 row" id="audioMode">
+                {{ form.audiomode.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiomode}}
+        </div>
+        <div class="row1 row" id="audioTime" >
+            <span>{{ form.audiotime.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotime}}&nbsp;&nbsp;&nbsp;分钟</span>
         </div>
 
-    </div>
+        <div class="row tips">
+            <label>通道名称配置</label>
+        </div>
+        <div class="row1 row channel_name">
+            <div class="col-md-5">{{ form.channel1.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel1}}</div>
+            <div class="col-md-5">{{ form.channel2.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel2}}</div>
+        </div>
+        <div class="row1 row channel_name">
+            <div class="col-md-5">{{ form.channel3.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel3}}</div>
+            <div class="col-md-5">{{ form.channel4.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel4}}</div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-md-offset-8">
+                <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
+    $('input#id_channel1').val('{{ channel1 }}')
+    $('input#id_channel2').val('{{ channel2 }}')
+    $('input#id_channel3').val('{{ channel3 }}')
+    $('input#id_channel4').val('{{ channel4 }}')
+    $('select#id_audiomode').val('{{audiomode}}')
+    $('select#id_audiotype').val('{{audiotype}}')
+    if('{{audiomode}}'=='全时段录音'){
+        $('select#id_audiotime').val('{{audiotime}}')
+        $('div#audioTime').removeAttr('style')
+    }
+    else {
+        $('div#audioTime').attr('style','visibility: hidden')
+    }
+
+
+
+
+
+
+
+    $('select#id_audiomode').change(function () {
+        var opt = $('select#id_audiomode').val();
+        if(opt == "自动录音"){
+            $('div#audioTime').attr('style','visibility: hidden')
+        }
+        else {
+            $('div#audioTime').removeAttr('style')
+
+
+        }
+
+    })
 
 
 </script>
