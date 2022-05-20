@@ -1,5 +1,5 @@
 import pytz
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from .forms import SysconfigForm,UsrForm
@@ -398,7 +398,7 @@ def free_logs(request):
 
 
 
-# 这个主要是返回html模板，暂时放弃
+# 这个主要是返回html模板
 def free_html(request):
     if request.method=="POST":
         pass
@@ -412,13 +412,21 @@ def free_count(request):
         pass
     else:
 
-        pages = request.GET.get('page',)
+        page_num = request.GET.get('page',1)
         with open(file=file_path, mode="r", encoding="utf-8") as f:
             data =f.read().splitlines()
+        #     print(data)
         paginator = Paginator(data, 5)
-        if pages is not None:
-            c_page = paginator.page(int(pages))
-        else:
-            c_page = paginator.page(int(2))
+        # if page_num is not None:
+        #     c_page = paginator.page(int(page_num))
+        # else:
+        #     c_page = paginator.page(int(page_num))
+        try:
+            # print(page)
+            book_list = paginator.page(int(page_num))  # 获取当前页码的记录
+        except PageNotAnInteger:
+            book_list = paginator.page(1)  # 如果用户输入的页码不是整数时,显示第1页的内容
+        except EmptyPage:
+            book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页码列表中时,显示最后一页的内容
 
-        return render(request,'system/free.html',locals(),{"data":data})
+        return render(request,'system/free.html',locals())
