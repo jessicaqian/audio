@@ -56,13 +56,19 @@ def main(request):
         pass
 
     else:
+        config.read("web.ini")
+        audiomode = config.get("configinfo", "audiomode")
+        channel1 =  config.get("configinfo", "channel1")
+        channel2 =  config.get("configinfo", "channel2")
+        channel3 = config.get("configinfo", "channel3")
+        channel4 =  config.get("configinfo", "channel4")
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         with open(file=file_path, mode="a", encoding="utf-8") as f:
             f.write(f'{time} {name}登录\n')
-        return render(request, 'system/main.html',{'name':name,'permiss':permiss})
+        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4,'audiomode':audiomode})
 
 def get_diskstatus(request):
     st = os.statvfs('/home')

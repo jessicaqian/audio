@@ -16,8 +16,8 @@
                 <label>系统状态</label>
             </div>
             <div class="row1 row" >
-                <div class="col-md-5">
-                    当前录音模式:<label>自动</label>
+                <div class="col-md-12">
+                    当前录音模式:<label id="a_mode"></label>
 
                 </div>
             </div>
@@ -52,7 +52,7 @@
         <div class="col-md-6 col-md-offset-1 channel">
             <div class="row">
                 <div class="col-md-8">
-                    <label>1通道1</label>
+                    <label>通道号：1</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label id="c1_name">通道名：1</label>
                     <div class="row channel_in_off" id="channel1">
 
                     </div>
@@ -76,7 +76,7 @@
     <div class="col-md-6 col-md-offset-1 channel">
         <div class="row">
             <div class="col-md-8">
-                <label>2通道2</label>
+                <label>通道号：2</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label id="c2_name">通道名：2</label>
                 <div class="row channel_in_off" id="channel2">
 
                 </div>
@@ -100,7 +100,7 @@
         <div class="col-md-6 col-md-offset-1 channel">
             <div class="row">
                 <div class="col-md-8">
-                    <label>3通道3</label>
+                    <label>通道号：3</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label id="c3_name">通道名：3</label>
                     <div class="row channel_in_off" id="channel3">
 
                     </div>
@@ -124,7 +124,7 @@
     <div class="col-md-6 col-md-offset-1 channel">
         <div class="row">
             <div class="col-md-8">
-                <label>4通道4</label>
+                <label>通道号：4</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label id="c4_name" >通道名：4</label>
                 <div class="row channel_in_off" id="channel4">
 
                 </div>
@@ -150,7 +150,11 @@
 
 {% block js %}
 <script type="text/javascript">
-
+    $('label#a_mode').html('{{ audiomode }}')
+    $('label#c1_name').html('通道名：{{ channel1 }}')
+    $('label#c2_name').html('通道名：{{ channel2 }}')
+    $('label#c3_name').html('通道名：{{ channel3 }}')
+    $('label#c4_name').html('通道名：{{ channel4 }}')
     var no = 0
 
     function getdiskStatus(){
