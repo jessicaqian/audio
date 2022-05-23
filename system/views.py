@@ -71,7 +71,10 @@ def system_config(request):
         if form.is_valid():
             audiotype = form.cleaned_data['audiotype']
             audiomode = form.cleaned_data['audiomode']
-            audiotime = form.cleaned_data['audiotime']
+            if audiomode == '全时段录音':
+                audiotime = form.cleaned_data['audiotime']
+                config.set("configinfo", "audiotime", audiotime)
+
             channel1 = form.cleaned_data['channel1']
             channel2 = form.cleaned_data['channel2']
             channel3 = form.cleaned_data['channel3']
@@ -79,14 +82,14 @@ def system_config(request):
 
             config.set("configinfo","audiotype",audiotype)
             config.set("configinfo", "audiomode", audiomode)
-            if audiomode == '全时段录音':
-                config.set("configinfo", "audiotime", audiotime)
+
             config.set("configinfo", "channel1", channel1)
             config.set("configinfo", "channel2", channel2)
             config.set("configinfo", "channel3", channel3)
             config.set("configinfo", "channel4", channel4)
-            config.write(open("web.ini","r+"))
-            return HttpResponseRedirect('/system/sysconfig.html')
+            config.write(open("web.ini","w"))
+            print(form)
+            return render(request, 'system/sysconfig.html', {'form': form})
         else:
 
             return render(request, 'system/sysconfig.html', {'form': form})
@@ -105,7 +108,7 @@ def system_config(request):
         channel4 =  config.get("configinfo", "channel4")
 
 
-        return render(request, 'system/sysconfig.html',{'form': form,'name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
+        return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
                                                         'audiotime':audiotime,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4})
 
 def usr_config(request):

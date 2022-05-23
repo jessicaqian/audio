@@ -48,24 +48,27 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
-    $('input#id_channel1').val('{{ channel1 }}')
-    $('input#id_channel2').val('{{ channel2 }}')
-    $('input#id_channel3').val('{{ channel3 }}')
-    $('input#id_channel4').val('{{ channel4 }}')
-    $('select#id_audiomode').val('{{audiomode}}')
-    $('select#id_audiotype').val('{{audiotype}}')
-    if('{{audiomode}}'=='全时段录音'){
-        $('select#id_audiotime').val('{{audiotime}}')
+    var opt = $('select#id_audiomode').val();
+    if(opt=='全时段录音'){
         $('div#audioTime').removeAttr('style')
-    }
-    else {
+    }else {
         $('div#audioTime').attr('style','visibility: hidden')
     }
-
-
-
-
-
+    if('{{ method }}'=='get'){
+        $('input#id_channel1').val('{{ channel1 }}')
+        $('input#id_channel2').val('{{ channel2 }}')
+        $('input#id_channel3').val('{{ channel3 }}')
+        $('input#id_channel4').val('{{ channel4 }}')
+        $('select#id_audiomode').val('{{audiomode}}')
+        $('select#id_audiotype').val('{{audiotype}}')
+        if('{{audiomode}}'=='全时段录音'){
+            $('select#id_audiotime').val('{{audiotime}}')
+            $('div#audioTime').removeAttr('style')
+        }
+        else {
+            $('div#audioTime').attr('style','visibility: hidden')
+        }
+    }
 
 
     $('select#id_audiomode').change(function () {
