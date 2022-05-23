@@ -1,5 +1,7 @@
+import pytz
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
-from django.http import JsonResponse,HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from .forms import SysconfigForm,UsrForm
 import os,sqlite3,hashlib,json,threading,re
 import time,datetime,configparser
@@ -14,6 +16,8 @@ from . import udp
 # udp.senddata(data)
 # res = udp.getdata(data)
 # print(res["audioAckValue"]["funcResult"])
+dir = os.getcwd()
+file_path = dir + '/audio_logs.txt'
 
 f_lists={}
 config = configparser.ConfigParser()
@@ -54,7 +58,10 @@ def main(request):
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
-
+        now = datetime.datetime.now()
+        time = now.strftime("%Y-%m-%d %H:%M:%S")
+        with open(file=file_path, mode="a", encoding="utf-8") as f:
+            f.write(f'{time} {name}登录\n')
         return render(request, 'system/main.html',{'name':name,'permiss':permiss})
 
 def get_diskstatus(request):
@@ -408,65 +415,56 @@ def heartbeat(request):
 # """
 # 日志信息
 # yxy
+#添加日志
 # """
-def free(request):
-    conn = sqlite3.connect('db.sqlite3')
-    cursor = conn.cursor()
+def free_logs(request):
     if request.method == 'POST':
         data =json.loads(request.POST['mes'])
         start_time = data.get('start_time')
-        print(start_time)
-        # time_local = time.localtime(start_time)
-        # dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
-        # print(dt)
         end_time = data.get("end_time")
         user_name = data.get("name")
         channel_name = data.get("channel_name")
-        sql = "SELECT id FROM audio_logs limit 1 offset (select COUNT (id) -1 FROM audio_logs)"
-        cursor.execute(sql)
-        array = cursor.fetchall()
-        json_dict = {}
-        json_dict = {}
-        for i in array:
-            json_dict["id"] = i[0]
-        data = json_dict.get('id')
-
         if end_time is None:
-            sql = "INSERT INTO audio_logs(start_time,user_name,channel_name) values ('{}','{}','{}')".format(start_time, user_name,channel_name)
-            cursor.execute(sql)
-            conn.commit()
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{start_time} {channel_name} {user_name}开始录音\n')
         else:
-            sql = f"UPDATE audio_logs SET end_time = '{end_time}' where id={data} "
-            cursor.execute(sql)
-            conn.commit()
-        conn.close()
-        return JsonResponse({"mes":"ok"})
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{end_time} {channel_name} {user_name}停止录音\n')
+        return JsonResponse({'mes':"ok"})
     else:
         return render(request,'system/free.html')
 
 
+
+# 这个主要是返回html模板
+def free_html(request):
+    if request.method=="POST":
+        pass
+    else:
+        return render(request,'system/free.html')
+# 这里现在是查询展示日志的功能，
 def free_count(request):
     conn = sqlite3.connect('db.sqlite3')
     cursor = conn.cursor()
-    if request.method == "POST":
+    if request.method=="POST":
         pass
     else:
-        limit = request.GET.get("limit")
-        print(limit)
-        offset = request.GET.get("offset")
-        if limit is not None:
-            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {}".format(limit)
-            cursor.execute(sql)
-        if offset is not None:
-            sql = "SELECT start_time,end_time,channel_name,user_name FROM audio_logs limit {}".format(offset)
-            cursor.execute(sql)
 
-        array = cursor.fetchall()
-        conn.close()
-        status_dict = {}
-        for i in array:
-            i = list(i)
-            status_dict[i[0]] = i
-        # return JsonResponse({"mes":"ok","lists":list(status_dict.values())})
-        print(list(status_dict.values()))
-        return render(request,'system/free.html')
+        page_num = request.GET.get('page',1)
+        with open(file=file_path, mode="r", encoding="utf-8") as f:
+            data =f.read().splitlines()
+        #     print(data)
+        paginator = Paginator(data, 5)
+        # if page_num is not None:
+        #     c_page = paginator.page(int(page_num))
+        # else:
+        #     c_page = paginator.page(int(page_num))
+        try:
+            # print(page)
+            book_list = paginator.page(int(page_num))  # 获取当前页码的记录
+        except PageNotAnInteger:
+            book_list = paginator.page(1)  # 如果用户输入的页码不是整数时,显示第1页的内容
+        except EmptyPage:
+            book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页码列表中时,显示最后一页的内容
+
+        return render(request,'system/free.html',locals())

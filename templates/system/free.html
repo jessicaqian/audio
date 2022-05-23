@@ -9,90 +9,51 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
-        <div class="row sparse">
-            <div class="col-md-6">
-                <label class="time" >查询起始时间&nbsp&nbsp</label><input id="start" name="start" type="datetime-local" value="2022-01-01 00:00:00"/>
-            </div>
-            <div class="col-md-6">
-                <label class="time">查询截止时间&nbsp&nbsp</label><input type="datetime-local" id="end" name="end" value="2022-01-01T00:00"/>
-            </div>
-        </div>
-        <div class="row sparse">
-            <div class="col-md-12">
-                <label class="time">按通道名(通道号)查询&nbsp&nbsp
-                    <select id="sel" name="no">
-                        <option value="all" selected="selected">全部 </option>
-                        <option value="1" >1通道1</option>
-                        <option value="2">2通道2</option>
-                        <option value="3">3通道3</option>
-                        <option value="4">4通道4</option>
-                    </select>
-                </label>
-            </div>
-             <div class="col-md-3 col-md-offset-9">
-                 <input type="submit" value="搜索" class="btn btn-primary" id="submit">
-
-             </div>
-        </div>
-
-
-
+    <div class="row sparse"><label class="head">日志查询&nbsp&nbsp&nbsp&nbsp</label></div>
         <table class="table table-hover table-condensed table-striped" id="key_table_body">
             <tbody>
-            {% for list in lists %}
-                <tr id="id{{ forloop.counter }}">
-                    <td><a href="audiofile.html?dir={{ list }}">{{list.0}}</a></td>
-                <td><a href="audiofile.html?dir={{ list }}">{{list.1}}</a></td>
-                <td><a href="audiofile.html?dir={{ list }}">{{list.2}}</a></td>
-                <td><a href="audiofile.html?dir={{ list }}">{{list.3}}</a></td>
-                </tr>
-            {% endfor %}
+            {% for book in book_list %}
+
+			<li>{{ book }}</li>
+		{% endfor %}
             </tbody>
         </table>
 
-<ul class="pagination">
+	<ul class="pagination" id="pager">
+		{#上一页按钮开始#}
+		{# 如果当前页有上一页#}
+		{% if book_list.has_previous %}
+			{#  当前页的上一页按钮正常使用#}
+			<li class="previous"><a href="free.html?page={{ book_list.previous_page_number }}">上一页</a></li>
+		{% else %}
+			{# 当前页的不存在上一页时,上一页的按钮不可用#}
+			<li class="previous disabled"><a href="#">上一页</a></li>
+		{% endif %}
+		{#上一页按钮结束#}
+		{# 页码开始#}
+		{% for num in paginator.page_range %}
 
-        {% if c_page.has_previous %}
-        <li></li><a href="#" id="up">上一页</a></li>
+			{% if num == currentPage %}
+				<li class="item active"><a href="free.html?page={{ num }}">{{ num }}</a></li>
+			{% else %}
+				<li class="item"><a href="free.html?page={{ num }}">{{ num }}</a></li>
 
-        {# 若没有上一页，则显示为普通的字符即可 #}
-    {% else %}
-        <li>上一页</li>
-    {% endif %}
-
- {% for p_num in paginator.page_range %}
-        {#若是当前页，则显示为普通的一个数字#}
-        {% if p_num == c_page_number %}
-            {{ p_num }}
-            {# 若不是当前页面，则显示为一个超链接 #}
-        {% else  %}
-            <a href="/test_page?page={{ p_num }}">{{ p_num }}</a>
-
-        {% endif %}
-
-    {% endfor %}
-
-
-  {% if c_page.has_next %}
-        <a href="#" id ="down">下一页</a>
-    {% else %}
-        <li>下一页</li>
-    {% endif %}
-
-</ul>
+			{% endif %}
+		{% endfor %}
+		{#页码结束#}
+		{# 下一页按钮开始#}
+		{% if book_list.has_next %}
+			<li class="next"><a href="free.html?page={{ book_list.next_page_number }}">下一页</a></li>
+		{% else %}
+			<li class="next disabled"><a href="#">下一页</a></li>
+		{% endif %}
+		{# 下一页按钮结束#}
+	</ul>
 
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
-    $('a#flow').attr('aria-expanded','true');
-    $('div#collapseExample1').attr('class','collapse in');
-    if('{{ mark }}'=='post'){
-        $('#start').val('{{ start_a }}')
-        $('#end').val('{{ end_a }}')
-    }
-    else{
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
         var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -101,19 +62,12 @@
         var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
         var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes());
-        var time = Y+M+D+" "+h+m
-        $('#start').val(time)
-        $('#end').val(time)
-    }
+        var time2 = Y+M+D+"T"+h+m
+        $('#start_time').val(time2)
+        $('#end_time').val(time2)
 
     $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
     $('#submit').click(function () {
-
-        {#var jsonstr = JSON.stringify(data);#}
-        $.get('free.html',{'limit':1},function (data,status) {
-
-
-        })
 
     })
 
