@@ -22,14 +22,13 @@
 <div id="table_box">
      <table class="table table-hover table-condensed table-striped" id="configed_table">
         <colgroup>
-            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px"><col style="width: 70px">
+            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
         </colgroup>
         <thead>
             <tr>
                 <th>#</th>
                 <th>用户名</th>
                 <th>用户权限</th>
-                <th>编辑</th>
                 <th>删除</th>
             </tr>
         </thead>
@@ -38,22 +37,17 @@
 <div id="configed_table_body">
     <table class="table table-hover table-condensed table-striped" id="table_body">
         <colgroup>
-            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px"><col style="width: 70px">
+            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
         </colgroup>
     <tbody>
 
-{% for form in form %}
+{% for usrinfo in usrinfo %}
         <tr id="id{{ forloop.counter }}">
             <td>{{ forloop.counter }}</td>
-            <td  id="name_{{ forloop.counter }}">{{form.0}}</td>
-            <td>{{form.1}}</td>
-            <td class="download">
-                <a class="btn config" href="/system/config.html?id={{ form.3 }}&status=edit">
-                    <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                </a>
-            </td>
+            <td  id="name_{{ forloop.counter }}">{{usrinfo.0}}</td>
+            <td>{{usrinfo.1}}</td>
             <td class="delete">
-                <a class="btn config" href="/system/configedaction?id={{ form.3 }}&action=delete&ip={{ form.1 }}">
+                <a class="btn config" href="/system/delete.html?usrname={{ usrinfo.0}}&name={{ name }}&permiss={{ permiss }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                 </a>
             </td>

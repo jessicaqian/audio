@@ -15,6 +15,7 @@ urlpatterns = [
     path('audiofile.html', views.audio_file),
     path('free_log', views.free_logs),
     # path('free.html',views.free_html),
-    path('free.html',views.free_count)
+    path('free.html',views.free_count),
+    path('delete.html',views.del_usr)
 
 ]
