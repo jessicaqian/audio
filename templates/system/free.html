@@ -9,8 +9,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">日志查询&nbsp&nbsp&nbsp&nbsp</label></div>
-        <table class="table table-hover table-condensed table-striped" id="key_table_body">
+    <div class="row sparse_min"><label class="head">日志查询&nbsp&nbsp&nbsp&nbsp</label></div>
+        <div class="hidden">{{ name }}{{ permiss }}</div>
+        <table class="table table-hover table-condensed table-striped" id="key_table_body" style="margin: 0">
             <tbody>
             {% for book in book_list %}
 
@@ -24,7 +25,7 @@
 		{# 如果当前页有上一页#}
 		{% if book_list.has_previous %}
 			{#  当前页的上一页按钮正常使用#}
-			<li class="previous"><a href="free.html?page={{ book_list.previous_page_number }}">上一页</a></li>
+			<li class="previous"><a href="free.html?page={{ book_list.previous_page_number }}&name={{ name }}&permiss={{ permiss }}">上一页</a></li>
 		{% else %}
 			{# 当前页的不存在上一页时,上一页的按钮不可用#}
 			<li class="previous disabled"><a href="#">上一页</a></li>
@@ -34,16 +35,16 @@
 		{% for num in paginator.page_range %}
 
 			{% if num == currentPage %}
-				<li class="item active"><a href="free.html?page={{ num }}">{{ num }}</a></li>
+				<li class="item active"><a href="free.html?page={{ num }}&name={{ name }}&permiss={{ permiss }}">{{ num }}</a></li>
 			{% else %}
-				<li class="item"><a href="free.html?page={{ num }}">{{ num }}</a></li>
+				<li class="item"><a href="free.html?page={{ num }}&name={{ name }}&permiss={{ permiss }}">{{ num }}</a></li>
 
 			{% endif %}
 		{% endfor %}
 		{#页码结束#}
 		{# 下一页按钮开始#}
 		{% if book_list.has_next %}
-			<li class="next"><a href="free.html?page={{ book_list.next_page_number }}">下一页</a></li>
+			<li class="next"><a href="free.html?page={{ book_list.next_page_number }}&name={{ name }}&permiss={{ permiss }}">下一页</a></li>
 		{% else %}
 			<li class="next disabled"><a href="#">下一页</a></li>
 		{% endif %}

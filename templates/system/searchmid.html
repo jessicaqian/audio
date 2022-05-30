@@ -32,6 +32,12 @@
                 </label>
             </div>
         </div>
+        <div class="hidden">
+            <input id="id_usrname_n" type="text" name="usrname_n" required="required">
+        </div>
+        <div class="hidden">
+            <input id="id_usr_perssions_n" type="text" name="usr_perssions_n" required="required">
+        </div>
         <div class="row sparse">
              <div class="col-md-3 col-md-offset-9">
                  <input type="submit" value="搜索" class="btn btn-primary">
@@ -47,7 +53,7 @@
             <tbody>
             {% for list in lists %}
                 <tr id="id{{ forloop.counter }}">
-                    <td><a href="audiofile.html?dir={{ list }}">{{list}}</a></td>
+                    <td><a href="audiofile.html?dir={{ list }}&name={{ name }}&permiss={{ permiss }}">{{list}}</a></td>
 
 
                 </tr>
@@ -61,6 +67,8 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample1').attr('class','collapse in');
+    $('input#id_usrname_n').val("{{ name }}")
+    $('input#id_usr_perssions_n').val("{{ permiss }}")
     if('{{ mark }}'=='post'){
         $('#start').val('{{ start_a }}')
         $('#end').val('{{ end_a }}')

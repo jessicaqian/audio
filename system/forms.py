@@ -17,6 +17,8 @@ class SysconfigForm(forms.Form):
     channel2 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='channel2')
     channel3 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='channel3')
     channel4 = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='channel4')
+    usrname_n = forms.CharField(widget=forms.TextInput)
+    usr_perssions_n = forms.CharField(widget=forms.TextInput)
 
 class UsrForm(forms.Form):
     CHOICES = (

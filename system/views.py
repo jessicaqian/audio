@@ -82,6 +82,10 @@ def system_config(request):
     if request.method == 'POST':
         form = SysconfigForm(request.POST)
         if form.is_valid():
+
+            u_name = form.cleaned_data['usrname_n']
+            u_permiss = form.cleaned_data['usr_perssions_n']
+
             audiotype = form.cleaned_data['audiotype']
             audiomode = form.cleaned_data['audiomode']
             if audiomode == '全时段录音':
@@ -102,7 +106,7 @@ def system_config(request):
             config.set("configinfo", "channel4", channel4)
             config.write(open("web.ini","w"))
             print(form)
-            return render(request, 'system/sysconfig.html', {'form': form})
+            return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss})
         else:
 
             return render(request, 'system/sysconfig.html', {'form': form})
@@ -119,10 +123,11 @@ def system_config(request):
         channel2 =  config.get("configinfo", "channel2")
         channel3 = config.get("configinfo", "channel3")
         channel4 =  config.get("configinfo", "channel4")
-
-
-        return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
+        if permiss == '管理员':
+            return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
                                                         'audiotime':audiotime,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4})
+        else:
+            return
 
 def usr_config(request):
     if request.method == 'POST':
@@ -200,6 +205,9 @@ def search_mid(request):
     if request.method == 'POST':
         lists = []
         f_lists.clear()
+
+        name = request.POST['usrname_n']
+        permiss = request.POST['usr_perssions_n']
 
         start = request.POST['start']
         start_date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
@@ -399,11 +407,12 @@ def search_mid(request):
 
 
         return render(request, 'system/searchmid.html',
-                      {'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date})
+                      {'name':name,'permiss':permiss,'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date})
 
     else:
-
-        return render(request, 'system/searchmid.html')
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        return render(request, 'system/searchmid.html',{'name':name,'permiss':permiss})
 
 def audio_file(request):
     if request.method == 'POST':
@@ -413,6 +422,8 @@ def audio_file(request):
 
 
         dir = request.GET.get('dir', default='10000000')
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
         try:
             print(f_lists[dir])
             path = 'static/record/' + dir
@@ -420,7 +431,7 @@ def audio_file(request):
         except:
             path = 'static/record/' + dir
             lists =  os.listdir(path)
-        return render(request, 'system/audiofile.html', {'lists': lists, 'path': path})
+        return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
 
 
 def send_data(request):
@@ -466,7 +477,9 @@ def free_logs(request):
                 f.write(f'{end_time} {channel_name} {user_name}停止录音\n')
         return JsonResponse({'mes':"ok"})
     else:
-        return render(request,'system/free.html')
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        return render(request,'system/free.html',{'name':name,'permiss':permiss})
 
 
 
@@ -475,7 +488,9 @@ def free_html(request):
     if request.method=="POST":
         pass
     else:
-        return render(request,'system/free.html')
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        return render(request,'system/free.html',{'name':name,'permiss':permiss})
 # 这里现在是查询展示日志的功能，
 def free_count(request):
     conn = sqlite3.connect('db.sqlite3')
@@ -483,12 +498,13 @@ def free_count(request):
     if request.method=="POST":
         pass
     else:
-
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
         page_num = request.GET.get('page',1)
         with open(file=file_path, mode="r", encoding="utf-8") as f:
             data =f.read().splitlines()
         #     print(data)
-        paginator = Paginator(data, 5)
+        paginator = Paginator(data, 25)
         # if page_num is not None:
         #     c_page = paginator.page(int(page_num))
         # else:
@@ -501,4 +517,4 @@ def free_count(request):
         except EmptyPage:
             book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页码列表中时,显示最后一页的内容
 
-        return render(request,'system/free.html',locals())
+        return render(request,'system/free.html',locals(),{'name':name,'permiss':permiss})

@@ -35,6 +35,10 @@
             <div class="col-md-5">{{ form.channel3.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel3}}</div>
             <div class="col-md-5">{{ form.channel4.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel4}}</div>
         </div>
+        <div class="hidden">{{ form.usrname_n}}</div>
+        <div class="hidden">{{ form.usr_perssions_n}}</div>
+
+
         <div class="row">
             <div class="col-md-2 col-md-offset-8">
                 <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
@@ -48,6 +52,8 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
+    $('input#id_usrname_n').val("{{ name }}")
+    $('input#id_usr_perssions_n').val("{{ permiss }}")
     var opt = $('select#id_audiomode').val();
     if(opt=='全时段录音'){
         $('div#audioTime').removeAttr('style')
