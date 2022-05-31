@@ -41,3 +41,9 @@ li#dev_configed > a{
 input#save{
     margin-top: 40px;
 }
+
+label#tips{
+    margin-left: 50px;
+    font-size: 18px;
+    color:#ae0101;
+}

@@ -127,7 +127,7 @@ def system_config(request):
             return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
                                                         'audiotime':audiotime,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4})
         else:
-            return
+            return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 
 def usr_config(request):
     if request.method == 'POST':
@@ -148,8 +148,12 @@ def usr_config(request):
 
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
+        if permiss == '管理员':
 
-        return render(request, 'system/usrconfig.html',{'name':name,'permiss':permiss,'usrinfo':usrinfo})
+            return render(request, 'system/usrconfig.html',{'name':name,'permiss':permiss,'usrinfo':usrinfo})
+        else:
+            return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
+
 
 def new_usr(request):
     if request.method == 'POST':
@@ -164,26 +168,30 @@ def new_usr(request):
             pw = hashlib.md5(m.encode())
 
             config.read("web.ini")
-            config.set("usrinfo",name,perssions)
-            config.add_section(name)
-            config.set(name, "name", name)
-            config.set(name, "pw", pw.hexdigest())
-            config.write(open("web.ini", "w"))
+            try:
+                config.add_section(name)
+                config.set(name, "name", name)
+                config.set(name, "pw", pw.hexdigest())
+                config.set("usrinfo", name, perssions)
+                config.write(open("web.ini", "w"))
+                return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
 
-            # conn = sqlite3.connect('db.sqlite3')
-            # cursor = conn.cursor()
-            # sql = "INSERT INTO usradmin(usrname,psword,usrpermiss) VALUES('"+name+ "','"+pw.hexdigest()+ "','"+perssions+"') "
-            # cursor.execute(sql)
-            # conn.commit()
-            # conn.close()
-            return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
+            except:
+                return render(request, 'system/error.html', {'name': u_name, 'permiss': u_permiss,'ecode':1})
+
+
+
 
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         form = UsrForm()
+        if permiss == '管理员':
 
-        return render(request, 'system/newusr.html', { 'form':form,'name': name, 'permiss': permiss})
+            return render(request, 'system/newusr.html', { 'form':form,'name': name, 'permiss': permiss})
+        else:
+            return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
+
 
 def del_usr(request):
 
