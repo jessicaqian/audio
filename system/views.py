@@ -192,16 +192,13 @@ def new_usr(request):
                 config.set(name, "pw", pw.hexdigest())
                 config.set("usrinfo", name, perssions)
                 config.write(open("web.ini", "w"))
+
+                now = datetime.datetime.now()
+                time = now.strftime("%Y-%m-%d %H:%M:%S")
+                with open(file=file_path, mode="a", encoding="utf-8") as f:
+                    f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
                 return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
-            config.set("usrinfo",name,perssions)
-            config.add_section(name)
-            config.set(name, "name", name)
-            config.set(name, "pw", pw.hexdigest())
-            config.write(open("web.ini", "w"))
-            now = datetime.datetime.now()
-            time = now.strftime("%Y-%m-%d %H:%M:%S")
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
+
 
 
             # conn = sqlite3.connect('db.sqlite3')
@@ -210,7 +207,7 @@ def new_usr(request):
             # cursor.execute(sql)
             # conn.commit()
             # conn.close()
-            return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
+
 
             except:
                 return render(request, 'system/error.html', {'name': u_name, 'permiss': u_permiss,'ecode':1})
