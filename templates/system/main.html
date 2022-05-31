@@ -211,7 +211,7 @@
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
         var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
         var time = Y+M+D+" "+h+m+s;
-        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道一"}
+        var dict = {"name":"{{ name }}","start_time":time,"channel_no":"通道一","channel_name":"{{ channel1 }}"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -248,7 +248,7 @@
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
         var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
         var time = Y+M+D+" "+h+m+s
-        var dict = {"end_time":time,"channel_name":"通道一","name":"{{ name }}"}
+        var dict = {"end_time":time,"channel_no":"通道一","channel_name":"{{ channel1 }}","name":"{{ name }}"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -285,7 +285,7 @@
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
         var s = (date.getSeconds() <10 ? '0'+date.getSeconds():date.getSeconds())
         var time = Y+M+D+" "+h+m+s
-        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道二"}
+        var dict = {"name":"{{ name }}","start_time":time,"channel_no":"通道二","channel_name":"{{ channel2 }}"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -322,7 +322,7 @@
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
         var s = (date.getSeconds() <10 ? '0'+date.getSeconds():date.getSeconds());
         var time = Y+M+D+" "+h+m+s
-        var dict = {"end_time":time,"channel_name":"通道二","name":"{{ name }}"}
+        var dict = {"end_time":time,"channel_no":"通道二","channel_name":"{{ channel2 }}","name":"{{ name }}"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
@@ -355,8 +355,9 @@
         var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
         var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
+        var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
         var time = Y+M+D+" "+h+m+s
-        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道三"}
+        var dict = {"name":"{{ name }}","start_time":time,"channel_no":"通道三","channel_name":"{{ channel3 }}"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
@@ -392,7 +393,7 @@
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
         var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
         var time = Y+M+D+" "+h+m+s
-        var dict = {"end_time":time,"channel_name":"通道三","name":"{{ name }}"}
+        var dict = {"end_time":time,"channel_no":"通道三","channel_name":"{{ channel3 }}","name":"{{ name }}"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
@@ -427,7 +428,7 @@
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+':';
         var s = (date.getSeconds()<10 ? '0'+date.getSeconds():date.getSeconds())
         var time = Y+M+D+" "+h+m+s
-        var dict = {"name":"{{ name }}","start_time":time,"channel_name":"通道四"}
+        var dict = {"name":"{{ name }}","start_time":time,"channel_no":"通道四","channel_name":"{{ channel4 }}"}
 
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
@@ -464,7 +465,7 @@
         var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
         var s = (date.getSeconds() <10 ? '0'+date.getSeconds():date.getSeconds())
         var time = Y+M+D+" "+h+m+s
-        var dict = {"end_time":time,"channel_name":"通道四","name":"{{ name }}"}
+        var dict = {"end_time":time,"channel_no":"通道四","channel_name":"{{ channel4 }}","name":"{{ name }}"}
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
