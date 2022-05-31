@@ -81,6 +81,8 @@ def system_config(request):
     config.read("web.ini")
     if request.method == 'POST':
         form = SysconfigForm(request.POST)
+        now = datetime.datetime.now()
+        time = now.strftime("%Y-%m-%d %H:%M:%S")
         if form.is_valid():
 
             u_name = form.cleaned_data['usrname_n']
@@ -88,22 +90,38 @@ def system_config(request):
 
             audiotype = form.cleaned_data['audiotype']
             audiomode = form.cleaned_data['audiomode']
+
+            raudiotype = config.get("configinfo", "audiotype")
+            raudiomode = config.get("configinfo", "audiomode")
+            raudiotime = config.get("configinfo", "audiotime")
+
             if audiomode == '全时段录音':
                 audiotime = form.cleaned_data['audiotime']
                 config.set("configinfo", "audiotime", audiotime)
+                with open(file=file_path, mode="a", encoding="utf-8") as f:
+                    f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
+            else:
+                with open(file=file_path, mode="a", encoding="utf-8") as f:
+                    f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode};\n')
+            wchannel1 = form.cleaned_data['channel1']
+            wchannel2 = form.cleaned_data['channel2']
+            wchannel3 = form.cleaned_data['channel3']
+            wchannel4 = form.cleaned_data['channel4']
+            rchannel1 = config.get("configinfo", "channel1")
+            rchannel2 = config.get("configinfo", "channel2")
+            rchannel3 = config.get("configinfo", "channel3")
+            rchannel4 = config.get("configinfo", "channel4")
 
-            channel1 = form.cleaned_data['channel1']
-            channel2 = form.cleaned_data['channel2']
-            channel3 = form.cleaned_data['channel3']
-            channel4 = form.cleaned_data['channel4']
 
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{time} {u_name}用户 将通道一:{rchannel1}修改为通道一:{wchannel1}; 通道二:{rchannel2}修改为通道二:{wchannel2}; 通道三:{rchannel3}修改为通道三:{wchannel3}; 通道四:{rchannel4}修改为{wchannel4}\n')
             config.set("configinfo","audiotype",audiotype)
             config.set("configinfo", "audiomode", audiomode)
 
-            config.set("configinfo", "channel1", channel1)
-            config.set("configinfo", "channel2", channel2)
-            config.set("configinfo", "channel3", channel3)
-            config.set("configinfo", "channel4", channel4)
+            config.set("configinfo", "channel1", wchannel1)
+            config.set("configinfo", "channel2", wchannel2)
+            config.set("configinfo", "channel3", wchannel3)
+            config.set("configinfo", "channel4", wchannel4)
             config.write(open("web.ini","w"))
             print(form)
             return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss})
@@ -175,6 +193,24 @@ def new_usr(request):
                 config.set("usrinfo", name, perssions)
                 config.write(open("web.ini", "w"))
                 return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
+            config.set("usrinfo",name,perssions)
+            config.add_section(name)
+            config.set(name, "name", name)
+            config.set(name, "pw", pw.hexdigest())
+            config.write(open("web.ini", "w"))
+            now = datetime.datetime.now()
+            time = now.strftime("%Y-%m-%d %H:%M:%S")
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
+
+
+            # conn = sqlite3.connect('db.sqlite3')
+            # cursor = conn.cursor()
+            # sql = "INSERT INTO usradmin(usrname,psword,usrpermiss) VALUES('"+name+ "','"+pw.hexdigest()+ "','"+perssions+"') "
+            # cursor.execute(sql)
+            # conn.commit()
+            # conn.close()
+            return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
 
             except:
                 return render(request, 'system/error.html', {'name': u_name, 'permiss': u_permiss,'ecode':1})
@@ -198,6 +234,10 @@ def del_usr(request):
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         usrname = request.GET.get('usrname')
+        now = datetime.datetime.now()
+        time = now.strftime("%Y-%m-%d %H:%M:%S")
+        with open(file=file_path, mode="a", encoding="utf-8") as f:
+            f.write(f'{time} {name}用户 删除用户{usrname}权限:{permiss}\n')
 
 
 
@@ -476,13 +516,14 @@ def free_logs(request):
         start_time = data.get('start_time')
         end_time = data.get("end_time")
         user_name = data.get("name")
+        channel_no = data.get("channel_no")
         channel_name = data.get("channel_name")
         if end_time is None:
             with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{start_time} {channel_name} {user_name}开始录音\n')
+                f.write(f'{start_time} 用户:{user_name}开始录音 通道号:{channel_no} 通道名:{channel_name}\n')
         else:
             with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{end_time} {channel_name} {user_name}停止录音\n')
+                f.write(f'{end_time} 用户:{user_name}停止录音 通道号:{channel_no} 通道名:{channel_name}\n')
         return JsonResponse({'mes':"ok"})
     else:
         name = request.GET.get('name', default='10000000')
