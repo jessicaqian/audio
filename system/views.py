@@ -22,6 +22,40 @@ file_path = dir + '/audio_logs.txt'
 f_lists={}
 config = configparser.ConfigParser()
 
+def login_required(func):  # 自定义登录验证装饰器
+    def warpper(request, *args, **kwargs):
+        timenow = datetime.datetime.now()
+        T_Now = timenow.minute + timenow.hour * 60
+        config.read("web.ini")
+
+        name = request.GET.get('name', default='e')
+        if name == 'e':
+            return HttpResponseRedirect("/") #没有名字，直接跳转登录页
+        else:
+            try:
+
+                T_logout = int(config.get(name,'T_current')) #名字正确继续执行
+                interval = int(T_Now - T_logout)
+                if interval>10:
+                    config.set(name,'is_login','false')
+                else:
+                    config.set(name, 'T_current',str(T_Now))
+                config.write(open("web.ini", "w"))
+            except:
+                return HttpResponseRedirect("/")
+        is_login = config.get(name,'is_login')
+
+        if is_login == 'true':
+            return func(request, *args, **kwargs)
+        else:
+
+            return HttpResponseRedirect("/")
+    return warpper
+
+
+
+
+
 def mkdir():
     threading.Timer(43200,mkdir).start()
     current_time = time.strftime("%Y-%m-%d", time.localtime())
@@ -49,7 +83,7 @@ def mkdir():
 
 mkdir()
 
-
+@login_required
 def main(request):
 
     if request.method == 'POST':
@@ -77,6 +111,7 @@ def get_diskstatus(request):
 
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
+@login_required
 def system_config(request):
     config.read("web.ini")
     if request.method == 'POST':
@@ -147,6 +182,7 @@ def system_config(request):
         else:
             return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 
+@login_required
 def usr_config(request):
     if request.method == 'POST':
         pass
@@ -172,7 +208,7 @@ def usr_config(request):
         else:
             return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 
-
+@login_required
 def new_usr(request):
     if request.method == 'POST':
         form = UsrForm(request.POST)
@@ -225,7 +261,7 @@ def new_usr(request):
         else:
             return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 
-
+@login_required
 def del_usr(request):
 
         name = request.GET.get('name', default='10000000')
@@ -246,6 +282,7 @@ def del_usr(request):
 
         return HttpResponseRedirect('/system/usrconfig.html?name='+name+'&permiss='+permiss)
 
+@login_required
 def search_mid(request):
     if request.method == 'POST':
         lists = []
@@ -459,6 +496,7 @@ def search_mid(request):
         permiss = request.GET.get('permiss', default='10000000')
         return render(request, 'system/searchmid.html',{'name':name,'permiss':permiss})
 
+@login_required
 def audio_file(request):
     if request.method == 'POST':
         pass

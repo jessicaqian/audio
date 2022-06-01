@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from .forms import NameForm
 # import sqlite3
 import configparser
+import time,datetime
 
 # Create your views here.
 
@@ -12,12 +13,19 @@ def login(request):
         form = NameForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
+
             info = form.cleaned_data
+            timenow = datetime.datetime.now()
+            T_Now = timenow.minute + timenow.hour * 60
             usrname = info['usrname']
 
             config = configparser.ConfigParser()
             config.read("web.ini")
+            config.set(usrname, "is_login", 'true')
+            config.set(usrname, "t_current", str(T_Now))
+
             usrpermiss = config.get('usrinfo', usrname)
+            config.write(open("web.ini", "w"))
 
             # conn = sqlite3.connect('db.sqlite3')
             # cursor = conn.cursor()
