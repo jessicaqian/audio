@@ -36,7 +36,7 @@ def login_required(func):  # 自定义登录验证装饰器
 
                 T_logout = int(config.get(name,'T_current')) #名字正确继续执行
                 interval = int(T_Now - T_logout)
-                if interval>10:
+                if interval>30:
                     config.set(name,'is_login','false')
                 else:
                     config.set(name, 'T_current',str(T_Now))
