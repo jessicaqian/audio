@@ -157,6 +157,29 @@
     $('label#c4_name').html('通道名：{{ channel4 }}')
     var no = 0
 
+{% for r_statu in r_status %}
+    if ('{{ r_statu }}' == 'start'){
+        start('{{ forloop.counter }}')
+    }else if('{{ r_statu }}' == 'stop'){
+        stop('{{ forloop.counter }}')
+
+    }
+
+{% endfor %}
+
+    function start(str) {
+        $('#record'+str).attr('disabled','disabled')
+        $('#stop'+str).removeAttr('disabled')
+        $('#channel'+str).attr('class','row channel_in')
+
+    }
+
+    function stop(str) {
+        $('#stop'+str).attr('disabled','disabled')
+        $('#record'+str).removeAttr('disabled')
+        $('#channel'+str).attr('class','row channel_in_off')
+    }
+
     function getdiskStatus(){
         $.get('getdiskStatus').done(function (info) {
             if(no == info.no){
@@ -187,9 +210,7 @@
     })
 
     $('#record1').click(function () {
-        $('#record1').attr('disabled','disabled')
-        $('#stop1').removeAttr('disabled')
-        $('#channel1').attr('class','row channel_in')
+        start('1')
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
@@ -197,6 +218,11 @@
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
 
+            $.post('recordStatus',{'no':'1','act':'start'}).done(function () {
+
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
@@ -224,9 +250,8 @@
     })
 
     $('#stop1').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#record1').removeAttr('disabled')
-        $('#channel1').attr('class','row channel_in_off')
+        stop('1')
+
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
@@ -234,6 +259,11 @@
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
 
+            $.post('recordStatus',{'no':'1','act':'stop'}).done(function () {
+
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
@@ -261,16 +291,19 @@
     })
 
     $('#record2').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#stop2').removeAttr('disabled')
-        $('#channel2').attr('class','row channel_in')
+        start('2')
+
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 1,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            $.post('recordStatus',{'no':'2','act':'start'}).done(function () {
 
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
@@ -298,16 +331,19 @@
     })
 
     $('#stop2').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#record2').removeAttr('disabled')
-        $('#channel2').attr('class','row channel_in_off')
+        stop('2')
+
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 1,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            $.post('recordStatus',{'no':'2','act':'stop'}).done(function () {
 
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
@@ -333,16 +369,19 @@
     })
 
     $('#record3').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#stop3').removeAttr('disabled')
-        $('#channel3').attr('class','row channel_in')
+        start('3')
+
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            $.post('recordStatus',{'no':'3','act':'start'}).done(function () {
 
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
@@ -369,16 +408,19 @@
     })
 
     $('#stop3').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#record3').removeAttr('disabled')
-        $('#channel3').attr('class','row channel_in_off')
+        stop('3')
+
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            $.post('recordStatus',{'no':'3','act':'stop'}).done(function () {
 
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
@@ -404,16 +446,19 @@
     })
 
     $('#record4').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#stop4').removeAttr('disabled')
-        $('#channel4').attr('class','row channel_in')
+        start('4')
+
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 1,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            $.post('recordStatus',{'no':'4','act':'start'}).done(function () {
 
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
@@ -441,16 +486,19 @@
     })
 
     $('#stop4').click(function () {
-        $(this).attr('disabled','disabled')
-        $('#record4').removeAttr('disabled')
-        $('#channel4').attr('class','row channel_in_off')
+        stop('4')
+
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 1,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            $.post('recordStatus',{'no':'4','act':'stop'}).done(function () {
 
+            }).fail(function () {
+
+            })
 
         }).fail(function () {
 
