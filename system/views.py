@@ -521,28 +521,80 @@ def free_html(request):
         return render(request,'system/free.html',{'name':name,'permiss':permiss})
 # 这里现在是查询展示日志的功能，
 def free_count(request):
-    conn = sqlite3.connect('db.sqlite3')
-    cursor = conn.cursor()
+    # conn = sqlite3.connect('db.sqlite3')
+    # cursor = conn.cursor()
     if request.method=="POST":
-        pass
+        st = request.POST.get('start')
+        et = request.POST.get('end')
+        start_date = datetime.datetime.strptime(st, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
+        end_data = datetime.datetime.strptime(et, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
+        time_array = time.strptime(start_date,'%Y-%m-%d %H:%M')
+        start_time_array =int(time.mktime(time_array))
+        name = request.POST.get('usrname_n', default='10000000')
+        permiss = request.POST.get('usr_perssions_n', default='10000000')
+        page_num = request.POST.get('page', 1)
+        with open(file=file_path, mode="r", encoding="utf-8") as f:
+            data =f.read().splitlines()
+        a=0
+        lists =[]
+        for i in data:
+            a+=1
+            timestr = i[0:16]
+            time_array_out = time.strptime(timestr,'%Y-%m-%d %H:%M')
+            time_array_st = int(time.mktime(time_array_out))
+            if start_time_array <= time_array_st:
+                print(a)
+            result = os.popen('sed -n {}p {}'.format(a,'/home/zzq/Desktop/audio/audio_logs.txt')).read()
+            print(result)
+            lists.append(result)
+            paginator = Paginator(lists, 25)
+
+        return render(request,'system/free.html',locals(),{'name':name,'permiss':permiss})
+
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         page_num = request.GET.get('page',1)
-        with open(file=file_path, mode="r", encoding="utf-8") as f:
-            data =f.read().splitlines()
-        #     print(data)
-        paginator = Paginator(data, 25)
-        # if page_num is not None:
-        #     c_page = paginator.page(int(page_num))
-        # else:
-        #     c_page = paginator.page(int(page_num))
-        try:
-            # print(page)
-            book_list = paginator.page(int(page_num))  # 获取当前页码的记录
-        except PageNotAnInteger:
-            book_list = paginator.page(1)  # 如果用户输入的页码不是整数时,显示第1页的内容
-        except EmptyPage:
-            book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页码列表中时,显示最后一页的内容
+        st = request.GET.get('start')
+        et = request.GET.get('end')
+        if st is not None and et is not None:
+            start_date = datetime.datetime.strptime(st, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
+            end_data = datetime.datetime.strptime(et, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
+
+            time_array_st = time.strptime(start_date, '%Y-%m-%d %H:%M')
+            start_time_array = int(time.mktime(time_array_st))
+            time_array_et = time.strptime(start_date, '%Y-%m-%d %H:%M')
+            end_time_array = int(time.mktime(time_array_et))
+            name = request.POST.get('usrname_n', default='10000000')
+            permiss = request.POST.get('usr_perssions_n', default='10000000')
+            page_num = request.POST.get('page', 1)
+            with open(file=file_path, mode="r", encoding="utf-8") as f:
+                data = f.read().splitlines()
+            a = 0
+            lists = []
+            for i in data:
+                a += 1
+                timestr = i[0:16]
+                time_out = time.strptime(timestr, '%Y-%m-%d %H:%M')
+                time_array_out = int(time.mktime(time_out))
+                if start_time_array <= time_array_out:
+                    print(a)
+                    result = os.popen('sed -n {}p {}'.format(a, '/home/zzq/Desktop/audio/audio_logs.txt')).read()
+                    # print(result)
+                    lists.append(result)
+            print(lists)
+            paginator = Paginator(lists, 25)
+
+        # with open(file=file_path, mode="r", encoding="utf-8") as f:
+        #         data =f.read().splitlines()
+        #
+        # paginator = Paginator(data, 25)
+            try:
+                # print(page)
+                book_list = paginator.page(int(page_num))  # 获取当前页码的记录
+            except PageNotAnInteger:
+                book_list = paginator.page(1)  # 如果用户输入的页码不是整数时,显示第1页的内容
+            except EmptyPage:
+                book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页`码列表中时,显示最后一页的内容
 
         return render(request,'system/free.html',locals(),{'name':name,'permiss':permiss})
