@@ -26,6 +26,7 @@ class NameForm(forms.Form):
                 pass
 
 
+
             else:
                  raise forms.ValidationError(u"用户名或密码错误，请重新输入")
         except:

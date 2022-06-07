@@ -16,6 +16,7 @@ urlpatterns = [
     path('free_log', views.free_logs),
     # path('free.html',views.free_html),
     path('free.html',views.free_count),
-    path('delete.html',views.del_usr)
+    path('delete.html',views.del_usr),
+    path('recordStatus',views.record_status)
 
 ]

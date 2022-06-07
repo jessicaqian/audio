@@ -22,6 +22,38 @@ file_path = dir + '/audio_logs.txt'
 f_lists={}
 config = configparser.ConfigParser()
 
+r_status = ['stop','stop','stop','stop']
+
+def login_required(func):  # 自定义登录验证装饰器
+    def warpper(request, *args, **kwargs):
+        timenow = datetime.datetime.now()
+        T_Now = timenow.minute + timenow.hour * 60
+        config.read("web.ini")
+
+        name = request.GET.get('name', default='e')
+        if name == 'e':
+            return HttpResponseRedirect("/") #没有名字，直接跳转登录页
+        else:
+            try:
+
+                T_logout = int(config.get(name,'T_current')) #名字正确继续执行
+                interval = int(T_Now - T_logout)
+                if interval>30:
+                    config.set(name,'is_login','false')
+                else:
+                    config.set(name, 'T_current',str(T_Now))
+                config.write(open("web.ini", "w"))
+            except:
+                return HttpResponseRedirect("/")
+        is_login = config.get(name,'is_login')
+
+        if is_login == 'true':
+            return func(request, *args, **kwargs)
+        else:
+
+            return HttpResponseRedirect("/")
+    return warpper
+
 def mkdir():
     threading.Timer(43200,mkdir).start()
     current_time = time.strftime("%Y-%m-%d", time.localtime())
@@ -49,7 +81,7 @@ def mkdir():
 
 mkdir()
 
-
+@login_required
 def main(request):
 
     if request.method == 'POST':
@@ -68,7 +100,8 @@ def main(request):
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         with open(file=file_path, mode="a", encoding="utf-8") as f:
             f.write(f'{time} {name}登录\n')
-        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4,'audiomode':audiomode})
+        print(r_status)
+        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4,'audiomode':audiomode,'r_status':r_status})
 
 def get_diskstatus(request):
     st = os.statvfs('/home')
@@ -77,6 +110,21 @@ def get_diskstatus(request):
 
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
+def record_status(request):
+    if request.method == 'POST':
+        no = int(request.POST['no'])-1
+        act = request.POST['act']
+        r_status[no] = act
+        print(r_status)
+
+
+
+    else:
+        pass
+    return JsonResponse({'msg': 'success'})
+
+
+@login_required
 def system_config(request):
     config.read("web.ini")
     if request.method == 'POST':
@@ -145,8 +193,9 @@ def system_config(request):
             return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
                                                         'audiotime':audiotime,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4})
         else:
-            return
+            return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 
+@login_required
 def usr_config(request):
     if request.method == 'POST':
         pass
@@ -166,9 +215,13 @@ def usr_config(request):
 
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
+        if permiss == '管理员':
 
-        return render(request, 'system/usrconfig.html',{'name':name,'permiss':permiss,'usrinfo':usrinfo})
+            return render(request, 'system/usrconfig.html',{'name':name,'permiss':permiss,'usrinfo':usrinfo})
+        else:
+            return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 
+@login_required
 def new_usr(request):
     if request.method == 'POST':
         form = UsrForm(request.POST)
@@ -182,15 +235,19 @@ def new_usr(request):
             pw = hashlib.md5(m.encode())
 
             config.read("web.ini")
-            config.set("usrinfo",name,perssions)
-            config.add_section(name)
-            config.set(name, "name", name)
-            config.set(name, "pw", pw.hexdigest())
-            config.write(open("web.ini", "w"))
-            now = datetime.datetime.now()
-            time = now.strftime("%Y-%m-%d %H:%M:%S")
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
+            try:
+                config.add_section(name)
+                config.set(name, "name", name)
+                config.set(name, "pw", pw.hexdigest())
+                config.set("usrinfo", name, perssions)
+                config.write(open("web.ini", "w"))
+
+                now = datetime.datetime.now()
+                time = now.strftime("%Y-%m-%d %H:%M:%S")
+                with open(file=file_path, mode="a", encoding="utf-8") as f:
+                    f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
+                return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
+
 
 
             # conn = sqlite3.connect('db.sqlite3')
@@ -199,15 +256,25 @@ def new_usr(request):
             # cursor.execute(sql)
             # conn.commit()
             # conn.close()
-            return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
+
+
+            except:
+                return render(request, 'system/error.html', {'name': u_name, 'permiss': u_permiss,'ecode':1})
+
+
+
 
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         form = UsrForm()
+        if permiss == '管理员':
 
-        return render(request, 'system/newusr.html', { 'form':form,'name': name, 'permiss': permiss})
+            return render(request, 'system/newusr.html', { 'form':form,'name': name, 'permiss': permiss})
+        else:
+            return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 
+@login_required
 def del_usr(request):
 
         name = request.GET.get('name', default='10000000')
@@ -228,6 +295,7 @@ def del_usr(request):
 
         return HttpResponseRedirect('/system/usrconfig.html?name='+name+'&permiss='+permiss)
 
+@login_required
 def search_mid(request):
     if request.method == 'POST':
         lists = []
@@ -441,6 +509,7 @@ def search_mid(request):
         permiss = request.GET.get('permiss', default='10000000')
         return render(request, 'system/searchmid.html',{'name':name,'permiss':permiss})
 
+@login_required
 def audio_file(request):
     if request.method == 'POST':
         pass
@@ -468,7 +537,10 @@ def send_data(request):
 
     udp.senddata(data)
     res = udp.getdata(data)
-    if res["audioAckValue"]["funcResult"]==0:
+    if res == 0:
+        return JsonResponse({'msg': 'failed'})
+
+    elif res["audioAckValue"]["funcResult"]==0:
 
         return JsonResponse({ 'msg': 'success'})
     else:
