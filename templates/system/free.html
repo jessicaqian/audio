@@ -12,10 +12,10 @@
     <form method="get">
         <div class="row sparse">
             <div class="col-md-6">
-                <label class="time" >查询起始时间&nbsp&nbsp</label><input id="start1" name="start" type="datetime-local" value="2022-01-01T00:00"/>
+                <label class="time" >查询起始时间&nbsp&nbsp</label><input id="start1" name="start" type="date" value="2022-01-01"/>
             </div>
             <div class="col-md-6">
-                <label class="time">查询截止时间&nbsp&nbsp</label><input type="datetime-local" id="end1" name="end" value="2022-01-01T00:00"/>
+                <label class="time">查询截止时间&nbsp&nbsp</label><input type="date" id="end1" name="end" value="2022-01-01"/>
             </div>
         </div>
         <div class="row sparse">
@@ -92,10 +92,7 @@
         var Y = date.getFullYear() + '-';
         var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
         var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
-        var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-        var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
-        var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
-        var time = Y + M + D + "T" + h + m
+        var time = Y + M + D
         $('#start1').val(time)
         $('#end1').val(time)
 

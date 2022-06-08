@@ -16,8 +16,15 @@ from . import udp
 # udp.senddata(data)
 # res = udp.getdata(data)
 # print(res["audioAckValue"]["funcResult"])
-dir = os.getcwd()
-file_path = dir + '/audio_logs.txt'
+time.time()
+now = datetime.datetime.now()
+timestr = now.strftime("%Y-%m-%d")
+
+dir = os.getcwd() + '/logs'
+if not os.path.exists(dir):
+    os.mkdir(dir)
+file_path = dir + '/'+timestr+'.txt'
+print(file_path)
 
 f_lists={}
 config = configparser.ConfigParser()
@@ -593,35 +600,9 @@ def free_html(request):
         return render(request,'system/free.html',{'name':name,'permiss':permiss})
 # 这里现在是查询展示日志的功能，
 def free_count(request):
-    # conn = sqlite3.connect('db.sqlite3')
-    # cursor = conn.cursor()
-    if request.method=="POST":
-        st = request.POST.get('start')
-        et = request.POST.get('end')
-        start_date = datetime.datetime.strptime(st, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
-        end_data = datetime.datetime.strptime(et, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
-        time_array = time.strptime(start_date,'%Y-%m-%d %H:%M')
-        start_time_array =int(time.mktime(time_array))
-        name = request.POST.get('usrname_n', default='10000000')
-        permiss = request.POST.get('usr_perssions_n', default='10000000')
-        page_num = request.POST.get('page', 1)
-        with open(file=file_path, mode="r", encoding="utf-8") as f:
-            data =f.read().splitlines()
-        a=0
-        lists =[]
-        for i in data:
-            a+=1
-            timestr = i[0:16]
-            time_array_out = time.strptime(timestr,'%Y-%m-%d %H:%M')
-            time_array_st = int(time.mktime(time_array_out))
-            if start_time_array <= time_array_st:
-                print(a)
-            result = os.popen('sed -n {}p {}'.format(a,'/home/zzq/Desktop/audio/audio_logs.txt')).read()
-            print(result)
-            lists.append(result)
-            paginator = Paginator(lists, 25)
 
-        return render(request,'system/free.html',locals(),{'name':name,'permiss':permiss})
+    if request.method=="POST":
+        pass
 
     else:
         name = request.GET.get('name', default='10000000')
@@ -630,37 +611,19 @@ def free_count(request):
         st = request.GET.get('start')
         et = request.GET.get('end')
         if st is not None and et is not None:
-            start_date = datetime.datetime.strptime(st, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
-            end_data = datetime.datetime.strptime(et, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M')
-
-            time_array_st = time.strptime(start_date, '%Y-%m-%d %H:%M')
-            start_time_array = int(time.mktime(time_array_st))
-            time_array_et = time.strptime(start_date, '%Y-%m-%d %H:%M')
-            end_time_array = int(time.mktime(time_array_et))
             name = request.POST.get('usrname_n', default='10000000')
             permiss = request.POST.get('usr_perssions_n', default='10000000')
             page_num = request.POST.get('page', 1)
-            with open(file=file_path, mode="r", encoding="utf-8") as f:
-                data = f.read().splitlines()
-            a = 0
-            lists = []
-            for i in data:
-                a += 1
-                timestr = i[0:16]
-                time_out = time.strptime(timestr, '%Y-%m-%d %H:%M')
-                time_array_out = int(time.mktime(time_out))
-                if start_time_array <= time_array_out:
-                    print(a)
-                    result = os.popen('sed -n {}p {}'.format(a, '/home/zzq/Desktop/audio/audio_logs.txt')).read()
-                    # print(result)
-                    lists.append(result)
-            print(lists)
-            paginator = Paginator(lists, 25)
+            listdivd =[]
+            listdir =os.listdir(dir)
+            for i in listdir:
+                time_os = i[0:10]
+                if time_os >= st and time_os<=et:
+                    with open(file=dir+'/'+i, mode="r", encoding="utf-8") as f:
+                        data =f.readlines()
+                        listdivd.extend(data)
 
-        # with open(file=file_path, mode="r", encoding="utf-8") as f:
-        #         data =f.read().splitlines()
-        #
-        # paginator = Paginator(data, 25)
+            paginator = Paginator(listdivd, 25)
             try:
                 # print(page)
                 book_list = paginator.page(int(page_num))  # 获取当前页码的记录
