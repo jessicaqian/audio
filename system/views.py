@@ -633,3 +633,35 @@ def free_count(request):
                 book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页`码列表中时,显示最后一页的内容
 
         return render(request,'system/free.html',locals(),{'name':name,'permiss':permiss})
+
+
+
+def devices(request):
+    if request.method =="POST":
+        pass
+    else:
+        config.read("web.ini")
+
+        audiotype = config.get("configinfo", "audiotype")
+        channel1 = config.get("configinfo", "channel1")
+        channel2 = config.get("configinfo", "channel2")
+        channel3 = config.get("configinfo", "channel3")
+        channel4 = config.get("configinfo", "channel4")
+        listd=[{"id":"1",
+                "name":channel1,
+                "status":r_status[0],
+                "fileType":audiotype
+                },
+               {"id":"2",
+                "name":channel2,
+                "status":r_status[1],
+                "fileType":audiotype},
+               {"id":"3",
+                "name":channel3,
+                "status":r_status[2],
+                "fileType":audiotype},
+               {"id":"4",
+                "name":channel4,
+                "status":r_status[3],
+                "fileType":audiotype}]
+    return HttpResponse(json.dumps(listd))
