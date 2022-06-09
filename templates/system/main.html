@@ -167,15 +167,15 @@
 
 {% endfor %}
 
-    function start_w(str) {
-        $('#record'+str+'>span').attr('class','glyphicon glyphicon-option-horizontal')
-        $('#record'+str).attr('disabled','disabled')
+    function wait(str,act) {
+        $('#' + act + str +'>span').attr('class','glyphicon glyphicon-option-horizontal')
+        $('#' + act + str).attr('disabled','disabled')
 
     }
 
-    function re_w(str) {
-        $('#record'+str+'>span').attr('class','glyphicon glyphicon-record')
-        $('#record'+str).removeAttr('disabled')
+    function re_w(str,act) {
+        $('#' + act + str +'>span').attr('class','glyphicon glyphicon-'+act)
+        $('#' + act + str).removeAttr('disabled')
     }
 
     function start(str) {
@@ -221,7 +221,7 @@
     })
 
     $('#record1').click(function () {
-        start_w('1')
+        wait('1','record')
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
@@ -229,7 +229,7 @@
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
             if(info.mes=='success'){
-                $.post('recordStatus',{'no':'1','act':'start'}).done(function () {
+                $.post('recordStatus',{'no':'1','act':'on'}).done(function () {
                     start('1')
 
                 }).fail(function () {
@@ -237,7 +237,7 @@
                 })
 
             }else{
-                re_w('1')
+                re_w('1','record')
 
             }
 
@@ -267,7 +267,7 @@
     })
 
     $('#stop1').click(function () {
-        stop('1')
+        wait('1','stop')
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 0,
@@ -275,12 +275,18 @@
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            if(info.mes=='success'){
+                $.post('recordStatus',{'no':'1','act':'off'}).done(function () {
+                    stop('1')
 
-            $.post('recordStatus',{'no':'1','act':'stop'}).done(function () {
+                }).fail(function () {
 
-            }).fail(function () {
+                })
+            }else {
+                re_w('1','stop')
+            }
 
-            })
+
 
         }).fail(function () {
 
@@ -308,7 +314,7 @@
     })
 
     $('#record2').click(function () {
-        start_w('2')
+        wait('2','record')
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 1,
@@ -317,14 +323,14 @@
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
             if(info.mes=='success'){
-                $.post('recordStatus',{'no':'2','act':'start'}).done(function () {
+                $.post('recordStatus',{'no':'2','act':'on'}).done(function () {
                     start('2')
 
                 }).fail(function () {
 
                 })
             }else {
-                re_w('2')
+                re_w('2','record')
             }
 
 
@@ -354,7 +360,7 @@
     })
 
     $('#stop2').click(function () {
-        stop('2')
+        wait('2','stop')
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 1,
@@ -362,11 +368,18 @@
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            $.post('recordStatus',{'no':'2','act':'stop'}).done(function () {
+            if(info.mes=='success'){
+                $.post('recordStatus',{'no':'2','act':'off'}).done(function () {
+                    stop('2')
 
-            }).fail(function () {
+                }).fail(function () {
 
-            })
+                })
+            }else {
+                re_w('2','stop')
+            }
+
+
 
         }).fail(function () {
 
@@ -392,7 +405,7 @@
     })
 
     $('#record3').click(function () {
-        start_w('3')
+        wait('3','record')
 
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
@@ -402,14 +415,14 @@
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
             if(info.mes=='success'){
-                 $.post('recordStatus',{'no':'3','act':'start'}).done(function () {
+                 $.post('recordStatus',{'no':'3','act':'on'}).done(function () {
                      start('3')
 
                 }).fail(function () {
 
                 })
             }else{
-                re_w('3')
+                re_w('3','record')
             }
 
 
@@ -438,7 +451,7 @@
     })
 
     $('#stop3').click(function () {
-        stop('3')
+        wait('3','stop')
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 0,
@@ -446,11 +459,17 @@
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            $.post('recordStatus',{'no':'3','act':'stop'}).done(function () {
+            if(info.mes=='success'){
+                $.post('recordStatus',{'no':'3','act':'off'}).done(function () {
+                    stop('3')
 
-            }).fail(function () {
+                }).fail(function () {
 
-            })
+                })
+            }else {
+                re_w('3','stop')
+            }
+
 
         }).fail(function () {
 
@@ -476,7 +495,7 @@
     })
 
     $('#record4').click(function () {
-        start_w('4')
+        wait('4','record')
 
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
@@ -486,13 +505,13 @@
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
                 if(info.mes=='success'){
-                     $.post('recordStatus',{'no':'4','act':'start'}).done(function () {
+                     $.post('recordStatus',{'no':'4','act':'on'}).done(function () {
                         start('4')
                     }).fail(function () {
 
                     })
                 }else {
-                    re_w('4')
+                    re_w('4','record')
                 }
 
         }).fail(function () {
@@ -521,7 +540,7 @@
     })
 
     $('#stop4').click(function () {
-        stop('4')
+        wait('4','stop')
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 1,
@@ -529,11 +548,17 @@
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            $.post('recordStatus',{'no':'4','act':'stop'}).done(function () {
+            if(info.mes=='success'){
+                $.post('recordStatus',{'no':'4','act':'off'}).done(function () {
+                    stop('4')
 
-            }).fail(function () {
+                }).fail(function () {
 
-            })
+                })
+            }else {
+                re_w('4','stop')
+            }
+
 
         }).fail(function () {
 

@@ -2,8 +2,8 @@ from django import forms
 
 class SysconfigForm(forms.Form):
     CHOICES = (
-        ("MP3", "MP3"),
-        ("WMA", "WMA"),
+        ("mp3", "MP3"),
+        ("wma", "WMA"),
     )
     CHOICES1 = (
         ("全时段录音", "全时段录音"),

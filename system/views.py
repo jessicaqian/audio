@@ -29,7 +29,7 @@ print(file_path)
 f_lists={}
 config = configparser.ConfigParser()
 
-r_status = ['stop','stop','stop','stop']
+r_status = ['off','off','off','off']
 
 def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
@@ -648,7 +648,8 @@ def devices(request):
         channel2 = config.get("configinfo", "channel2")
         channel3 = config.get("configinfo", "channel3")
         channel4 = config.get("configinfo", "channel4")
-        listd=[{"id":"1",
+        listd={"data":
+                [{"id":"1",
                 "name":channel1,
                 "status":r_status[0],
                 "fileType":audiotype
@@ -664,5 +665,5 @@ def devices(request):
                {"id":"4",
                 "name":channel4,
                 "status":r_status[3],
-                "fileType":audiotype}]
-    return HttpResponse(json.dumps(listd))
+                "fileType":audiotype}]}
+    return JsonResponse(listd)
