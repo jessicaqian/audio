@@ -24,10 +24,11 @@
                 <label class="time">按通道名(通道号)查询&nbsp&nbsp
                     <select id="sel" name="no">
                         <option value="all" selected="selected">全部 </option>
-                        <option value="1" >1通道1</option>
-                        <option value="2">2通道2</option>
-                        <option value="3">3通道3</option>
-                        <option value="4">4通道4</option>
+                        {% for chan in chanlist %}
+
+                        <option value="{{ forloop.counter }}" >{{ forloop.counter }}({{ chan }})</option>
+
+                        {% endfor %}
                     </select>
                 </label>
             </div>

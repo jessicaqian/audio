@@ -167,6 +167,17 @@
 
 {% endfor %}
 
+    function start_w(str) {
+        $('#record'+str+'>span').attr('class','glyphicon glyphicon-option-horizontal')
+        $('#record'+str).attr('disabled','disabled')
+
+    }
+
+    function re_w(str) {
+        $('#record'+str+'>span').attr('class','glyphicon glyphicon-record')
+        $('#record'+str).removeAttr('disabled')
+    }
+
     function start(str) {
         $('#record'+str).attr('disabled','disabled')
         $('#stop'+str).removeAttr('disabled')
@@ -210,19 +221,25 @@
     })
 
     $('#record1').click(function () {
-        start('1')
+        start_w('1')
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
+            if(info.mes=='success'){
+                $.post('recordStatus',{'no':'1','act':'start'}).done(function () {
+                    start('1')
 
-            $.post('recordStatus',{'no':'1','act':'start'}).done(function () {
+                }).fail(function () {
 
-            }).fail(function () {
+                })
 
-            })
+            }else{
+                re_w('1')
+
+            }
 
         }).fail(function () {
 
@@ -291,7 +308,7 @@
     })
 
     $('#record2').click(function () {
-        start('2')
+        start_w('2')
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 1,
@@ -299,11 +316,17 @@
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            $.post('recordStatus',{'no':'2','act':'start'}).done(function () {
+            if(info.mes=='success'){
+                $.post('recordStatus',{'no':'2','act':'start'}).done(function () {
+                    start('2')
 
-            }).fail(function () {
+                }).fail(function () {
 
-            })
+                })
+            }else {
+                re_w('2')
+            }
+
 
         }).fail(function () {
 
@@ -369,7 +392,8 @@
     })
 
     $('#record3').click(function () {
-        start('3')
+        start_w('3')
+
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 0,
@@ -377,11 +401,17 @@
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            $.post('recordStatus',{'no':'3','act':'start'}).done(function () {
+            if(info.mes=='success'){
+                 $.post('recordStatus',{'no':'3','act':'start'}).done(function () {
+                     start('3')
 
-            }).fail(function () {
+                }).fail(function () {
 
-            })
+                })
+            }else{
+                re_w('3')
+            }
+
 
         }).fail(function () {
 
@@ -446,7 +476,8 @@
     })
 
     $('#record4').click(function () {
-        start('4')
+        start_w('4')
+
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 1,
@@ -454,11 +485,15 @@
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            $.post('recordStatus',{'no':'4','act':'start'}).done(function () {
+                if(info.mes=='success'){
+                     $.post('recordStatus',{'no':'4','act':'start'}).done(function () {
+                        start('4')
+                    }).fail(function () {
 
-            }).fail(function () {
-
-            })
+                    })
+                }else {
+                    re_w('4')
+                }
 
         }).fail(function () {
 

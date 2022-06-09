@@ -6,12 +6,14 @@ def senddata(data):
     udp_send.sendto(jsondata.encode('gbk'),("10.25.15.177",8666))
     udp_send.close()
 
-def getdata(info):
+def getdata():
     udp_get = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_get.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     # 我们有时则需要一种超时机制使其在一定时间后返回而不管是否有数据到来，这里我们就会用到setsockopt()函数
-    udp_get.bind(("0.0.0.0",8711))
+
     udp_get.settimeout(5)
+
+    udp_get.bind(("0.0.0.0", 8711))
     # 接收数据
     try:
         # recv_data0 = udp_get.recvfrom(1024)  # 接收数据最大字节数   recv_data为一个元组(数据，发送方ip,端口)
@@ -25,6 +27,7 @@ def getdata(info):
         # print(recv_data[0].decode('gbk'))
         jsondata = recv_data[0].decode('gbk')
         data = json.loads(jsondata)
+        print(data)
         if data:
             return data
         else:

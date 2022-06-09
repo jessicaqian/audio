@@ -117,12 +117,9 @@ def record_status(request):
         r_status[no] = act
         print(r_status)
 
-
-
     else:
         pass
     return JsonResponse({'msg': 'success'})
-
 
 @login_required
 def system_config(request):
@@ -297,6 +294,15 @@ def del_usr(request):
 
 @login_required
 def search_mid(request):
+    config.read("web.ini")
+    chan_list=[]
+    num =1
+    while num<5:
+        channel = config.get("configinfo", "channel"+str(num))
+        chan_list.append(channel)
+        num = num+1
+    print(chan_list)
+
     if request.method == 'POST':
         lists = []
         f_lists.clear()
@@ -502,12 +508,12 @@ def search_mid(request):
 
 
         return render(request, 'system/searchmid.html',
-                      {'name':name,'permiss':permiss,'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date})
+                      {'name':name,'permiss':permiss,'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date,'chanlist':chan_list})
 
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
-        return render(request, 'system/searchmid.html',{'name':name,'permiss':permiss})
+        return render(request, 'system/searchmid.html',{'name':name,'permiss':permiss,'chanlist':chan_list})
 
 @login_required
 def audio_file(request):
@@ -534,17 +540,12 @@ def send_data(request):
     data =json.loads(request.POST['mes'])
     print(data)
 
-
     udp.senddata(data)
-    res = udp.getdata(data)
+    res = udp.getdata()
     if res == 0:
         return JsonResponse({'msg': 'failed'})
 
-    elif res["audioAckValue"]["funcResult"]==0:
-
-        return JsonResponse({ 'msg': 'success'})
-    else:
-        return JsonResponse({'msg': 'failed'})
+    return JsonResponse({'msg': 'success'})
 
 def heartbeat(request):
     res = udp.heartbeat()
