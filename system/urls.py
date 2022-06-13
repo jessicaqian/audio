@@ -18,6 +18,7 @@ urlpatterns = [
     path('free.html',views.free_count),
     path('delete.html',views.del_usr),
     path('recordStatus',views.record_status),
-    path('devices',views.devices)
+    path('devices',views.devices),
+    path('netconfig.html',views.net_config)
 
 ]

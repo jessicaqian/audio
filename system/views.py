@@ -2,10 +2,11 @@ import pytz
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
-from .forms import SysconfigForm,UsrForm
-import os,sqlite3,hashlib,json,threading,re
+from .forms import SysconfigForm,UsrForm,NetForm
+import os,hashlib,json,threading,re
 import time,datetime,configparser
 from . import udp
+
 
 
 # Create your views here.
@@ -30,6 +31,10 @@ f_lists={}
 config = configparser.ConfigParser()
 
 r_status = ['off','off','off','off']
+
+def sudoCMD(command,password):
+    str = os.system('echo %s | sudo -S %s' % (password,command))
+    print(str)
 
 def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
@@ -198,6 +203,36 @@ def system_config(request):
                                                         'audiotime':audiotime,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4})
         else:
             return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
+
+@login_required
+def net_config(request):
+    if request.method == 'POST':
+        form = NetForm(request.POST)
+        if form.is_valid():
+            ip = form.cleaned_data['ip']
+            mask = form.cleaned_data['mask']
+            netgate = form.cleaned_data['netgate']
+            config.read("web.ini")
+            dev = config.get("systeminfo", "netdev")
+            pw = config.get("systeminfo", "syspw")
+            path = '/etc/ifcfg-'+ dev
+            sudoCMD('chmod 777 '+ path,pw)
+            sudoCMD('touch ' + path+'cp', pw)
+            sudoCMD('chmod 777 ' + path+'cp', pw)
+            with open(path+'cp', mode='w', encoding='utf-8') as fw, open(path, mode='r', encoding='utf-8') as fr:
+                for line in fr:
+                    if 'BOOTPROTO' in line:
+                        line = 'BOOTPROTO=static\n'
+                    fw.write(line)
+            fr.close()
+            fw.close()
+
+        return render(request, 'system/error.html')
+    else:
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        form = NetForm()
+        return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form})
 
 @login_required
 def usr_config(request):

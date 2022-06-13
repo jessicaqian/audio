@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block content %}
+    <div class="row sparse_min"><label class="head">日志查询&nbsp&nbsp&nbsp&nbsp</label></div>
     <form method="get">
         <div class="row sparse">
             <div class="col-md-6">
@@ -31,14 +32,14 @@
         </div>
 
     </form>
-    <div class="row sparse_min"><label class="head">日志查询&nbsp&nbsp&nbsp&nbsp</label></div>
-        <div class="hidden">{{ name }}{{ permiss }}</div>
+
+    <div class="hidden">{{ name }}{{ permiss }}</div>
         <table class="table table-hover table-condensed table-striped" id="key_table_body" style="margin: 0">
             <tbody>
             {% for book in book_list %}
 
 			<li>{{ book }}</li>
-		{% endfor %}
+		    {% endfor %}
             </tbody>
         </table>
 
@@ -77,8 +78,8 @@
 
 {% block js %}
 <script type="text/javascript">
-    {#$('a#flow').attr('aria-expanded','true');#}
-    {#$('div#collapseExample1').attr('class','collapse in');#}
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample1').attr('class','collapse in');
     $('input#id_usrname_n').val("{{ name }}")
     $('input#id_usr_perssions_n').val("{{ permiss }}")
     if('{{ mark }}'=='get'){

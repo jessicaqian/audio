@@ -1,0 +1,26 @@
+li#config>a{
+    background-color: #eee;
+    color: #23527c;
+}
+
+li#net_config > a{
+    color: #efb041;
+    padding-left: 30px;
+}
+
+div.line{
+    margin-top: 30px;
+    width: 400px;
+
+}
+
+div.line>input{
+    width:80%;
+
+}
+
+div#myalter{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+}

@@ -9,7 +9,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">系统配置&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
+
+
     <div class="row tips">
         <label>音频配置</label>
     </div>
@@ -24,6 +26,7 @@
             <span>{{ form.audiotime.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotime}}&nbsp;&nbsp;&nbsp;分钟</span>
         </div>
 
+
         <div class="row tips">
             <label>通道名称配置</label>
         </div>
@@ -37,8 +40,6 @@
         </div>
         <div class="hidden">{{ form.usrname_n}}</div>
         <div class="hidden">{{ form.usr_perssions_n}}</div>
-
-
         <div class="row">
             <div class="col-md-2 col-md-offset-8">
                 <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">

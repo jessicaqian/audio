@@ -34,7 +34,7 @@
         <div class="col-md-2">
             <ul class="nav nav-pills nav-stacked">
                 <li role="presentation" class="nav_bar" id="main"><a href="main.html?name={{ name }}&permiss={{ permiss }}">
-                    <span class="glyphicon glyphicon-stats" aria-hidden="true"></span> 设备状态</a>
+                    <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> 设备状态</a>
                 </li>
                 <li role="presentation" class="nav_bar" id="config">
                     <a id="flow" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
@@ -42,10 +42,13 @@
                     <div class="collapse" id="collapseExample">
                         <ul class="nav nav-pills nav-stacked">
                             <li role="presentation" class="nav_bar_inner" id="dev_configed"><a href="sysconfig.html?name={{ name }}&permiss={{ permiss }}">
-                                <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 系统配置</a>
+                                <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 录音配置</a>
                             </li>
                             <li role="presentation" class="nav_bar_inner" id="usr_config"><a href="usrconfig.html?name={{ name }}&permiss={{ permiss }}">
                                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 用户配置</a>
+                            </li>
+                            <li role="presentation" class="nav_bar_inner" id="net_config"><a href="netconfig.html?name={{ name }}&permiss={{ permiss }}">
+                                <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 网络配置</a>
                             </li>
                         </ul>
                     </div>
