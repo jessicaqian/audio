@@ -36,6 +36,8 @@ class NetForm(forms.Form):
     ip = forms.CharField(widget=forms.TextInput(attrs={'class': 'single_line'}), required=False)
     mask = forms.CharField(widget=forms.TextInput(attrs={'class': 'single_line'}), required=False)
     netgate = forms.CharField(widget=forms.TextInput(attrs={'class': 'single_line'}), required=False)
+    usrname_n = forms.CharField(widget=forms.TextInput)
+    usr_perssions_n = forms.CharField(widget=forms.TextInput)
 
 
 

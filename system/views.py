@@ -209,13 +209,15 @@ def net_config(request):
     if request.method == 'POST':
         form = NetForm(request.POST)
         if form.is_valid():
+            name = form.cleaned_data['usrname_n']
+            permiss = form.cleaned_data['usr_perssions_n']
             ip = form.cleaned_data['ip']
             mask = form.cleaned_data['mask']
-            netgate = form.cleaned_data['netgate']
+            gateway = form.cleaned_data['netgate']
             config.read("web.ini")
             dev = config.get("systeminfo", "netdev")
             pw = config.get("systeminfo", "syspw")
-            path = '/etc/ifcfg-'+ dev
+            path = '/etc/sysconfig/network-scripts/ifcfg-'+ dev
             sudoCMD('chmod 777 '+ path,pw)
             sudoCMD('touch ' + path+'cp', pw)
             sudoCMD('chmod 777 ' + path+'cp', pw)
@@ -223,11 +225,23 @@ def net_config(request):
                 for line in fr:
                     if 'BOOTPROTO' in line:
                         line = 'BOOTPROTO=static\n'
+                    elif 'ONBOOT' in line:
+                        line = 'ONBOOT=yes\n'
+                    elif 'GATEWAY' in line:
+                        line = 'GATEWAY='+gateway+'\n'
+                    elif 'IPADDR' in line:
+                        line = 'IPADDR='+ip+'\n'
+                    elif 'NETMASK' in line:
+                        line = 'NETMASK='+mask+'\n'
                     fw.write(line)
             fr.close()
             fw.close()
-
-        return render(request, 'system/error.html')
+            with open(path+'cp', mode='r', encoding='utf-8') as fr1, open(path, mode='w', encoding='utf-8') as fw1:
+                for line in fr1:
+                    fw1.write(line)
+            fr1.close()
+            fw1.close()
+        return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form,'method':'post'})
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')

@@ -15,6 +15,12 @@
         </button>
       <strong id="tips" >IP地址不合法</strong> 请重新输入。
     </div>
+    <div class="alert alert-success" role="alert" id="myalter1" style="display: none">
+        <button type="button" class="close" id="close1">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      <strong id="tips1" >已配置成功</strong>
+    </div>
     <div class="row sparse"><label class="head">网络配置&nbsp&nbsp&nbsp&nbsp</label></div>
     <div class="row tips">
         <label>IP设置</label>
@@ -35,7 +41,8 @@
                 <label>网关:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>{{ form.netgate }}
             </div>
         </div>
-
+        <div class="hidden">{{ form.usrname_n}}</div>
+        <div class="hidden">{{ form.usr_perssions_n}}</div>
         <div class="row ">
             <div class="col-md-2 col-md-offset-8">
                 <input type="submit" value="提&nbsp&nbsp交" id="submit" class="btn btn-primary">
@@ -49,10 +56,18 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
+    $('input#id_usrname_n').val("{{ name }}")
+    $('input#id_usr_perssions_n').val("{{ permiss }}")
+    if('{{ method }}'=='post'){
+        $('#myalter1').attr('style','display:block')
+
+    }
     $('button#close').click(function () {
         $('#myalter').attr('style','display:none')
     });
-
+    $('button#close1').click(function () {
+        $('#myalter1').attr('style','display:none')
+    });
     function checkIP() {
         obj = document.getElementById("id_ip").value;
         obj1 = document.getElementById("id_mask").value;

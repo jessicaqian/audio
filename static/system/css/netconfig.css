@@ -19,7 +19,7 @@ div.line>input{
 
 }
 
-div#myalter{
+div#myalter,#myalter1{
     position: absolute;
     z-index: 100;
     width: 90%;
