@@ -217,7 +217,8 @@ def net_config(request):
             config.read("web.ini")
             dev = config.get("systeminfo", "netdev")
             pw = config.get("systeminfo", "syspw")
-            path = '/etc/sysconfig/network-scripts/ifcfg-'+ dev
+            path0 = config.get("systeminfo", "path")
+            path = path0+ dev
             sudoCMD('chmod 777 '+ path,pw)
             sudoCMD('touch ' + path+'cp', pw)
             sudoCMD('chmod 777 ' + path+'cp', pw)
@@ -241,7 +242,8 @@ def net_config(request):
                     fw1.write(line)
             fr1.close()
             fw1.close()
-        return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form,'method':'post'})
+            sudoCMD('reboot', pw)
+        return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form})
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
