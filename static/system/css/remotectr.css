@@ -1,0 +1,32 @@
+li#config>a{
+    background-color: #eee;
+    color: #23527c;
+}
+
+li#remo_control > a{
+    color: #efb041;
+    padding-left: 30px;
+}
+
+#shutdown{
+    background:url("../image/shutdown.png") center no-repeat;
+    height: 120px;
+    width: 120px;
+    background-size: 100%;
+    border-radius: 50%;
+
+}
+
+#reboot{
+    background:url("../image/reboot.png") center no-repeat;
+    height: 120px;
+    width: 120px;
+    background-size: 100%;
+    border-radius: 50%;
+
+}
+
+p.icon{
+    font-size: 20px;
+    margin-left: 42px;
+}

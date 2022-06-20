@@ -1,0 +1,44 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}网络配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/remotectr.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="row sparse"><label class="head">远程控制&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row">
+        <div class="col-md-3 col-md-offset-3">
+            <button id="shutdown"></button>
+        </div>
+        <div class="col-md-6">
+            <button id="reboot"></button>
+        </div>
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-md-offset-3">
+            <p class="icon">关机</p>
+        </div>
+        <div class="col-md-6">
+            <p class="icon">重启</p>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample').attr('class','collapse in');
+
+
+
+</script>
+{% endblock %}
+

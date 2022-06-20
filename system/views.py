@@ -350,6 +350,19 @@ def del_usr(request):
 
         return HttpResponseRedirect('/system/usrconfig.html?name='+name+'&permiss='+permiss)
 
+
+def remote_control(request):
+    name = request.GET.get('name', default='10000000')
+    permiss = request.GET.get('permiss', default='10000000')
+    return render(request, 'system/remotectr.html', {'name': name, 'permiss': permiss, 'ecode': 0})
+
+
+
+
+
+
+
+
 @login_required
 def search_mid(request):
     config.read("web.ini")
