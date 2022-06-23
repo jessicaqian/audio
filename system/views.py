@@ -243,7 +243,7 @@ def net_config(request):
             fr1.close()
             fw1.close()
             sudoCMD('reboot', pw)
-        return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form})
+        return render(request, 'system/netconfig.html')
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
@@ -352,15 +352,20 @@ def del_usr(request):
 
 
 def remote_control(request):
-    name = request.GET.get('name', default='10000000')
-    permiss = request.GET.get('permiss', default='10000000')
-    return render(request, 'system/remotectr.html', {'name': name, 'permiss': permiss, 'ecode': 0})
+    if request.method == 'POST':
+        config.read("web.ini")
+        pw = config.get("systeminfo", "syspw")
+        method = request.POST.get('mark')
+        if method == 'shutdown':
+            sudoCMD('shutdown', pw)
+        if method == 'reboot':
+            sudoCMD('reboot', pw)
+        return JsonResponse({'msg': 'success'})
 
-
-
-
-
-
+    else:
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        return render(request, 'system/remotectr.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
 
 @login_required
