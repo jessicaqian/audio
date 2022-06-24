@@ -25,7 +25,7 @@ def login(request):
             config.set(usrname, "t_current", str(T_Now))
 
             usrpermiss = config.get('usrinfo', usrname)
-            config.write(open("web.ini", "w"))
+            config.write(open("web.ini", "w",encoding='utf-8'))
 
             # conn = sqlite3.connect('db.sqlite3')
             # cursor = conn.cursor()

@@ -1,12 +1,10 @@
 div#selebox{
-     margin:30px 0px 30px 50px;
+     margin:30px -15px 30px 50px;
     font-size: 15px;
 }
 
 div#audioTime{
-    margin:30px 0px 30px 50px;
     font-size: 15px;
-    width: 500px;
 }
 
 input#id_audiotime{
@@ -14,9 +12,7 @@ input#id_audiotime{
 }
 
 div#audioMode{
-    margin:30px 0px 30px 50px;
     font-size: 15px;
-
 }
 
 input.single_line{
@@ -46,4 +42,8 @@ label#tips{
     margin-left: 50px;
     font-size: 18px;
     color:#ae0101;
+}
+
+input#save{
+    margin-bottom: 30px;
 }

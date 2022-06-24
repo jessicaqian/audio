@@ -9,14 +9,6 @@ from . import udp
 
 
 
-# Create your views here.
-# data = {"cmdCheck": 0x02, "Seq": 0x15,
-#         "audioPara": {"audioFunc": 0, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
-#                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
-#                       "isStereoSaveFlag": 0}}
-# udp.senddata(data)
-# res = udp.getdata(data)
-# print(res["audioAckValue"]["funcResult"])
 time.time()
 now = datetime.datetime.now()
 timestr = now.strftime("%Y-%m-%d")
@@ -54,7 +46,7 @@ def login_required(func):  # 自定义登录验证装饰器
                     config.set(name,'is_login','false')
                 else:
                     config.set(name, 'T_current',str(T_Now))
-                config.write(open("web.ini", "w"))
+                config.write(open("web.ini", "w",encoding='utf-8'))
             except:
                 return HttpResponseRedirect("/")
         is_login = config.get(name,'is_login')
@@ -179,8 +171,8 @@ def system_config(request):
             config.set("configinfo", "channel2", wchannel2)
             config.set("configinfo", "channel3", wchannel3)
             config.set("configinfo", "channel4", wchannel4)
-            config.write(open("web.ini","w"))
-            print(form)
+            config.write(open("web.ini","w",encoding='utf-8'))
+
             return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss})
         else:
 
@@ -258,7 +250,7 @@ def usr_config(request):
     else:
         config.read("web.ini",encoding='utf-8')
         usrinfo = config.items('usrinfo')
-        print(usrinfo)
+
 
         # conn = sqlite3.connect('db.sqlite3')
         # cursor = conn.cursor()
@@ -295,7 +287,7 @@ def new_usr(request):
                 config.set(name, "name", name)
                 config.set(name, "pw", pw.hexdigest())
                 config.set("usrinfo", name, perssions)
-                config.write(open("web.ini", "w"))
+                config.write(open("web.ini", "w",encoding='utf-8'))
 
                 now = datetime.datetime.now()
                 time = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -346,7 +338,7 @@ def del_usr(request):
         config.remove_section(usrname)
         config.remove_option("usrinfo",usrname)
 
-        config.write(open("web.ini", "w"))
+        config.write(open("web.ini", "w",encoding='utf-8'))
 
         return HttpResponseRedirect('/system/usrconfig.html?name='+name+'&permiss='+permiss)
 
@@ -377,7 +369,7 @@ def search_mid(request):
         channel = config.get("configinfo", "channel"+str(num))
         chan_list.append(channel)
         num = num+1
-    print(chan_list)
+
 
     if request.method == 'POST':
         lists = []
@@ -603,7 +595,7 @@ def audio_file(request):
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         try:
-            print(f_lists[dir])
+
             path = 'static/record/' + dir
             lists = f_lists[dir]
         except:
@@ -614,7 +606,7 @@ def audio_file(request):
 
 def send_data(request):
     data =json.loads(request.POST['mes'])
-    print(data)
+
 
     udp.senddata(data)
     res = udp.getdata()

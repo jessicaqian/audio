@@ -10,41 +10,18 @@
 
 {% block content %}
     <div class="row sparse"><label class="head">设备状态&nbsp&nbsp&nbsp&nbsp</label></div>
-    <div class="row">
-        <div class="col-md-5" id="system">
-            <div class="row tips">
-                <label>系统状态</label>
-            </div>
-            <div class="row1 row" >
-                <div class="col-md-12">
-                    当前录音模式:<label id="a_mode"></label>
-
-                </div>
-            </div>
-            <div class="row1 row">
-                <div class="col-md-5">
-                    当前用户:<label>{{ name }}:{{ permiss }}</label>
-
-                </div>
-            </div>
-
+    <div class="row" id="system">
+        <div class="row tips">
+            <label>系统状态</label>
         </div>
-        <div class="col-md-7" id="disk">
-            <div class="row tips">
-                <label>磁盘状态</label>
+        <div class="row1 row" >
+            <div class="col-md-6">
+                当前录音模式:<label id="a_mode"></label>
 
             </div>
-            <div class="row1 row">
-                <div class="col-md-5">
-                    磁盘剩余空间:<label class="disk-info" id="space">....G</label>
+            <div class="col-md-6">
+                当前用户:<label>{{ name }}:{{ permiss }}</label>
 
-                </div>
-            </div>
-            <div class="row1 row">
-                <div class="col-md-6">
-                    磁盘剩余可录制时间(单通道):<label class="disk-info"> 20h</label>
-
-                </div>
             </div>
         </div>
     </div>
@@ -190,21 +167,6 @@
         $('#record'+str).removeAttr('disabled')
         $('#channel'+str).attr('class','row channel_in_off')
     }
-
-    function getdiskStatus(){
-        $.get('getdiskStatus').done(function (info) {
-            if(no == info.no){
-
-            }else{
-                $('label#space').html(info.no + 'G')
-                no = info.no
-            }
-
-        }).fail(function () {
-
-        })
-    }
-    setInterval(getdiskStatus,3000)
 
     $('#editmode').click(function () {
          var data = {"cmdCheck": 0x02, "Seq": 0x15,
