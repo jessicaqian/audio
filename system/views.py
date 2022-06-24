@@ -40,7 +40,7 @@ def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
         timenow = datetime.datetime.now()
         T_Now = timenow.minute + timenow.hour * 60
-        config.read("web.ini")
+        config.read("web.ini",encoding='utf-8')
 
         name = request.GET.get('name', default='e')
         if name == 'e':
@@ -100,7 +100,7 @@ def main(request):
         pass
 
     else:
-        config.read("web.ini")
+        config.read("web.ini",encoding='utf-8')
         audiomode = config.get("configinfo", "audiomode")
         channel1 =  config.get("configinfo", "channel1")
         channel2 =  config.get("configinfo", "channel2")
@@ -135,7 +135,7 @@ def record_status(request):
 
 @login_required
 def system_config(request):
-    config.read("web.ini")
+    config.read("web.ini",encoding='utf-8')
     if request.method == 'POST':
         form = SysconfigForm(request.POST)
         now = datetime.datetime.now()
@@ -214,7 +214,7 @@ def net_config(request):
             ip = form.cleaned_data['ip']
             mask = form.cleaned_data['mask']
             gateway = form.cleaned_data['netgate']
-            config.read("web.ini")
+            config.read("web.ini",encoding='utf-8')
             dev = config.get("systeminfo", "netdev")
             pw = config.get("systeminfo", "syspw")
             path0 = config.get("systeminfo", "path")
@@ -256,7 +256,7 @@ def usr_config(request):
         pass
 
     else:
-        config.read("web.ini")
+        config.read("web.ini",encoding='utf-8')
         usrinfo = config.items('usrinfo')
         print(usrinfo)
 
@@ -289,7 +289,7 @@ def new_usr(request):
             m = password + "{{sdtzzq}}"
             pw = hashlib.md5(m.encode())
 
-            config.read("web.ini")
+            config.read("web.ini",encoding='utf-8')
             try:
                 config.add_section(name)
                 config.set(name, "name", name)
@@ -342,7 +342,7 @@ def del_usr(request):
 
 
 
-        config.read("web.ini")
+        config.read("web.ini",encoding='utf-8')
         config.remove_section(usrname)
         config.remove_option("usrinfo",usrname)
 
@@ -353,7 +353,7 @@ def del_usr(request):
 
 def remote_control(request):
     if request.method == 'POST':
-        config.read("web.ini")
+        config.read("web.ini",encoding='utf-8')
         pw = config.get("systeminfo", "syspw")
         method = request.POST.get('mark')
         if method == 'shutdown':
@@ -370,7 +370,7 @@ def remote_control(request):
 
 @login_required
 def search_mid(request):
-    config.read("web.ini")
+    config.read("web.ini",encoding='utf-8')
     chan_list=[]
     num =1
     while num<5:
@@ -710,7 +710,7 @@ def devices(request):
     if request.method =="POST":
         pass
     else:
-        config.read("web.ini")
+        config.read("web.ini",encoding='utf-8')
 
         audiotype = config.get("configinfo", "audiotype")
         channel1 = config.get("configinfo", "channel1")

@@ -20,7 +20,7 @@ def login(request):
             usrname = info['usrname']
 
             config = configparser.ConfigParser()
-            config.read("web.ini")
+            config.read("web.ini",encoding='utf-8')
             config.set(usrname, "is_login", 'true')
             config.set(usrname, "t_current", str(T_Now))
 

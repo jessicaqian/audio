@@ -1,6 +1,5 @@
 from django import forms
 import hashlib
-# import sqlite3
 import configparser
 
 class NameForm(forms.Form):
@@ -16,7 +15,7 @@ class NameForm(forms.Form):
         pw = hashlib.md5(m.encode())
         config = configparser.ConfigParser()
 
-        config.read("web.ini")
+        config.read("web.ini",encoding='utf-8')
 
         try:
             name = config.get(username, "name")
