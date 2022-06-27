@@ -152,25 +152,29 @@ def system_config(request):
             else:
                 with open(file=file_path, mode="a", encoding="utf-8") as f:
                     f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode};\n')
-            wchannel1 = form.cleaned_data['channel1']
-            wchannel2 = form.cleaned_data['channel2']
-            wchannel3 = form.cleaned_data['channel3']
-            wchannel4 = form.cleaned_data['channel4']
-            rchannel1 = config.get("configinfo", "channel1")
-            rchannel2 = config.get("configinfo", "channel2")
-            rchannel3 = config.get("configinfo", "channel3")
-            rchannel4 = config.get("configinfo", "channel4")
+            i = 0
+            wchannel = [None]*64
+            rchannel = [None]*64
+            mes = ''
 
+            while i < 64:
+                wchannel[i] = form.cleaned_data['channel'+str(i+1)]
+                rchannel[i] = config.get("configinfo", "channel"+str(i+1))
+
+                mes = mes + '通道' + str(i+1) + ':{rchannel' + str(i) + '}修改为通道' + str(i+1) + ':{wchannel' + str(i) + '};'
+                i = i + 1
 
             with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {u_name}用户 将通道一:{rchannel1}修改为通道一:{wchannel1}; 通道二:{rchannel2}修改为通道二:{wchannel2}; 通道三:{rchannel3}修改为通道三:{wchannel3}; 通道四:{rchannel4}修改为{wchannel4}\n')
+                f.write(f'{time} {u_name}用户 将' + mes + '\n')
+
             config.set("configinfo","audiotype",audiotype)
             config.set("configinfo", "audiomode", audiomode)
 
-            config.set("configinfo", "channel1", wchannel1)
-            config.set("configinfo", "channel2", wchannel2)
-            config.set("configinfo", "channel3", wchannel3)
-            config.set("configinfo", "channel4", wchannel4)
+            j = 0
+            while j < 64:
+                config.set("configinfo", "channel" + str(j + 1), wchannel[j])
+                j = j + 1
+
             config.write(open("web.ini","w",encoding='utf-8'))
 
             return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss})
@@ -186,13 +190,15 @@ def system_config(request):
         audiotype = config.get("configinfo","audiotype")
         audiomode =  config.get("configinfo", "audiomode")
         audiotime =  config.get("configinfo", "audiotime")
-        channel1 =  config.get("configinfo", "channel1")
-        channel2 =  config.get("configinfo", "channel2")
-        channel3 = config.get("configinfo", "channel3")
-        channel4 =  config.get("configinfo", "channel4")
+        i = 0
+        channel = ['未知']*64
+        while i < 63:
+            channel[i] =  config.get("configinfo", "channel" + str(i+1))
+            i = i + 1
+
         if permiss == '管理员':
             return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,
-                                                        'audiotime':audiotime,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4})
+                                                        'audiotime':audiotime,'channels':channel})
         else:
             return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
 

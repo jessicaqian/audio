@@ -20,12 +20,13 @@ label.disk-info{
 div.channel{
     height: 55px;
     margin-top: 30px;
+    margin-left: 1px;
     background-color: #cecece;
     border-radius: 6px;
 }
 
 div.channel_in{
-    margin-left: 15px;
+    margin-left: 5px;
     height: 25px;
     background:url("../image/28754.gif") center left;
     background-color: white;
@@ -34,7 +35,7 @@ div.channel_in{
 }
 
 div.channel_in_off{
-    margin-left: 15px;
+    margin-left: 5px;
     height: 25px;
     background-color: #e3e3e3;
     background-size: 50%;
