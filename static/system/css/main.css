@@ -20,7 +20,7 @@ label.disk-info{
 div.channel{
     height: 55px;
     margin-top: 30px;
-    margin-left: 1px;
+    margin-right: 1px;
     background-color: #cecece;
     border-radius: 6px;
 }
@@ -30,7 +30,7 @@ div.channel_in{
     height: 25px;
     background:url("../image/28754.gif") center left;
     background-color: white;
-    background-size: 50%;
+    background-size: 210%;
     border-radius: 4px;
 }
 
@@ -61,6 +61,14 @@ a.record,a.stop{
 li#main>a{
     background-color: #eee;
     color: #23527c;
+}
+
+div#buttom{
+    margin-bottom: 10px;
+}
+
+button.all{
+    margin-left: 45px;
 }
 
 

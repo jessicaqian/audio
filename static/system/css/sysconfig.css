@@ -16,7 +16,7 @@ div#audioMode{
 }
 
 input.single_line{
-    width: 50%;
+    width: 60%;
 }
 
 div.channel_name{
@@ -36,6 +36,7 @@ li#dev_configed > a{
 
 input#save{
     margin-top: 40px;
+    margin-bottom: 25px;
 }
 
 label#tips{
@@ -44,6 +45,4 @@ label#tips{
     color:#ae0101;
 }
 
-input#save{
-    margin-bottom: 30px;
-}
+

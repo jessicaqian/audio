@@ -94,10 +94,11 @@ def main(request):
     else:
         config.read("web.ini",encoding='utf-8')
         audiomode = config.get("configinfo", "audiomode")
-        channel1 =  config.get("configinfo", "channel1")
-        channel2 =  config.get("configinfo", "channel2")
-        channel3 = config.get("configinfo", "channel3")
-        channel4 =  config.get("configinfo", "channel4")
+        i = 0
+        channel = ['未知']*64
+        while i < 64:
+            channel[i] =  config.get("configinfo", "channel" + str(i+1))
+            i = i + 1
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         now = datetime.datetime.now()
@@ -105,7 +106,7 @@ def main(request):
         with open(file=file_path, mode="a", encoding="utf-8") as f:
             f.write(f'{time} {name}登录\n')
         print(r_status)
-        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4,'audiomode':audiomode,'r_status':r_status})
+        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel})
 
 def get_diskstatus(request):
     st = os.statvfs('/home')
@@ -192,7 +193,7 @@ def system_config(request):
         audiotime =  config.get("configinfo", "audiotime")
         i = 0
         channel = ['未知']*64
-        while i < 63:
+        while i < 64:
             channel[i] =  config.get("configinfo", "channel" + str(i+1))
             i = i + 1
 
