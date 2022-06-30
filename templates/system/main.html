@@ -47,7 +47,7 @@
 
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-danger record"  id="record1">
+                    <a class="btn btn-danger record"  id="1">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -63,7 +63,7 @@
 
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-danger record" id="record2">
+                    <a class="btn btn-danger record" id="2">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -147,7 +147,7 @@
 
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-danger record"  id="record1">
+                    <a class="btn btn-danger record"  id="1">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -163,7 +163,7 @@
 
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-danger record" id="record2">
+                    <a class="btn btn-danger record" id="2">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -179,7 +179,7 @@
 
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-danger record" id="record3">
+                    <a class="btn btn-danger record" id="3">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -195,7 +195,7 @@
 
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-danger record" id="record4">
+                    <a class="btn btn-danger record" id="4">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -227,7 +227,7 @@
 
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-danger record" id="record4">
+                    <a class="btn btn-danger record" id="4">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -1129,28 +1129,37 @@
 
 {% endfor %}
 
-    function wait(str,act) {
-        $('#' + act + str +'>span').attr('class','glyphicon glyphicon-option-horizontal')
-        $('#' + act + str).attr('disabled','disabled')
+    function wait(str) {
+        $('#' + str +'>span').attr('class','glyphicon glyphicon-option-horizontal')
+        $('#' + str).attr('disabled','disabled')
 
     }
 
     function re_w(str,act) {
-        $('#' + act + str +'>span').attr('class','glyphicon glyphicon-'+act)
-        $('#' + act + str).removeAttr('disabled')
+        if(act == 'record'){
+            $('#'+str).attr('class','btn btn-danger record')
+        }else {
+            $('#'+str).attr('class','btn btn-default stop')
+
+        }
+
+        $('#' + str +'>span').attr('class','glyphicon glyphicon-'+act)
+        $('#' + str).removeAttr('disabled')
     }
 
     function start(str) {
-        $('#record'+str).removeAttr('disabled')
-        $('#record'+str).attr('class','btn btn-default stop')
-        $('#record'+str+'>span').attr('class','glyphicon glyphicon-stop')
+        $('#'+str).removeAttr('disabled')
+        $('#'+str).attr('class','btn btn-default stop')
+        $('#'+str+'>span').attr('class','glyphicon glyphicon-stop')
         $('#channel'+str).attr('class','row channel_in')
 
     }
 
     function stop(str) {
-        $('#stop'+str).attr('disabled','disabled')
-        $('#record'+str).removeAttr('disabled')
+
+        $('#'+str).removeAttr('disabled')
+        $('#'+str).attr('class','btn btn-danger record')
+        $('#'+str+'>span').attr('class','glyphicon glyphicon-record')
         $('#channel'+str).attr('class','row channel_in_off')
     }
 
@@ -1168,93 +1177,99 @@
         })
     })
 
-    $('#record1').click(function () {
+    $('a.btn').click(function () {
+        var id = $(this).attr('id')
+        var mark = $(this).attr('class')
+        wait(id)
 
-        wait('1','record')
-        start('1')
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
-                $.post('recordStatus',{'no':'1','act':'on'}).done(function () {
-                    start('1')
+        if(mark == 'btn btn-danger record'){
+            var data = {'MSG_TYPE':'STARTRECORD','CHANNELINDEX':id}
+            var jsonstr = JSON.stringify(data)
 
-                }).fail(function () {
+            $.post('sendData',{'mes':jsonstr}).done(function (info) {
 
-                })
+                if(info.msg == 'success'){
+                    start(id)
 
-            }else{
-                re_w('1','record')
-
-            }
-
-        }).fail(function () {
-
-        })
-        var timestamp = Date.parse(new Date());
-        var timestamp = timestamp / 1000;
-        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
-        var Y = date.getFullYear() + '-';
-        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
-        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
-        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
-        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
-        var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
-        var time = Y+M+D+" "+h+m+s;
-        var dict = {"name":"{{ name }}","start_time":time,"channel_no":"1","channel_name":"{{ channel1 }}"}
-
-        var json_dict = JSON.stringify(dict)
-        $.post('free_log',{"mes":json_dict}).done(function (info) {
+                }else {
+                    re_w(id,'record')
+                }
 
 
-        }).fail(function () {
+            }).fail(function (info) {
 
-        })
+
+            })
+
+            var timestamp = Date.parse(new Date());
+            var timestamp = timestamp / 1000;
+            var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+            var Y = date.getFullYear() + '-';
+            var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+            var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+            var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+            var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
+            var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
+            var time = Y+M+D+" "+h+m+s;
+            var dict = {"name":"{{ name }}","start_time":time,"channel_no":"1","channel_name":"{{ channel1 }}"}
+
+            var json_dict = JSON.stringify(dict)
+            $.post('free_log',{"mes":json_dict}).done(function (info) {
+
+
+            }).fail(function () {
+
+            })
+        }
+        else {
+            var data = {'MSG_TYPE':'STOPRECORD','CHANNELINDEX':id}
+            var jsonstr = JSON.stringify(data);
+            $.post('sendData',{'mes':jsonstr}).done(function (info) {
+
+                if(info.msg == 'success'){
+                    stop(id)
+
+                }else {
+                    re_w(id,'stop')
+                }
+
+
+            }).fail(function () {
+
+            })
+            var timestamp = Date.parse(new Date());
+            var timestamp = timestamp / 1000;
+            var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+            var Y = date.getFullYear() + '-';
+            var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+            var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
+            var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+            var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
+            var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
+            var time = Y+M+D+" "+h+m+s
+            var dict = {"end_time":time,"channel_no":"1","channel_name":"{{ channel1 }}","name":"{{ name }}"}
+
+            var json_dict = JSON.stringify(dict)
+            $.post('free_log',{"mes":json_dict}).done(function (info) {
+
+
+            }).fail(function () {
+
+            })
+        }
+
+
+
+
+
 
     })
 
-    $('#stop1').click(function () {
-        wait('1','stop')
-
-        var data = {"cmdCheck": 0x02, "Seq": 0x15,
-        "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
-                      "isStereoSaveFlag": 0}}
-        var jsonstr = JSON.stringify(data);
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
-                $.post('recordStatus',{'no':'1','act':'off'}).done(function () {
-                    stop('1')
-
-                }).fail(function () {
-
-                })
-            }else {
-                re_w('1','stop')
-            }
+    $('a.stop').click(function () {
+        var id = $(this).attr('id')
+        wait(id)
 
 
-
-        }).fail(function () {
-
-        })
-        var timestamp = Date.parse(new Date());
-        var timestamp = timestamp / 1000;
-        var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
-        var Y = date.getFullYear() + '-';
-        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
-        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
-        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
-        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes())+":";
-        var s = (date.getSeconds()< 10 ? '0'+date.getSeconds():date.getSeconds())
-        var time = Y+M+D+" "+h+m+s
-        var dict = {"end_time":time,"channel_no":"1","channel_name":"{{ channel1 }}","name":"{{ name }}"}
-
-        var json_dict = JSON.stringify(dict)
-        $.post('free_log',{"mes":json_dict}).done(function (info) {
-
-
-        }).fail(function () {
-
-        })
 
     })
 

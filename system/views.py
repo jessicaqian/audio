@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from .forms import SysconfigForm,UsrForm,NetForm
 import os,hashlib,json,threading,re
-import time,datetime,configparser
+import time,datetime,configparser,requests
 from . import udp
 
 
@@ -612,15 +612,22 @@ def audio_file(request):
 
 
 def send_data(request):
-    data =json.loads(request.POST['mes'])
+    data = request.POST['mes']
+    try:
+        r = requests.post("http://10.25.15.13:8090", data=data)
+        res = r.json()
+        print(res)
+    except Exception as e:
+        print(e)
+        return JsonResponse({'msg': 'success'})
+    if res['ret_msg']=='OK':
+        return JsonResponse({'msg': 'success'})
+    else:
+        return JsonResponse({'msg': 'success'})
 
 
-    udp.senddata(data)
-    res = udp.getdata()
-    if res == 0:
-        return JsonResponse({'msg': 'failed'})
 
-    return JsonResponse({'msg': 'success'})
+
 
 def heartbeat(request):
     res = udp.heartbeat()
