@@ -141,6 +141,11 @@ def system_config(request):
             audiotype = form.cleaned_data['audiotype']
             audiomode = form.cleaned_data['audiomode']
 
+
+
+
+
+
             raudiotype = config.get("configinfo", "audiotype")
             raudiomode = config.get("configinfo", "audiomode")
             raudiotime = config.get("configinfo", "audiotime")
@@ -619,11 +624,11 @@ def send_data(request):
         print(res)
     except Exception as e:
         print(e)
-        return JsonResponse({'msg': 'success'})
+        return JsonResponse({'msg': 'failed'})
     if res['ret_msg']=='OK':
         return JsonResponse({'msg': 'success'})
     else:
-        return JsonResponse({'msg': 'success'})
+        return JsonResponse({'msg': 'failed'})
 
 
 
