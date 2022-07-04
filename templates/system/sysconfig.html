@@ -9,6 +9,12 @@
 {% endblock %}
 
 {% block content %}
+    <div class="alert alert-danger " role="alert" id="myalter" style="display: none">
+        <button type="button" class="close" id="close" >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      <strong id="tips" >IP地址不合法</strong>
+    </div>
     <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
 
 
@@ -135,6 +141,9 @@
     $('div#collapseExample').attr('class','collapse in');
     $('input#id_usrname_n').val("{{ name }}")
     $('input#id_usr_perssions_n').val("{{ permiss }}")
+    $('button#close').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
     var opt = $('select#id_audiomode').val();
     if(opt=='全时段录音'){
         $('div#audioTime').removeAttr('style')
@@ -143,9 +152,10 @@
     }
     if('{{ method }}'=='get'){
 
-{% for channel in channels %}
+
+    {% for channel in channels %}
     $('input#id_channel'+'{{ forloop.counter }}').val('{{ channel }}')
-{% endfor %}
+    {% endfor %}
 
 
         $('select#id_audiomode').val('{{audiomode}}')
@@ -157,8 +167,14 @@
         else {
             $('div#audioTime').attr('style','visibility: hidden')
         }
+    }else {
+        if('{{ res }}'=='failed'){
+            $('#myalter').attr('style','display:block')
+        }else {
+            $('#tips').html('保存成功')
+            $('#myalter').attr('style','display:block')
+        }
     }
-
 
     $('select#id_audiomode').change(function () {
         var opt = $('select#id_audiomode').val();

@@ -91,6 +91,7 @@ def main(request):
     if request.method == 'POST':
         pass
 
+
     else:
         config.read("web.ini",encoding='utf-8')
         audiomode = config.get("configinfo", "audiomode")
@@ -107,6 +108,15 @@ def main(request):
             f.write(f'{time} {name}登录\n')
         print(r_status)
         return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel})
+
+def btn_action(request):
+    data = request.POST['mes']
+    print(data)
+    mark = send_data(data)
+    if mark == True:
+        return JsonResponse({'msg': 'success'})
+    else:
+        return JsonResponse({'msg': 'failed'})
 
 def get_diskstatus(request):
     st = os.statvfs('/home')
@@ -139,12 +149,17 @@ def system_config(request):
             u_permiss = form.cleaned_data['usr_perssions_n']
 
             audiotype = form.cleaned_data['audiotype']
+            if audiotype == 'mp3':
+
+                datadict = {'MSG_TYPE':'SETRECORDFORMAT','MOD':'1'}
+            else:
+                datadict = {'MSG_TYPE': 'SETRECORDFORMAT', 'MOD': '1'}
+            data = json.dumps(datadict)
+            rest = send_data(data)
+            if rest == False:
+                return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'res':'failed'})
+
             audiomode = form.cleaned_data['audiomode']
-
-
-
-
-
 
             raudiotype = config.get("configinfo", "audiotype")
             raudiomode = config.get("configinfo", "audiomode")
@@ -152,6 +167,13 @@ def system_config(request):
 
             if audiomode == '全时段录音':
                 audiotime = form.cleaned_data['audiotime']
+
+
+
+
+
+
+
                 config.set("configinfo", "audiotime", audiotime)
                 with open(file=file_path, mode="a", encoding="utf-8") as f:
                     f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
@@ -616,19 +638,19 @@ def audio_file(request):
         return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
 
 
-def send_data(request):
-    data = request.POST['mes']
+def send_data(data):
+
     try:
         r = requests.post("http://10.25.15.13:8090", data=data)
         res = r.json()
         print(res)
     except Exception as e:
         print(e)
-        return JsonResponse({'msg': 'failed'})
+        return True
     if res['ret_msg']=='OK':
-        return JsonResponse({'msg': 'success'})
+        return True
     else:
-        return JsonResponse({'msg': 'failed'})
+        return False
 
 
 

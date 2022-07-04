@@ -45,4 +45,10 @@ label#tips{
     color:#ae0101;
 }
 
+div#myalter{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+}
+
 

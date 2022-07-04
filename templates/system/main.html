@@ -1172,7 +1172,7 @@
             var data = {'MSG_TYPE':'STARTRECORD','CHANNELINDEX':id}
             var jsonstr = JSON.stringify(data)
 
-            $.post('sendData',{'mes':jsonstr}).done(function (info) {
+            $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
                 if(info.msg == 'success'){
                     start(id)
@@ -1210,7 +1210,7 @@
         else {
             var data = {'MSG_TYPE':'STOPRECORD','CHANNELINDEX':id}
             var jsonstr = JSON.stringify(data);
-            $.post('sendData',{'mes':jsonstr}).done(function (info) {
+            $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
                 if(info.msg == 'success'){
                     stop(id)
@@ -1250,7 +1250,7 @@
         $('a.btn').attr('disabled','disabled')
         var data = {'MSG_TYPE':'STARTRECORD','CHANNELINDEX':'ALL'}
         var jsonstr = JSON.stringify(data);
-        $.post('sendData',{'mes':jsonstr}).done(function (info) {
+        $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
             if(info.msg == 'success'){
                 $('a.btn').removeAttr('disabled')
@@ -1279,7 +1279,7 @@
         $('a.btn').attr('disabled','disabled')
         var data = {'MSG_TYPE':'STOPRECORD','CHANNELINDEX':'ALL'}
         var jsonstr = JSON.stringify(data);
-        $.post('sendData',{'mes':jsonstr}).done(function (info) {
+        $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
             if(info.msg == 'success'){
                 $('a.btn').removeAttr('disabled')
