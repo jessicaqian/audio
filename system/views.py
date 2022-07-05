@@ -153,7 +153,7 @@ def system_config(request):
 
                 datadict = {'MSG_TYPE':'SETRECORDFORMAT','MOD':'1'}
             else:
-                datadict = {'MSG_TYPE': 'SETRECORDFORMAT', 'MOD': '1'}
+                datadict = {'MSG_TYPE': 'SETRECORDFORMAT', 'MOD': '0'}
             data = json.dumps(datadict)
             rest = send_data(data)
             if rest == False:
@@ -167,17 +167,35 @@ def system_config(request):
 
             if audiomode == '全时段录音':
                 audiotime = form.cleaned_data['audiotime']
+                timeint = int(audiotime)*60
+                timestr = str(timeint)
 
 
+                datadict = {'MSG_TYPE': 'SETRECORDMODE', 'MOD': '1'}
+                data = json.dumps(datadict)
+                rest = send_data(data)
+                if rest == False:
+                    return render(request, 'system/sysconfig.html',
+                                  {'form': form, 'name': u_name, 'permiss': u_permiss, 'res': 'failed'})
 
-
-
+                datadict = {'MSG_TYPE': 'SETRECORDPERIOD', 'PERIOD': timestr}
+                data = json.dumps(datadict)
+                rest = send_data(data)
+                if rest == False:
+                    return render(request, 'system/sysconfig.html',
+                                  {'form': form, 'name': u_name, 'permiss': u_permiss, 'res': 'failed'})
 
 
                 config.set("configinfo", "audiotime", audiotime)
                 with open(file=file_path, mode="a", encoding="utf-8") as f:
                     f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
             else:
+                datadict = {'MSG_TYPE': 'SETRECORDMODE', 'MOD': '0'}
+                data = json.dumps(datadict)
+                rest = send_data(data)
+                if rest == False:
+                    return render(request, 'system/sysconfig.html',
+                                  {'form': form, 'name': u_name, 'permiss': u_permiss, 'res': 'failed'})
                 with open(file=file_path, mode="a", encoding="utf-8") as f:
                     f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode};\n')
             i = 0
@@ -646,7 +664,7 @@ def send_data(data):
         print(res)
     except Exception as e:
         print(e)
-        return True
+        return False
     if res['ret_msg']=='OK':
         return True
     else:

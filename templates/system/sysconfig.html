@@ -169,10 +169,14 @@
         }
     }else {
         if('{{ res }}'=='failed'){
+            $('#tips').html('设置失败')
+            $('#myalter').attr('class','alert alert-danger')
             $('#myalter').attr('style','display:block')
         }else {
             $('#tips').html('保存成功')
+            $('#myalter').attr('class','alert alert-success')
             $('#myalter').attr('style','display:block')
+
         }
     }
 
