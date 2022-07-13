@@ -180,6 +180,7 @@
 
     function start(str) {
         $('#record'+str).attr('disabled','disabled')
+        $('#record'+str +'>span').attr('class','glyphicon glyphicon-record')
         $('#stop'+str).removeAttr('disabled')
         $('#channel'+str).attr('class','row channel_in')
 
@@ -187,6 +188,7 @@
 
     function stop(str) {
         $('#stop'+str).attr('disabled','disabled')
+        $('#stop'+str +'>span').attr('class','glyphicon glyphicon-stop')
         $('#record'+str).removeAttr('disabled')
         $('#channel'+str).attr('class','row channel_in_off')
     }
@@ -206,29 +208,16 @@
     }
     setInterval(getdiskStatus,3000)
 
-    $('#editmode').click(function () {
-         var data = {"cmdCheck": 0x02, "Seq": 0x15,
-        "audioPara": {"audioFunc": 3, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 0, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
-                      "isStereoSaveFlag": 0}}
-        var jsonstr = JSON.stringify(data);
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-
-
-        }).fail(function () {
-
-        })
-    })
 
     $('#record1').click(function () {
         wait('1','record')
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "1",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
+            if(info.msg=='success'){
                 $.post('recordStatus',{'no':'1','act':'on'}).done(function () {
                     start('1')
 
@@ -271,11 +260,11 @@
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "1",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
+            if(info.msg=='success'){
                 $.post('recordStatus',{'no':'1','act':'off'}).done(function () {
                     stop('1')
 
@@ -318,11 +307,11 @@
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 1,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "2",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
+            if(info.msg=='success'){
                 $.post('recordStatus',{'no':'2','act':'on'}).done(function () {
                     start('2')
 
@@ -364,11 +353,11 @@
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 1,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "2",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
+            if(info.msg=='success'){
                 $.post('recordStatus',{'no':'2','act':'off'}).done(function () {
                     stop('2')
 
@@ -410,11 +399,11 @@
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
+            if(info.msg=='success'){
                  $.post('recordStatus',{'no':'3','act':'on'}).done(function () {
                      start('3')
 
@@ -455,11 +444,11 @@
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
+            if(info.msg=='success'){
                 $.post('recordStatus',{'no':'3','act':'off'}).done(function () {
                     stop('3')
 
@@ -500,11 +489,11 @@
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 1,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "4",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-                if(info.mes=='success'){
+                if(info.msg=='success'){
                      $.post('recordStatus',{'no':'4','act':'on'}).done(function () {
                         start('4')
                     }).fail(function () {
@@ -544,11 +533,11 @@
 
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 1,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "4",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.mes=='success'){
+            if(info.msg=='success'){
                 $.post('recordStatus',{'no':'4','act':'off'}).done(function () {
                     stop('4')
 

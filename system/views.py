@@ -10,13 +10,35 @@ from . import udp
 
 
 # Create your views here.
-# data = {"cmdCheck": 0x02, "Seq": 0x15,
-#         "audioPara": {"audioFunc": 0, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
-#                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
-#                       "isStereoSaveFlag": 0}}
-# udp.senddata(data)
-# res = udp.getdata(data)
-# print(res["audioAckValue"]["funcResult"])
+data = {"cmdCheck": 0x02, "Seq": 0x15,
+        "audioPara": {"audioFunc": 5, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
+                      "isStereoSaveFlag": 0}}
+try:
+    udp.senddata(data)
+    res = udp.getdata()
+    print(res)
+
+except:
+    pass
+
+
+
+
+data = {"cmdCheck": 0x02, "Seq": 0x15,
+        "audioPara": {"audioFunc": 0, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
+                      "isStereoSaveFlag": 0}}
+try:
+    udp.senddata(data)
+    res = udp.getdata()
+    print(res)
+
+except:
+    pass
+
+
+
 time.time()
 now = datetime.datetime.now()
 timestr = now.strftime("%Y-%m-%d")
@@ -260,14 +282,6 @@ def usr_config(request):
         usrinfo = config.items('usrinfo')
         print(usrinfo)
 
-        # conn = sqlite3.connect('db.sqlite3')
-        # cursor = conn.cursor()
-        # sql = " SELECT usrname,usrpermiss FROM usradmin"
-        # cursor.execute(sql)
-        # form = cursor.fetchall()
-        # conn.close()
-        # print(form)
-
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         if permiss == '管理员':
@@ -303,21 +317,8 @@ def new_usr(request):
                     f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
                 return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
 
-
-
-            # conn = sqlite3.connect('db.sqlite3')
-            # cursor = conn.cursor()
-            # sql = "INSERT INTO usradmin(usrname,psword,usrpermiss) VALUES('"+name+ "','"+pw.hexdigest()+ "','"+perssions+"') "
-            # cursor.execute(sql)
-            # conn.commit()
-            # conn.close()
-
-
             except:
                 return render(request, 'system/error.html', {'name': u_name, 'permiss': u_permiss,'ecode':1})
-
-
-
 
     else:
         name = request.GET.get('name', default='10000000')
@@ -578,10 +579,6 @@ def search_mid(request):
                                 F_lists.append(Flist)
                                 f_lists[end_date + '/' + channel_no] = F_lists
                         lists.append(end_date + '/' + channel_no)
-
-
-
-
 
         return render(request, 'system/searchmid.html',
                       {'name':name,'permiss':permiss,'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date,'chanlist':chan_list})

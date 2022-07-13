@@ -91,7 +91,19 @@
 
     })
 
+    $('#editmode').click(function () {
+         var data = {"cmdCheck": 0x02, "Seq": 0x15,
+        "audioPara": {"audioFunc": 3, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 0, "nCapNo": 0,
+                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
+                      "isStereoSaveFlag": 0}}
+        var jsonstr = JSON.stringify(data);
+        $.post('sendData',{"mes":jsonstr}).done(function (info) {
 
+
+        }).fail(function () {
+
+        })
+    })
 </script>
 {% endblock %}
 
