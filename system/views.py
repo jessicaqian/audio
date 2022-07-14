@@ -22,7 +22,7 @@ print(file_path)
 f_lists={}
 config = configparser.ConfigParser()
 
-r_status = ['off','off','off','off']
+r_status = ['off']*64
 
 def sudoCMD(command,password):
     str = os.system('echo %s | sudo -S %s' % (password,command))
@@ -42,7 +42,7 @@ def login_required(func):  # 自定义登录验证装饰器
 
                 T_logout = int(config.get(name,'T_current')) #名字正确继续执行
                 interval = int(T_Now - T_logout)
-                if interval>30:
+                if interval>1000:
                     config.set(name,'is_login','false')
                 else:
                     config.set(name, 'T_current',str(T_Now))
@@ -57,33 +57,6 @@ def login_required(func):  # 自定义登录验证装饰器
 
             return HttpResponseRedirect("/")
     return warpper
-
-def mkdir():
-    threading.Timer(43200,mkdir).start()
-    current_time = time.strftime("%Y-%m-%d", time.localtime())
-    now_time = datetime.datetime.now()
-    lastday_time = (now_time + datetime.timedelta(days=+1)).strftime("%Y-%m-%d")
-    path = 'static/record/'+current_time
-    if not os.path.exists(path):
-        os.mkdir(path)
-        os.mkdir(path+'/1')
-        os.mkdir(path+'/2')
-        os.mkdir(path+'/3')
-        os.mkdir(path+'/4')
-    else:
-        pass
-    path1 = 'static/record/'+lastday_time
-    if not os.path.exists(path1):
-        os.mkdir(path1)
-        os.mkdir(path1+'/1')
-        os.mkdir(path1+'/2')
-        os.mkdir(path1+'/3')
-        os.mkdir(path1+'/4')
-    else:
-        pass
-    print(lastday_time)
-
-mkdir()
 
 @login_required
 def main(request):
@@ -107,7 +80,7 @@ def main(request):
         with open(file=file_path, mode="a", encoding="utf-8") as f:
             f.write(f'{time} {name}登录\n')
         print(r_status)
-        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel})
+        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel,'r_status':r_status})
 
 def btn_action(request):
     data = request.POST['mes']
@@ -129,8 +102,12 @@ def record_status(request):
     if request.method == 'POST':
         no = int(request.POST['no'])-1
         act = request.POST['act']
-        r_status[no] = act
-        print(r_status)
+        if no ==99:
+            for i in range(64):
+                r_status[i] = act
+        else:
+            r_status[no] = act
+
 
     else:
         pass
@@ -303,15 +280,6 @@ def usr_config(request):
         config.read("web.ini",encoding='utf-8')
         usrinfo = config.items('usrinfo')
 
-
-        # conn = sqlite3.connect('db.sqlite3')
-        # cursor = conn.cursor()
-        # sql = " SELECT usrname,usrpermiss FROM usradmin"
-        # cursor.execute(sql)
-        # form = cursor.fetchall()
-        # conn.close()
-        # print(form)
-
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         if permiss == '管理员':
@@ -346,16 +314,6 @@ def new_usr(request):
                 with open(file=file_path, mode="a", encoding="utf-8") as f:
                     f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
                 return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
-
-
-
-            # conn = sqlite3.connect('db.sqlite3')
-            # cursor = conn.cursor()
-            # sql = "INSERT INTO usradmin(usrname,psword,usrpermiss) VALUES('"+name+ "','"+pw.hexdigest()+ "','"+perssions+"') "
-            # cursor.execute(sql)
-            # conn.commit()
-            # conn.close()
-
 
             except:
                 return render(request, 'system/error.html', {'name': u_name, 'permiss': u_permiss,'ecode':1})
@@ -417,7 +375,7 @@ def search_mid(request):
     config.read("web.ini",encoding='utf-8')
     chan_list=[]
     num =1
-    while num<5:
+    while num<65:
         channel = config.get("configinfo", "channel"+str(num))
         chan_list.append(channel)
         num = num+1
@@ -448,9 +406,9 @@ def search_mid(request):
 
                 i = 1
 
-                while i < 5:
-                    path = 'static/record/' + start_date + '/' + str(i)
-                    if not os.listdir(path):
+                while i < 65:
+                    path = 'static/record/' + start_date + '/ch' + str(i)
+                    if not os.path.exists(path):
                         pass
 
                     else:
@@ -459,27 +417,24 @@ def search_mid(request):
                         Flists = os.listdir(path)
                         for Flist in Flists:
                             Flist1 = re.sub('.mp3','',Flist)
-                            Flist2 = re.sub('-', '', Flist1)
-                            Flist_str = list(Flist2)
-                            j = 0
-                            while j<10:
-                                Flist_str.pop(0)
-                                j = j + 1
-                            Flist3 = ''.join(Flist_str)
+                            Flist0 = re.sub('.wma', '', Flist1)
+                            Flist2 = re.sub('-', '', Flist0)
+
+
 
                             if start_date == end_date:
-                                if (int(start_time)-int(Flist3))<=0 and (int(end_time)-int(Flist3))>=0:
+                                if (int(start_time)-int(Flist2))<=0 and (int(end_time)-int(Flist2))>=0:
                                     F_lists.append(Flist)
-                                    f_lists[start_date + '/' + str(i)] = F_lists
+                                    f_lists[start_date + '/ch' + str(i)] = F_lists
                                     mark = True
                             else:
 
-                                if (int(start_time)-int(Flist3))<=0:
+                                if (int(start_time)-int(Flist2))<=0:
                                     F_lists.append(Flist)
-                                    f_lists[start_date + '/' + str(i)] = F_lists
+                                    f_lists[start_date + '/ch' + str(i)] = F_lists
                                     mark = True
                         if mark == True:
-                            lists.append(start_date + '/' + str(i))
+                            lists.append(start_date + '/ch' + str(i))
 
                     i = i + 1
 
@@ -488,8 +443,8 @@ def search_mid(request):
             if not os.path.exists(path0):
                 pass
             else:
-                path = 'static/record/' + start_date + '/' + channel_no
-                if not os.listdir(path):
+                path = 'static/record/' + start_date + '/ch' + channel_no
+                if not os.path.exists(path):
                     pass
 
 
@@ -499,18 +454,14 @@ def search_mid(request):
                     Flists = os.listdir(path)
                     for Flist in Flists:
                         Flist1 = re.sub('.mp3', '', Flist)
-                        Flist2 = re.sub('-', '', Flist1)
-                        Flist_str = list(Flist2)
-                        j = 0
-                        while j < 10:
-                            Flist_str.pop(0)
-                            j = j + 1
-                        Flist3 = ''.join(Flist_str)
+                        Flist0 = re.sub('.wma', '', Flist1)
+                        Flist2 = re.sub('-', '', Flist0)
 
-                        if (int(start_time) - int(Flist3)) <= 0:
+
+                        if (int(start_time) - int(Flist2)) <= 0:
                             F_lists.append(Flist)
-                            f_lists[start_date + '/' + channel_no] = F_lists
-                    lists.append(start_date + '/' + channel_no)
+                            f_lists[start_date + '/ch' + channel_no] = F_lists
+                    lists.append(start_date + '/ch' + channel_no)
 
 
 #处理既不是start_date也不是end_date的中间日期
@@ -529,14 +480,14 @@ def search_mid(request):
                     else:
                         i = 1
 
-                        while i < 5:
-                            path = 'static/record/' + startdate + '/' + str(i)
-                            if not os.listdir(path):
+                        while i < 65:
+                            path = 'static/record/' + startdate + '/ch' + str(i)
+                            if not os.path.exists(path):
                                 pass
 
 
                             else:
-                                lists.append(startdate + '/' + str(i))
+                                lists.append(startdate + '/ch' + str(i))
 
                             i = i + 1
 
@@ -546,12 +497,12 @@ def search_mid(request):
                     if not os.path.exists(path0):
                         pass
                     else:
-                        path = 'static/record/' + startdate + '/' + channel_no
-                        if not os.listdir(path):
+                        path = 'static/record/' + startdate + '/ch' + channel_no
+                        if not os.path.exists(path):
                             pass
 
                         else:
-                            lists.append(startdate + '/' + channel_no)
+                            lists.append(startdate + '/ch' + channel_no)
 
 #处理end_data
         datestart = datetime.datetime.strptime(start_date, '%Y-%m-%d')
@@ -566,9 +517,9 @@ def search_mid(request):
 
                     i = 1
 
-                    while i < 5:
-                        path = 'static/record/' + end_date + '/' + str(i)
-                        if not os.listdir(path):
+                    while i < 65:
+                        path = 'static/record/' + end_date + '/ch' + str(i)
+                        if not os.path.exists(path):
                             pass
 
                         else:
@@ -577,20 +528,15 @@ def search_mid(request):
                             Flists = os.listdir(path)
                             for Flist in Flists:
                                 Flist1 = re.sub('.mp3', '', Flist)
-                                Flist2 = re.sub('-', '', Flist1)
-                                Flist_str = list(Flist2)
-                                j = 0
-                                while j < 10:
-                                    Flist_str.pop(0)
-                                    j = j + 1
-                                Flist3 = ''.join(Flist_str)
+                                Flist0 = re.sub('.wma', '', Flist1)
+                                Flist2 = re.sub('-', '', Flist0)
 
-                                if (int(end_time) - int(Flist3)) >= 0:
+                                if (int(end_time) - int(Flist2)) >= 0:
                                     F_lists.append(Flist)
-                                    f_lists[end_date + '/' + str(i)] = F_lists
+                                    f_lists[end_date + '/ch' + str(i)] = F_lists
                                     mark = True
                             if mark == True:
-                                lists.append(end_date + '/' + str(i))
+                                lists.append(end_date + '/ch' + str(i))
 
                         i = i + 1
 
@@ -599,8 +545,8 @@ def search_mid(request):
                 if not os.path.exists(path0):
                     pass
                 else:
-                    path = 'static/record/' + end_date + '/' + channel_no
-                    if not os.listdir(path):
+                    path = 'static/record/' + end_date + '/ch' + channel_no
+                    if not os.path.exists(path):
                         pass
 
 
@@ -610,18 +556,14 @@ def search_mid(request):
                         Flists = os.listdir(path)
                         for Flist in Flists:
                             Flist1 = re.sub('.mp3', '', Flist)
-                            Flist2 = re.sub('-', '', Flist1)
-                            Flist_str = list(Flist2)
-                            j = 0
-                            while j < 10:
-                                Flist_str.pop(0)
-                                j = j + 1
-                            Flist3 = ''.join(Flist_str)
+                            Flist0 = re.sub('.wma', '', Flist1)
+                            Flist2 = re.sub('-', '', Flist0)
 
-                            if (int(end_time) - int(Flist3)) >= 0:
+
+                            if (int(end_time) - int(Flist2)) >= 0:
                                 F_lists.append(Flist)
-                                f_lists[end_date + '/' + channel_no] = F_lists
-                        lists.append(end_date + '/' + channel_no)
+                                f_lists[end_date + '/ch' + channel_no] = F_lists
+                        lists.append(end_date + '/ch' + channel_no)
 
 
 
@@ -659,7 +601,7 @@ def audio_file(request):
 def send_data(data):
 
     try:
-        r = requests.post("http://10.25.15.13:8090", data=data)
+        r = requests.post("http://10.25.16.200:8090", data=data)
         res = r.json()
         print(res)
     except Exception as e:
@@ -675,9 +617,9 @@ def send_data(data):
 
 
 def heartbeat(request):
-    res = udp.heartbeat()
-    if res==0:
-        return JsonResponse({'msg': 'failed'})
+    # res = udp.heartbeat()
+    # if res==0:
+    #     return JsonResponse({'msg': 'failed'})
 
     return JsonResponse({'msg': 'success'})
 

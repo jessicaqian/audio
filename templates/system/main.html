@@ -1,4 +1,4 @@
-{% extends "system/base.html" %}
+﻿{% extends "system/base.html" %}
 
 {% load static %}
 
@@ -1120,9 +1120,9 @@
     var no = 0
 
 {% for r_statu in r_status %}
-    if ('{{ r_statu }}' == 'start'){
+    if ('{{ r_statu }}' == 'on'){
         start('{{ forloop.counter }}')
-    }else if('{{ r_statu }}' == 'stop'){
+    }else if('{{ r_statu }}' == 'off'){
         stop('{{ forloop.counter }}')
 
     }
@@ -1175,7 +1175,12 @@
             $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
                 if(info.msg == 'success'){
-                    start(id)
+    	            $.post('recordStatus',{'no':id,'act':'on'}).done(function (info) {
+                        start(id)
+                    }).fail(function (info) {
+
+
+                	})
 
                 }else {
                     re_w(id,'record')
@@ -1213,8 +1218,13 @@
             $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
                 if(info.msg == 'success'){
+                   
+                $.post('recordStatus',{'no':'1','act':'off'}).done(function () {
                     stop(id)
 
+                }).fail(function () {
+
+                })
                 }else {
                     re_w(id,'stop')
                 }
@@ -1253,10 +1263,20 @@
         $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
             if(info.msg == 'success'){
-                $('a.btn').removeAttr('disabled')
-                $('a.btn').attr('class','btn btn-default stop')
-                $('a.btn>span').attr('class','glyphicon glyphicon-stop')
-                $('div.channel_in_off').attr('class','row channel_in')
+
+                $.post('recordStatus',{'no':'100','act':'on'}).done(function (info) {
+                    $('a.btn').removeAttr('disabled')
+                    $('a.btn').attr('class','btn btn-default stop')
+                    $('a.btn>span').attr('class','glyphicon glyphicon-stop')
+                    $('div.channel_in_off').attr('class','row channel_in')
+                }).fail(function (info) {
+
+
+                })
+
+
+
+
             }else {
                 $('a.btn').removeAttr('disabled')
                 $('a.btn').attr('class','btn btn-danger record')
@@ -1282,10 +1302,19 @@
         $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
             if(info.msg == 'success'){
-                $('a.btn').removeAttr('disabled')
-                $('a.btn').attr('class','btn btn-danger record')
-                $('a.btn>span').attr('class','glyphicon glyphicon-record')
-                $('div.channel_in').attr('class','row channel_in_off')
+
+                $.post('recordStatus',{'no':'100','act':'off'}).done(function () {
+                    $('a.btn').removeAttr('disabled')
+                    $('a.btn').attr('class','btn btn-danger record')
+                    $('a.btn>span').attr('class','glyphicon glyphicon-record')
+                    $('div.channel_in').attr('class','row channel_in_off')
+
+                }).fail(function () {
+
+                })
+
+
+
             }else {
                 $('a.btn').removeAttr('disabled')
                 $('a.btn').attr('class','btn btn-default stop')
