@@ -1,11 +1,11 @@
-import pytz
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from .forms import SysconfigForm,UsrForm,NetForm
-import os,hashlib,json,threading,re
+import os,hashlib,json,re
 import time,datetime,configparser,requests
-from . import udp
+import ctypes
+
 
 
 
@@ -92,9 +92,10 @@ def btn_action(request):
         return JsonResponse({'msg': 'failed'})
 
 def get_diskstatus(request):
-    st = os.statvfs('/home')
-    status = st.f_bavail * st.f_frsize/(1024*1024*1024) #这里单位可能差了1024
-    no = round(status,2)
+    free_bytes = ctypes.c_ulonglong(0)
+    ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p('C:/'), None, None, ctypes.pointer(free_bytes))
+    no = round(free_bytes.value / 1024 / 1024 / 1024,2)
+
 
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
@@ -417,7 +418,7 @@ def search_mid(request):
                         Flists = os.listdir(path)
                         for Flist in Flists:
                             Flist1 = re.sub('.mp3','',Flist)
-                            Flist0 = re.sub('.wma', '', Flist1)
+                            Flist0 = re.sub('.wav', '', Flist1)
                             Flist2 = re.sub('-', '', Flist0)
 
 
@@ -454,7 +455,7 @@ def search_mid(request):
                     Flists = os.listdir(path)
                     for Flist in Flists:
                         Flist1 = re.sub('.mp3', '', Flist)
-                        Flist0 = re.sub('.wma', '', Flist1)
+                        Flist0 = re.sub('.wav', '', Flist1)
                         Flist2 = re.sub('-', '', Flist0)
 
 
@@ -528,7 +529,7 @@ def search_mid(request):
                             Flists = os.listdir(path)
                             for Flist in Flists:
                                 Flist1 = re.sub('.mp3', '', Flist)
-                                Flist0 = re.sub('.wma', '', Flist1)
+                                Flist0 = re.sub('.wav', '', Flist1)
                                 Flist2 = re.sub('-', '', Flist0)
 
                                 if (int(end_time) - int(Flist2)) >= 0:
@@ -556,7 +557,7 @@ def search_mid(request):
                         Flists = os.listdir(path)
                         for Flist in Flists:
                             Flist1 = re.sub('.mp3', '', Flist)
-                            Flist0 = re.sub('.wma', '', Flist1)
+                            Flist0 = re.sub('.wav', '', Flist1)
                             Flist2 = re.sub('-', '', Flist0)
 
 

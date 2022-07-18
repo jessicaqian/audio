@@ -1,5 +1,7 @@
 div#system{
-    height: 100px;
+    height: 180px;
+    border-bottom: #a9a9a9 1px solid;
+    margin-bottom: 20px;
 
 }
 
