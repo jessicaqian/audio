@@ -3,7 +3,7 @@ from django import forms
 class SysconfigForm(forms.Form):
     CHOICES = (
         ("mp3", "MP3"),
-        ("wma", "WMA"),
+        ("wav", "WAV"),
     )
     CHOICES1 = (
         ("全时段录音", "全时段录音"),

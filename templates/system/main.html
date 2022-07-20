@@ -42,7 +42,7 @@
             </div>
             <div class="row1 row">
                 <div class="col-md-6">
-                    磁盘剩余可录制时间(单通道):<label class="disk-info"> 20h</label>
+                    磁盘剩余可录制时间(单通道):<label class="disk-info" id="record_time">.....h</label>
 
                 </div>
             </div>
@@ -158,9 +158,9 @@
     var no = 0
 
 {% for r_statu in r_status %}
-    if ('{{ r_statu }}' == 'start'){
+    if ('{{ r_statu }}' == 'on'){
         start('{{ forloop.counter }}')
-    }else if('{{ r_statu }}' == 'stop'){
+    }else if('{{ r_statu }}' == 'off'){
         stop('{{ forloop.counter }}')
 
     }
@@ -199,6 +199,7 @@
 
             }else{
                 $('label#space').html(info.no + 'G')
+                $('label#record_time').html(info.time + 'h')
                 no = info.no
             }
 
@@ -206,7 +207,8 @@
 
         })
     }
-    setInterval(getdiskStatus,3000)
+    getdiskStatus()
+    setInterval(getdiskStatus,10000)
 
 
     $('#record1').click(function () {

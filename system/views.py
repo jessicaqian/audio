@@ -1,62 +1,108 @@
-import pytz
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from .forms import SysconfigForm,UsrForm,NetForm
 import os,hashlib,json,threading,re
 import time,datetime,configparser
 from . import udp
-
-
+from ctypes import *
 
 # Create your views here.
-data = {"cmdCheck": 0x02, "Seq": 0x15,
-        "audioPara": {"audioFunc": 5, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
-                      "isStereoSaveFlag": 0}}
-try:
-    udp.senddata(data)
-    res = udp.getdata()
-    print(res)
 
-except:
-    pass
-
-
-
-
-data = {"cmdCheck": 0x02, "Seq": 0x15,
-        "audioPara": {"audioFunc": 0, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
-                      "isStereoSaveFlag": 0}}
-try:
-    udp.senddata(data)
-    res = udp.getdata()
-    print(res)
-
-except:
-    pass
-
-
+target = cdll.LoadLibrary("./pcmToWavqq.so")
 
 time.time()
 now = datetime.datetime.now()
 timestr = now.strftime("%Y-%m-%d")
-
 dir = os.getcwd() + '/logs'
 if not os.path.exists(dir):
     os.mkdir(dir)
 file_path = dir + '/'+timestr+'.txt'
-print(file_path)
 
 f_lists={}
+
 config = configparser.ConfigParser()
+config.read("web.ini")
+pw = config.get("systeminfo", "syspw")
+
 
 r_status = ['off','off','off','off']
+modedict={'mp3':1,'wav':0,'全时段录音':0,'自动录音':1}
+
+
+def init():
+    mpath = config.get("systeminfo", "mpath")
+    audiomode = config.get("configinfo", "audiomode")
+    audiotype = config.get("configinfo", "audiotype")
+    audiotime = config.get("configinfo", "audiotime")
+
+
+    data = {"cmdCheck": 0x02, "Seq": 0x15,
+            "audioPara": {"audioFunc": 3, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1, "nCapNo": 0,
+                          "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
+                          "isStereoSaveFlag": 0}}
+    try:
+        udp.senddata(data)
+        res = udp.getdata()
+        print(res)
+
+    except:
+        print('stop error')
+
+
+    data = {"cmdCheck": 0x02, "Seq": 0x15,
+            "audioPara": {"audioFunc": 0, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1, "nCapNo": 0,
+                          "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
+                          "isStereoSaveFlag": 0}}
+    try:
+        udp.senddata(data)
+        res = udp.getdata()
+        print(res)
+
+    except:
+        print('start error')
+
+    data = {"cmdCheck": 0x02, "Seq": 0x15,
+            "audioPara": {"audioFunc": 5, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1, "nCapNo": 0,
+                          "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": mpath,
+                          "isStereoSaveFlag": 0}}
+    try:
+        udp.senddata(data)
+        res = udp.getdata()
+        print(res)
+
+    except:
+        print('mount error')
+
 
 def sudoCMD(command,password):
     str = os.system('echo %s | sudo -S %s' % (password,command))
     print(str)
+
+def pcmtowav(input,output):
+
+    file1 = bytes(input, encoding='utf-8')
+    file2 = bytes(output, encoding='utf-8')
+
+    try:
+
+        no = target.swich(file1, file2)
+        print(no)
+        sudoCMD('rm -f '+ input,pw)
+        return 1
+    except:
+        return 0
+
+def checkpcm(ch_no):
+    current_time = time.strftime("%Y-%m-%d", time.localtime())
+    path = 'static/record/' + current_time + '/' + ch_no + '/'
+    lists = os.listdir(path)
+    sudoCMD('chmod 777 -R ' + path, pw)
+    for list in lists:
+        if ('pcm' in list):
+            list0 = re.sub('.pcm', '', list) + '.wav'
+            pcmtowav(path+list,path+list0)
+
 
 def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
@@ -111,8 +157,9 @@ def mkdir():
         os.mkdir(path1+'/4')
     else:
         pass
-    print(lastday_time)
 
+#######################################start here######################################################################
+init()
 mkdir()
 
 @login_required
@@ -122,7 +169,7 @@ def main(request):
         pass
 
     else:
-        config.read("web.ini")
+        # config.read("web.ini")
         audiomode = config.get("configinfo", "audiomode")
         channel1 =  config.get("configinfo", "channel1")
         channel2 =  config.get("configinfo", "channel2")
@@ -134,22 +181,25 @@ def main(request):
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         with open(file=file_path, mode="a", encoding="utf-8") as f:
             f.write(f'{time} {name}登录\n')
-        print(r_status)
+
         return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4,'audiomode':audiomode,'r_status':r_status})
 
 def get_diskstatus(request):
     st = os.statvfs('/home')
-    status = st.f_bavail * st.f_frsize/(1024*1024*1024) #这里单位可能差了1024
+    status = st.f_bavail * st.f_frsize/(1024*1024*1024)
     no = round(status,2)
+    time = st.f_bavail * st.f_frsize/(60*60*16)
 
-    return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
+    return JsonResponse({'no': no, 'msg': 'success','time':time})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
 def record_status(request):
     if request.method == 'POST':
-        no = int(request.POST['no'])-1
+        strno = request.POST['no']
+        no = int(strno)-1
         act = request.POST['act']
         r_status[no] = act
-        print(r_status)
+        if act == 'off':
+            checkpcm(strno)
 
     else:
         pass
@@ -169,19 +219,51 @@ def system_config(request):
 
             audiotype = form.cleaned_data['audiotype']
             audiomode = form.cleaned_data['audiomode']
+            audiotime = form.cleaned_data['audiotime']
 
             raudiotype = config.get("configinfo", "audiotype")
             raudiomode = config.get("configinfo", "audiomode")
             raudiotime = config.get("configinfo", "audiotime")
 
-            if audiomode == '全时段录音':
-                audiotime = form.cleaned_data['audiotime']
-                config.set("configinfo", "audiotime", audiotime)
-                with open(file=file_path, mode="a", encoding="utf-8") as f:
-                    f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
+            if audiotype == raudiotype and audiomode== raudiomode and audiotime == raudiotime:
+                pass
             else:
-                with open(file=file_path, mode="a", encoding="utf-8") as f:
-                    f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode};\n')
+
+                data = {"cmdCheck": 0x02, "Seq": 0x15,
+                        "audioPara": {"audioFunc": 3, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1,
+                                      "nCapNo": 0,
+                                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10,
+                                      "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
+                                      "isStereoSaveFlag": 0}}
+                try:
+                    udp.senddata(data)
+                    res = udp.getdata()
+                    print(res)
+
+                except:
+                    print('systemconfig stop error')
+
+                data = {"cmdCheck": 0x02, "Seq": 0x15,
+                        "audioPara": {"audioFunc": 0, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1,
+                                      "nCapNo": 0,
+                                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10,
+                                      "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
+                                      "isStereoSaveFlag": 0}}
+
+
+                try:
+                    udp.senddata(data)
+                    res = udp.getdata()
+                    print(res)
+                    config.set("configinfo", "audiotype", audiotype)
+                    config.set("configinfo", "audiomode", audiomode)
+                    config.set("configinfo", "audiotime", audiotime)
+                    with open(file=file_path, mode="a", encoding="utf-8") as f:
+                        f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：'
+                                f'{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
+                except:
+                    print('systemconfig restart error')
+
             wchannel1 = form.cleaned_data['channel1']
             wchannel2 = form.cleaned_data['channel2']
             wchannel3 = form.cleaned_data['channel3']
@@ -191,18 +273,16 @@ def system_config(request):
             rchannel3 = config.get("configinfo", "channel3")
             rchannel4 = config.get("configinfo", "channel4")
 
-
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {u_name}用户 将通道一:{rchannel1}修改为通道一:{wchannel1}; 通道二:{rchannel2}修改为通道二:{wchannel2}; 通道三:{rchannel3}修改为通道三:{wchannel3}; 通道四:{rchannel4}修改为{wchannel4}\n')
-            config.set("configinfo","audiotype",audiotype)
-            config.set("configinfo", "audiomode", audiomode)
-
             config.set("configinfo", "channel1", wchannel1)
             config.set("configinfo", "channel2", wchannel2)
             config.set("configinfo", "channel3", wchannel3)
             config.set("configinfo", "channel4", wchannel4)
             config.write(open("web.ini","w"))
-            print(form)
+
+
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{time} {u_name}用户 将通道一:{rchannel1}修改为通道一:{wchannel1}; 通道二:{rchannel2}修改为通道二:{wchannel2}; 通道三:{rchannel3}修改为通道三:{wchannel3}; 通道四:{rchannel4}修改为{wchannel4}\n')
+
             return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss})
         else:
 
@@ -280,7 +360,7 @@ def usr_config(request):
     else:
         config.read("web.ini")
         usrinfo = config.items('usrinfo')
-        print(usrinfo)
+        # print(usrinfo)
 
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
@@ -378,7 +458,7 @@ def search_mid(request):
         channel = config.get("configinfo", "channel"+str(num))
         chan_list.append(channel)
         num = num+1
-    print(chan_list)
+    # print(chan_list)
 
     if request.method == 'POST':
         lists = []
@@ -416,7 +496,8 @@ def search_mid(request):
                         Flists = os.listdir(path)
                         for Flist in Flists:
                             Flist1 = re.sub('.mp3','',Flist)
-                            Flist2 = re.sub('-', '', Flist1)
+                            Flist0 = re.sub('.wav','',Flist1)
+                            Flist2 = re.sub('-', '', Flist0)
                             Flist_str = list(Flist2)
                             j = 0
                             while j<10:
@@ -456,7 +537,8 @@ def search_mid(request):
                     Flists = os.listdir(path)
                     for Flist in Flists:
                         Flist1 = re.sub('.mp3', '', Flist)
-                        Flist2 = re.sub('-', '', Flist1)
+                        Flist0 = re.sub('.wav', '', Flist1)
+                        Flist2 = re.sub('-', '', Flist0)
                         Flist_str = list(Flist2)
                         j = 0
                         while j < 10:
@@ -534,7 +616,8 @@ def search_mid(request):
                             Flists = os.listdir(path)
                             for Flist in Flists:
                                 Flist1 = re.sub('.mp3', '', Flist)
-                                Flist2 = re.sub('-', '', Flist1)
+                                Flist0 = re.sub('.wav', '', Flist1)
+                                Flist2 = re.sub('-', '', Flist0)
                                 Flist_str = list(Flist2)
                                 j = 0
                                 while j < 10:
@@ -567,7 +650,8 @@ def search_mid(request):
                         Flists = os.listdir(path)
                         for Flist in Flists:
                             Flist1 = re.sub('.mp3', '', Flist)
-                            Flist2 = re.sub('-', '', Flist1)
+                            Flist0 = re.sub('.wav','',Flist1)
+                            Flist2 = re.sub('-', '', Flist0)
                             Flist_str = list(Flist2)
                             j = 0
                             while j < 10:
@@ -586,6 +670,11 @@ def search_mid(request):
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
+
+        pw = config.get("systeminfo", "syspw")
+        path = 'static/record'
+        sudoCMD('chmod 777 -R ' + path, pw)
+
         return render(request, 'system/searchmid.html',{'name':name,'permiss':permiss,'chanlist':chan_list})
 
 @login_required
@@ -600,7 +689,7 @@ def audio_file(request):
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         try:
-            print(f_lists[dir])
+            # print(f_lists[dir])
             path = 'static/record/' + dir
             lists = f_lists[dir]
         except:
@@ -611,7 +700,7 @@ def audio_file(request):
 
 def send_data(request):
     data =json.loads(request.POST['mes'])
-    print(data)
+    # print(data)
 
     udp.senddata(data)
     res = udp.getdata()

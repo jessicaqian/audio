@@ -1,9 +1,17 @@
 import socket
 import json
+import configparser
+
+
+config = configparser.ConfigParser()
+config.read("web.ini")
+ip = config.get("systeminfo", "inIP")
+
 def senddata(data):
     udp_send = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     jsondata = json.dumps(data)
-    udp_send.sendto(jsondata.encode('gbk'),("10.25.15.179",8666))
+
+    udp_send.sendto(jsondata.encode('gbk'),(ip,8666))
     udp_send.close()
 
 def getdata():
@@ -28,7 +36,7 @@ def getdata():
         # print(recv_data[0].decode('gbk'))
         jsondata = recv_data[0].decode('gbk')
         data = json.loads(jsondata)
-        print(data)
+
         if data:
             return data
         else:
@@ -40,7 +48,7 @@ def heartbeat():
     udp_send = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     data = {"msg_type":"AudioPing","seq":1}
     jsondata = json.dumps(data)
-    udp_send.sendto(jsondata.encode('gbk'),("10.25.15.179",8707))
+    udp_send.sendto(jsondata.encode('gbk'),(ip,8707))
     udp_send.close()
 
     udp_get = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
