@@ -10,6 +10,16 @@ div#title{
 
 }
 
+a#logout{
+    text-align: right;
+    font-size: 16px;
+    float: right;
+    margin-right: 10px;
+    margin-top: 10px;
+
+
+}
+
 li.nav_bar{
     border-left:solid 5px #337ab7;
     margin-bottom: 10px;

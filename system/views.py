@@ -10,6 +10,9 @@ from ctypes import *
 # Create your views here.
 
 target = cdll.LoadLibrary("./pcmToWavqq.so")
+s_show = cdll.LoadLibrary("./usbtty_neokylin.so")
+
+s_show.main()
 
 time.time()
 now = datetime.datetime.now()
@@ -188,7 +191,8 @@ def get_diskstatus(request):
     st = os.statvfs('/home')
     status = st.f_bavail * st.f_frsize/(1024*1024*1024)
     no = round(status,2)
-    time = st.f_bavail * st.f_frsize/(60*60*16)
+    time = round(st.f_bavail * st.f_frsize/(60*60*16),2)
+
 
     return JsonResponse({'no': no, 'msg': 'success','time':time})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
@@ -324,33 +328,43 @@ def net_config(request):
             sudoCMD('chmod 777 '+ path,pw)
             sudoCMD('touch ' + path+'cp', pw)
             sudoCMD('chmod 777 ' + path+'cp', pw)
-            with open(path+'cp', mode='w', encoding='utf-8') as fw, open(path, mode='r', encoding='utf-8') as fr:
-                for line in fr:
-                    if 'BOOTPROTO' in line:
-                        line = 'BOOTPROTO=static\n'
-                    elif 'ONBOOT' in line:
-                        line = 'ONBOOT=yes\n'
-                    elif 'GATEWAY' in line:
-                        line = 'GATEWAY='+gateway+'\n'
-                    elif 'IPADDR' in line:
-                        line = 'IPADDR='+ip+'\n'
-                    elif 'NETMASK' in line:
-                        line = 'NETMASK='+mask+'\n'
-                    fw.write(line)
-            fr.close()
-            fw.close()
-            with open(path+'cp', mode='r', encoding='utf-8') as fr1, open(path, mode='w', encoding='utf-8') as fw1:
-                for line in fr1:
-                    fw1.write(line)
-            fr1.close()
-            fw1.close()
-            sudoCMD('reboot', pw)
-        return render(request, 'system/netconfig.html')
+            try:
+                with open(path+'cp', mode='w', encoding='utf-8') as fw, open(path, mode='r', encoding='utf-8') as fr:
+                    for line in fr:
+                        if 'BOOTPROTO' in line:
+                            line = 'BOOTPROTO=static\n'
+                        elif 'ONBOOT' in line:
+                            line = 'ONBOOT=yes\n'
+                        elif 'GATEWAY' in line:
+                            line = 'GATEWAY='+gateway+'\n'
+                        elif 'IPADDR' in line:
+                            line = 'IPADDR='+ip+'\n'
+                        elif 'NETMASK' in line:
+                            line = 'NETMASK='+mask+'\n'
+                        fw.write(line)
+                fr.close()
+                fw.close()
+                with open(path+'cp', mode='r', encoding='utf-8') as fr1, open(path, mode='w', encoding='utf-8') as fw1:
+                    for line in fr1:
+                        fw1.write(line)
+                fr1.close()
+                fw1.close()
+                config.set("systeminfo", "ip", ip)
+                config.set("systeminfo", "mask", mask)
+                config.set("systeminfo", "gateway", gateway)
+                sudoCMD('reboot', pw)
+                return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss})
+            except:
+
+                return render(request, 'system/netconfig.html',{'name':name,'permiss': permiss,'ip':ip,'mask':mask,'gateway':gateway})
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         form = NetForm()
-        return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form})
+        ip = config.get("systeminfo", "ip")
+        mask = config.get("systeminfo", "mask")
+        gateway = config.get("systeminfo", "gateway")
+        return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form,'ip':ip,'mask':mask,'gateway':gateway})
 
 @login_required
 def usr_config(request):
@@ -767,9 +781,8 @@ def free_count(request):
         st = request.GET.get('start')
         et = request.GET.get('end')
         if st is not None and et is not None:
-            name = request.POST.get('usrname_n', default='10000000')
-            permiss = request.POST.get('usr_perssions_n', default='10000000')
-            page_num = request.POST.get('page', 1)
+
+            page_num = request.GET.get('page', 1)
             listdivd =[]
             listdir =os.listdir(dir)
             for i in listdir:
@@ -788,7 +801,11 @@ def free_count(request):
             except EmptyPage:
                 book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页`码列表中时,显示最后一页的内容
 
-        return render(request,'system/free.html',locals(),{'name':name,'permiss':permiss})
+            return render(request,'system/free.html',{'name':name,'permiss':permiss,'start':st,'end':et,'mark':'reload','page_num':page_num,'locals':locals()})
+        else:
+            return render(request, 'system/free.html',{'name': name, 'permiss': permiss})
+
+
 
 
 
