@@ -349,9 +349,13 @@ def net_config(request):
                         fw1.write(line)
                 fr1.close()
                 fw1.close()
-                config.set("systeminfo", "ip", ip)
-                config.set("systeminfo", "mask", mask)
-                config.set("systeminfo", "gateway", gateway)
+                try:
+                    config.set("systeminfo", "ip", ip)
+                    config.set("systeminfo", "mask", mask)
+                    config.set("systeminfo", "gateway", gateway)
+                    config.write(open("web.ini", "w"))
+                except:
+                    pass
                 sudoCMD('reboot', pw)
                 return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss})
             except:
