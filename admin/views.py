@@ -33,7 +33,7 @@ def login(request):
             # cursor.execute(sql)
             # val = cursor.fetchone()
             # usrpermiss = val[0]
-            print(usrpermiss)
+            #print(usrpermiss)
             return HttpResponseRedirect('/system/main.html?name='+usrname+'&permiss='+usrpermiss)
         else:
             return render(request, 'admin/login.html', {'form': form})
