@@ -9,13 +9,21 @@
 {% endblock %}
 
 {% block content %}
+    <div class="alert alert-success " role="alert" id="myalter1" style="display: none">
+        <button type="button" class="close" id="close1" >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <strong id="tips" >设置成功</strong>
+    </div>
+
+
     <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
 
 
     <div class="row tips">
         <label>音频配置</label>
     </div>
-    <form method="post">
+    <form method="post" id="form">
          <div class="row1 row" id="selebox">
                 {{ form.audiotype.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotype}}
         </div>
@@ -42,8 +50,16 @@
         <div class="hidden">{{ form.usr_perssions_n}}</div>
         <div class="row">
             <div class="col-md-2 col-md-offset-8">
-                <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
+                <a id="save" class="btn btn-primary" onclick="check()" >保&nbsp&nbsp存</a>
             </div>
+        </div>
+        <div class="alert alert-warning fade in" role="alert" id="myalter" style="display: none">
+            <button type="button" class="close" id="close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <strong id="tips1" >修改这些配置将会自动停止录音</strong>，请在修改成功后重新手动开启录音，仍然继续么？
+            <input class="btn btn-warning" type="submit" id="continue" value="继续">
+            <button class="btn btn-default" type="button" id="cancle">取消</button>
         </div>
     </form>
 
@@ -87,6 +103,7 @@
             $('div#audioTime').removeAttr('style')
 
 
+
         }
 
     })
@@ -104,6 +121,49 @@
 
         })
     })
+
+    $('button#close1').click(function () {
+       $('#myalter1').attr('style','display:none')
+    });
+
+    $('button#close').click(function () {
+       $('#myalter').attr('style','display:none')
+    });
+
+    $('button#cancle ').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
+
+    function check() {
+         var audiomode = $('select#id_audiomode').val()
+         var audiotype = $('select#id_audiotype').val()
+         var audiotime = $('input#id_audiotime').val()
+
+        if((audiomode=='{{audiomode}}')&&audiotype=='{{audiotype}}'&&audiotime=='{{audiotime}}'){
+            $('#form').submit()
+
+
+        }else{
+            $('#myalter').attr('style','display:block')
+
+        }
+
+
+    }
+
+    if('{{ res }}'=='failed'){
+        $('select#id_audiomode').val('{{audiomode}}')
+        $('select#id_audiotype').val('{{audiotype}}')
+        $('select#id_audiotime').val('{{audiotime}}')
+        $('#tips').html('设置失败')
+        $('#myalter1').attr('class','alert alert-danger')
+        $('#myalter1').attr('style','display:block')
+    }else if('{{ res }}'=='success'){
+        $('#tips').html('设置成功')
+        $('#myalter1').attr('class','alert alert-success')
+        $('#myalter1').attr('style','display:block')
+
+    }
 </script>
 {% endblock %}
 

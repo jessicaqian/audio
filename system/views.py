@@ -243,10 +243,11 @@ def system_config(request):
                     udp.senddata(data)
                     res = udp.getdata()
                     print(res)
-
+                    if res == 0:
+                        return render(request, 'system/sysconfig.html',{'form': form, 'name': u_name, 'permiss': u_permiss, 'audiotype': raudiotype,'audiomode': raudiomode, 'audiotime': raudiotime,'res':'failed'})
                 except:
                     print('systemconfig stop error')
-
+                    return render(request, 'system/sysconfig.html',{'form': form, 'name': u_name, 'permiss': u_permiss, 'audiotype': raudiotype,'audiomode': raudiomode, 'audiotime': raudiotime, 'res': 'failed'})
                 data = {"cmdCheck": 0x02, "Seq": 0x15,
                         "audioPara": {"audioFunc": 0, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1,
                                       "nCapNo": 0,
@@ -259,14 +260,18 @@ def system_config(request):
                     udp.senddata(data)
                     res = udp.getdata()
                     print(res)
-                    config.set("configinfo", "audiotype", audiotype)
-                    config.set("configinfo", "audiomode", audiomode)
-                    config.set("configinfo", "audiotime", audiotime)
-                    with open(file=file_path, mode="a", encoding="utf-8") as f:
-                        f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：'
-                                f'{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
+                    if res == 0:
+                        return render(request, 'system/sysconfig.html',{'form': form, 'name': u_name, 'permiss': u_permiss, 'audiotype': raudiotype,'audiomode': raudiomode, 'audiotime': raudiotime, 'res': 'failed'})
+                    else:
+                        config.set("configinfo", "audiotype", audiotype)
+                        config.set("configinfo", "audiomode", audiomode)
+                        config.set("configinfo", "audiotime", audiotime)
+                        with open(file=file_path, mode="a", encoding="utf-8") as f:
+                            f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：'
+                                    f'{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
                 except:
                     print('systemconfig restart error')
+                    return render(request, 'system/sysconfig.html',{'form': form, 'name': u_name, 'permiss': u_permiss, 'audiotype': raudiotype,'audiomode': raudiomode, 'audiotime': raudiotime, 'res': 'failed'})
 
             wchannel1 = form.cleaned_data['channel1']
             wchannel2 = form.cleaned_data['channel2']
@@ -287,7 +292,7 @@ def system_config(request):
             with open(file=file_path, mode="a", encoding="utf-8") as f:
                 f.write(f'{time} {u_name}用户 将通道一:{rchannel1}修改为通道一:{wchannel1}; 通道二:{rchannel2}修改为通道二:{wchannel2}; 通道三:{rchannel3}修改为通道三:{wchannel3}; 通道四:{rchannel4}修改为{wchannel4}\n')
 
-            return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss})
+            return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'audiotype':audiotype,'audiomode':audiomode,'audiotime':audiotime,'res':'success'})
         else:
 
             return render(request, 'system/sysconfig.html', {'form': form})
@@ -455,6 +460,21 @@ def remote_control(request):
         config.read("web.ini")
         pw = config.get("systeminfo", "syspw")
         method = request.POST.get('mark')
+
+        data = {"cmdCheck": 0x02, "Seq": 0x15,
+                "audioPara": {"audioFunc": 3, "audioType":0, "recordType": 0,
+                              "recordTime": 0, "nDevNo": 1, "nCapNo": 0,
+                              "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10,
+                              "fileName": "10.25.15.167:/home/zzq/PycharmProjects/audio_record/static/record/",
+                              "isStereoSaveFlag": 0}}
+        try:
+            udp.senddata(data)
+            res = udp.getdata()
+            print(res)
+
+        except:
+            print('stop error')
+
         if method == 'shutdown':
             sudoCMD('shutdown', pw)
         if method == 'reboot':

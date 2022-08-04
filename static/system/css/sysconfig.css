@@ -38,7 +38,7 @@ li#dev_configed > a{
     padding-left: 30px;
 }
 
-input#save{
+a#save{
     margin-top: 40px;
 }
 
@@ -46,4 +46,10 @@ label#tips{
     margin-left: 50px;
     font-size: 18px;
     color:#ae0101;
+}
+
+div#myalter1{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
 }
