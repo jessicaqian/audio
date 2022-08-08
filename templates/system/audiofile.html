@@ -10,6 +10,7 @@
 
 {% block content %}
     <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
+    <h5 class="modal-title" id="filename">当前播放：</h5>
     <audio controls="controls" src="" id="audio"></audio>
     <h5 class="modal-title" >文件列表</h5>
 
@@ -35,6 +36,7 @@
     $('div#collapseExample1').attr('class','collapse in');
     $('a.file').click(function () {
         var filename = $(this).attr('id')
+        $('#filename').html('当前播放：'+filename)
         var src ='../' + '{{ path }}'+'/' + filename
         console.log(src)
         $('#audio').attr('src',src)

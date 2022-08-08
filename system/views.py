@@ -248,6 +248,11 @@ def system_config(request):
                 except:
                     print('systemconfig stop error')
                     return render(request, 'system/sysconfig.html',{'form': form, 'name': u_name, 'permiss': u_permiss, 'audiotype': raudiotype,'audiomode': raudiomode, 'audiotime': raudiotime, 'res': 'failed'})
+                i = 0
+                while i<4:
+                    r_status[i]='off'
+                    i = i+1
+
                 data = {"cmdCheck": 0x02, "Seq": 0x15,
                         "audioPara": {"audioFunc": 0, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1,
                                       "nCapNo": 0,

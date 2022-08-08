@@ -14,5 +14,7 @@ label.time{
 }
 
 audio#audio{
+    margin-top: 10px;
+    margin-bottom: 30px;
     width: 100%;
 }
