@@ -27,6 +27,7 @@ f_lists={}
 config = configparser.ConfigParser()
 config.read("web.ini")
 pw = config.get("systeminfo", "syspw")
+mpath = config.get("systeminfo", "mpath")
 
 
 r_status = ['off','off','off','off']
@@ -34,10 +35,11 @@ modedict={'mp3':1,'wav':0,'全时段录音':0,'自动录音':1}
 
 
 def init():
-    mpath = config.get("systeminfo", "mpath")
+
     audiomode = config.get("configinfo", "audiomode")
     audiotype = config.get("configinfo", "audiotype")
     audiotime = config.get("configinfo", "audiotime")
+    ip = config.get("systeminfo", "inip")
 
 
     data = {"cmdCheck": 0x02, "Seq": 0x15,
@@ -51,6 +53,8 @@ def init():
 
     except:
         print('stop error')
+
+
 
 
     data = {"cmdCheck": 0x02, "Seq": 0x15,
@@ -67,7 +71,7 @@ def init():
 
     data = {"cmdCheck": 0x02, "Seq": 0x15,
             "audioPara": {"audioFunc": 5, "audioType": modedict[audiotype], "recordType": modedict[audiomode], "recordTime": int(audiotime), "nDevNo": 1, "nCapNo": 0,
-                          "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": mpath,
+                          "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": ip+":"+mpath,
                           "isStereoSaveFlag": 0}}
     try:
         udp.senddata(data)
@@ -98,7 +102,7 @@ def pcmtowav(input,output):
 
 def checkpcm(ch_no):
     current_time = time.strftime("%Y-%m-%d", time.localtime())
-    path = 'static/record/' + current_time + '/' + ch_no + '/'
+    path = mpath + current_time + '/' + ch_no + '/'
     lists = os.listdir(path)
     sudoCMD('chmod 777 -R ' + path, pw)
     for list in lists:
@@ -142,7 +146,7 @@ def mkdir():
     current_time = time.strftime("%Y-%m-%d", time.localtime())
     now_time = datetime.datetime.now()
     lastday_time = (now_time + datetime.timedelta(days=+1)).strftime("%Y-%m-%d")
-    path = 'static/record/'+current_time
+    path = mpath+current_time
     if not os.path.exists(path):
         os.mkdir(path)
         os.mkdir(path+'/1')
@@ -151,7 +155,7 @@ def mkdir():
         os.mkdir(path+'/4')
     else:
         pass
-    path1 = 'static/record/'+lastday_time
+    path1 = mpath+lastday_time
     if not os.path.exists(path1):
         os.mkdir(path1)
         os.mkdir(path1+'/1')
@@ -182,8 +186,8 @@ def main(request):
         permiss = request.GET.get('permiss', default='10000000')
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
-        with open(file=file_path, mode="a", encoding="utf-8") as f:
-            f.write(f'{time} {name}登录\n')
+        # with open(file=file_path, mode="a", encoding="utf-8") as f:
+        #     f.write(f'{time} {name}登录\n')
 
         return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4,'audiomode':audiomode,'r_status':r_status})
 
@@ -521,7 +525,7 @@ def search_mid(request):
 
 #处理start_date
         if channel_no == 'all':
-            path0 = 'static/record/' + start_date
+            path0 = mpath + start_date
             if not os.path.exists(path0):
                 pass
             else:
@@ -529,7 +533,7 @@ def search_mid(request):
                 i = 1
 
                 while i < 5:
-                    path = 'static/record/' + start_date + '/' + str(i)
+                    path = mpath + start_date + '/' + str(i)
                     if not os.listdir(path):
                         pass
 
@@ -565,11 +569,11 @@ def search_mid(request):
                     i = i + 1
 
         else:
-            path0 = 'static/record/' + start_date
+            path0 = mpath + start_date
             if not os.path.exists(path0):
                 pass
             else:
-                path = 'static/record/' + start_date + '/' + channel_no
+                path = mpath + start_date + '/' + channel_no
                 if not os.listdir(path):
                     pass
 
@@ -605,14 +609,14 @@ def search_mid(request):
                 datestart += datetime.timedelta(days=1)
                 startdate = datetime.datetime.strftime(datestart, '%Y-%m-%d')
                 if channel_no == 'all':
-                    path0 = 'static/record/' + startdate
+                    path0 = mpath + startdate
                     if not os.path.exists(path0):
                         pass
                     else:
                         i = 1
 
                         while i < 5:
-                            path = 'static/record/' + startdate + '/' + str(i)
+                            path = mpath + startdate + '/' + str(i)
                             if not os.listdir(path):
                                 pass
 
@@ -624,11 +628,11 @@ def search_mid(request):
 
 
                 else:
-                    path0 = 'static/record/' + startdate
+                    path0 = mpath + startdate
                     if not os.path.exists(path0):
                         pass
                     else:
-                        path = 'static/record/' + startdate + '/' + channel_no
+                        path = mpath + startdate + '/' + channel_no
                         if not os.listdir(path):
                             pass
 
@@ -641,7 +645,7 @@ def search_mid(request):
 
         if dateend >= datestart + datetime.timedelta(days=1):
             if channel_no == 'all':
-                path0 = 'static/record/' + end_date
+                path0 = mpath + end_date
                 if not os.path.exists(path0):
                     pass
                 else:
@@ -649,7 +653,7 @@ def search_mid(request):
                     i = 1
 
                     while i < 5:
-                        path = 'static/record/' + end_date + '/' + str(i)
+                        path = mpath + end_date + '/' + str(i)
                         if not os.listdir(path):
                             pass
 
@@ -678,11 +682,11 @@ def search_mid(request):
                         i = i + 1
 
             else:
-                path0 = 'static/record/' + end_date
+                path0 = mpath + end_date
                 if not os.path.exists(path0):
                     pass
                 else:
-                    path = 'static/record/' + end_date + '/' + channel_no
+                    path = mpath + end_date + '/' + channel_no
                     if not os.listdir(path):
                         pass
 
@@ -733,10 +737,10 @@ def audio_file(request):
         permiss = request.GET.get('permiss', default='10000000')
         try:
             # print(f_lists[dir])
-            path = 'static/record/' + dir
+            path = mpath + dir
             lists = f_lists[dir]
         except:
-            path = 'static/record/' + dir
+            path = mpath + dir
             lists =  os.listdir(path)
         return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
 

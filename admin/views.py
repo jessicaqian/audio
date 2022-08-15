@@ -3,9 +3,18 @@ from django.http import HttpResponseRedirect
 from .forms import NameForm
 # import sqlite3
 import configparser
-import time,datetime
+import time,datetime,os
 
 # Create your views here.
+
+now = datetime.datetime.now()
+
+timestr = now.strftime("%Y-%m-%d")
+dir = os.getcwd() + '/logs'
+if not os.path.exists(dir):
+    os.mkdir(dir)
+file_path = dir + '/' + timestr + '.txt'
+
 
 def login(request):
     if request.method == 'POST':
@@ -33,6 +42,10 @@ def login(request):
             # cursor.execute(sql)
             # val = cursor.fetchone()
             # usrpermiss = val[0]
+
+
+            with open(file=file_path, mode="a", encoding="utf-8") as f:
+                f.write(f'{time} {usrname}登录\n')
             print(usrpermiss)
             return HttpResponseRedirect('/system/main.html?name='+usrname+'&permiss='+usrpermiss)
         else:

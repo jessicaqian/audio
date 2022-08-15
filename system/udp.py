@@ -5,7 +5,7 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read("web.ini")
-ip = config.get("systeminfo", "inIP")
+ip = config.get("systeminfo", "audioip")
 
 def senddata(data):
     udp_send = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
@@ -19,7 +19,7 @@ def getdata():
     udp_get.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     # 我们有时则需要一种超时机制使其在一定时间后返回而不管是否有数据到来，这里我们就会用到setsockopt()函数
 
-    udp_get.settimeout(5)
+    udp_get.settimeout(2)
 
     udp_get.bind(("0.0.0.0", 8711))
     # 接收数据
@@ -28,12 +28,12 @@ def getdata():
         # recv_msg = recv_data[0]   #数据
         # recv_addr = recv_data[1]   #发送方的地址
         # print(recv_data,recv_msg.decode('gbk'),recv_addr)  #decode解码windows系统默认编码方式是gbk
-        print(recv_data0[0].decode('gbk'))
+        #print(recv_data0[0].decode('gbk'))
 
 
         recv_data = udp_get.recvfrom(1024)
 
-        # print(recv_data[0].decode('gbk'))
+        print(recv_data[0].decode('gbk'))
         jsondata = recv_data[0].decode('gbk')
         data = json.loads(jsondata)
 
@@ -42,7 +42,7 @@ def getdata():
         else:
             return 0
     except:
-        return 0
+        return -1
 
 def heartbeat():
     udp_send = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
