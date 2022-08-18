@@ -20,5 +20,6 @@ urlpatterns = [
     path('devices',views.devices),
     path('netconfig.html',views.net_config),
     path('remotectr.html',views.remote_control),
+    path('channelconfig.html',views.channel_config)
 
 ]

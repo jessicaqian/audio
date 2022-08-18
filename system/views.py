@@ -66,7 +66,7 @@ def main(request):
 
     else:
         config.read("web.ini",encoding='utf-8')
-        audiomode = config.get("configinfo", "audiomode")
+
         i = 0
         channel = ['未知']*64
         while i < 64:
@@ -126,61 +126,20 @@ def system_config(request):
             u_permiss = form.cleaned_data['usr_perssions_n']
 
             audiotype = form.cleaned_data['audiotype']
-            audiomode = form.cleaned_data['audiomode']
-            audiotime = form.cleaned_data['audiotime']
             filepath = form.cleaned_data['path']
-            timeint = int(audiotime) * 60
-            timestr = str(timeint)
             infolist = {'mp3':'1','wav':'0','全时段录音':'1','自动录音':'0'}
 
-            if audiomode == '全时段录音':
-                datadict = {'MSG_TYPE':'RECORDCONFIG','FORMAT':infolist[audiotype],'MOD':infolist[audiomode],'PERIOD':timestr,'LOCATION':filepath}
-            else:
-                datadict = {'MSG_TYPE': 'RECORDCONFIG', 'FORMAT': infolist[audiotype], 'MOD': infolist[audiomode],'PERIOD': '0','LOCATION':filepath}
-
+            datadict = {'MSG_TYPE':'RECORDCONFIG','FORMAT':infolist[audiotype],'LOCATION':filepath}
             data = json.dumps(datadict)
             rest = send_data(data)
             if rest == False:
                 return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'res':'failed'})
 
             raudiotype = config.get("configinfo", "audiotype")
-            raudiomode = config.get("configinfo", "audiomode")
-            raudiotime = config.get("configinfo", "audiotime")
-
-
-            config.set("configinfo", "audiotime", audiotime)
             config.set("configinfo", "audiotype", audiotype)
-            config.set("configinfo", "audiomode", audiomode)
             config.set("configinfo", "filepath", filepath)
             with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode}; 存储时间:{raudiotime}分钟修改为存储时间:{audiotime}分钟\n')
-
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}; 录音模式：{raudiomode}修改为录音模式：{audiomode};\n')
-
-
-
-            i = 0
-            wchannel = [None]*64
-            rchannel = [None]*64
-            mes = ''
-
-            while i < 64:
-                wchannel[i] = form.cleaned_data['channel'+str(i+1)]
-                rchannel[i] = config.get("configinfo", "channel"+str(i+1))
-
-                mes = mes + '通道' + str(i+1) + ':{rchannel' + str(i) + '}修改为通道' + str(i+1) + ':{wchannel' + str(i) + '};'
-                i = i + 1
-
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {u_name}用户 将' + mes + '\n')
-
-
-
-            j = 0
-            while j < 64:
-                config.set("configinfo", "channel" + str(j + 1), wchannel[j])
-                j = j + 1
+                f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}\n')
 
             config.write(open("web.ini","w",encoding='utf-8'))
 
@@ -195,8 +154,6 @@ def system_config(request):
         permiss = request.GET.get('permiss', default='10000000')
         form = SysconfigForm()
         audiotype = config.get("configinfo","audiotype")
-        audiomode =  config.get("configinfo", "audiomode")
-        audiotime =  config.get("configinfo", "audiotime")
         filepath = config.get("configinfo", "filepath")
         i = 0
         channel = ['未知']*64
@@ -205,10 +162,19 @@ def system_config(request):
             i = i + 1
 
         if permiss == '管理员':
-            return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiomode':audiomode,'filepath':filepath,
-                                                        'audiotime':audiotime,'channels':channel})
+            return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'filepath':filepath,
+                                                        'channels':channel})
         else:
             return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
+
+@login_required
+def channel_config(request):
+    if request.method == 'POST':
+        pass
+    else:
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        return render(request, 'system/channelconfig.html', {'name': name, 'permiss': permiss})
 
 @login_required
 def net_config(request):

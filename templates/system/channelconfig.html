@@ -1,0 +1,71 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}系统配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/sysconfig.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="alert alert-danger " role="alert" id="myalter" style="display: none">
+        <button type="button" class="close" id="close" >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      <strong id="tips" >IP地址不合法</strong>
+    </div>
+    <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
+
+
+    <div class="row tips">
+        <label>通道配置</label>
+    </div>
+    <form method="post">
+        <div class="row1 row" id="selebox">
+            <div class="col-md-4">
+                {{ form.audiotype.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotype}}
+            </div>
+            <div class="col-md-4" id="filepath">
+                {{ form.path.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.path}}
+            </div>
+
+        </div>
+
+        <div class="hidden">{{ form.usrname_n}}</div>
+        <div class="hidden">{{ form.usr_perssions_n}}</div>
+        <div class="row">
+            <div class="col-md-2 col-md-offset-10">
+                <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample').attr('class','collapse in');
+    $('input#id_usrname_n').val("{{ name }}")
+    $('input#id_usr_perssions_n').val("{{ permiss }}")
+    $('input#id_path').val("{{ filepath }}")
+    $('button#close').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
+
+
+
+
+
+
+</script>
+{% endblock %}

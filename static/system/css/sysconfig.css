@@ -35,8 +35,8 @@ li#dev_configed > a{
 }
 
 input#save{
-    margin-top: 40px;
-    margin-bottom: 25px;
+
+    margin-bottom: 15px;
 }
 
 label#tips{
@@ -55,10 +55,6 @@ input#id_path{
     width:70%;
 }
 
-div#inputpath{
-    padding-left:65px;
-}
-
 div#filepath{
     padding-right:0px;
 }
@@ -67,4 +63,29 @@ div#scanbtn{
     padding-left: 0px;
 }
 
+table#configed_table>tbody>tr>td{
+    vertical-align:middle;
+}
 
+table#table_body>tbody>tr>td{
+    vertical-align:middle;
+}
+
+table#configed_table{
+
+    margin-bottom: 0px;
+}
+
+td,th{
+    text-align: center;
+
+}
+
+td{
+    font-size: 13px;
+}
+
+div#head_bar{
+    margin-left: 35px;
+    margin-top: 20px;
+}
