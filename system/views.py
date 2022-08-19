@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
-from .forms import SysconfigForm,UsrForm,NetForm
+from .forms import SysconfigForm,UsrForm,NetForm,ChannelForm
 import os,hashlib,json,re
 import time,datetime,configparser,requests
 import ctypes
@@ -95,7 +95,6 @@ def get_diskstatus(request):
     ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p('C:/'), None, None, ctypes.pointer(free_bytes))
     no = round(free_bytes.value / 1024 / 1024 / 1024,2)
 
-
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
 def record_status(request):
@@ -107,8 +106,6 @@ def record_status(request):
                 r_status[i] = act
         else:
             r_status[no] = act
-
-
     else:
         pass
     return JsonResponse({'msg': 'success'})
@@ -170,11 +167,41 @@ def system_config(request):
 @login_required
 def channel_config(request):
     if request.method == 'POST':
-        pass
+        form = ChannelForm(request.POST)
+        if form.is_valid():
+
+                name = form.cleaned_data['usrname_n']
+                permiss = form.cleaned_data['usr_perssions_n']
+
+                no = form.cleaned_data['channelNo']
+
+                audiomode = form.cleaned_data['audiomode']
+                channelname = form.cleaned_data['channelname']
+                recordval = form.cleaned_data['recordval']
+                mutetime = form.cleaned_data['mutetime']
+
+                config.set("configinfo", "audiomode"+no, audiomode)
+                config.set("configinfo", "channel" + no, channelname)
+                config.set("configinfo", "recordval" + no, recordval)
+                config.set("configinfo", "mutetime" + no, mutetime)
+
+                config.write(open("web.ini", "w", encoding='utf-8'))
+                return render(request, 'system/channelconfig.html', {'form': form,'name': name, 'permiss': permiss})
+        else:
+            return render(request, 'system/channelconfig.html', {'form': form})
     else:
+        form = ChannelForm()
+        no = request.GET.get('no')
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
-        return render(request, 'system/channelconfig.html', {'name': name, 'permiss': permiss})
+
+        audiomode = config.get("configinfo", "audiomode"+no)
+        channelname = config.get("configinfo", "channel"+no)
+        recordval = config.get("configinfo", "recordval"+no)
+        mutetime = config.get("configinfo", "mutetime"+no)
+        return render(request, 'system/channelconfig.html', {'form': form,'name': name, 'permiss': permiss,
+                                                             'channelno':no,'audiomode':audiomode,'channelname':channelname,
+                                                             'recordval':recordval,'mutetime':mutetime,'method':'get'})
 
 @login_required
 def net_config(request):

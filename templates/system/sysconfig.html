@@ -109,17 +109,13 @@
     $('div#collapseExample').attr('class','collapse in');
     $('input#id_usrname_n').val("{{ name }}")
     $('input#id_usr_perssions_n').val("{{ permiss }}")
-    $('input#id_path').val("{{ filepath }}")
+
     $('button#close').click(function () {
         $('#myalter').attr('style','display:none')
     });
 
-    if('{{ method }}'=='get'){
-
-        {% for channel in channels %}
-        $('input#id_channel'+'{{ forloop.counter }}').val('{{ channel }}')
-        {% endfor %}
-
+    if('{{ method }}'=='get')
+        $('input#id_path').val("{{ filepath }}")
         $('select#id_audiotype').val('{{audiotype}}')
 
     }else {
