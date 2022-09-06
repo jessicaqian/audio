@@ -186,7 +186,9 @@ def channel_config(request):
                 config.set("configinfo", "mutetime" + no, mutetime)
 
                 config.write(open("web.ini", "w", encoding='utf-8'))
-                return render(request, 'system/channelconfig.html', {'form': form,'name': name, 'permiss': permiss})
+
+                return HttpResponseRedirect('/system/sysconfig.html?name=' + name + '&permiss=' + permiss)
+
         else:
             return render(request, 'system/channelconfig.html', {'form': form})
     else:
