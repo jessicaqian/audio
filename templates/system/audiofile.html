@@ -17,8 +17,9 @@
         <tbody>
         {% for list in lists %}
             <tr id="id{{ forloop.counter }}">
-                <td><a href="#"  class="file" id="{{ list }}">{{list}}</a></td>
-
+                <td><input name="download" type="checkbox" value="{{ list }}" /></td>
+                <td><a href="#"  class="file" id="{{ list }}">{{list}}&nbsp;&nbsp;<span class="glyphicon glyphicon-play" aria-hidden="true"></span></a></td>
+                <td><a href="http://somehost/somefile.zip" download="{{list}}">下载&nbsp;&nbsp;<span class=" glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
 
             </tr>
         {% endfor %}
@@ -35,7 +36,9 @@
     $('div#collapseExample1').attr('class','collapse in');
     $('a.file').click(function () {
         var filename = $(this).attr('id')
-        var src ='../' + '{{ path }}'+'/' + filename
+        //var src ='file:///'+ '{{ path }}'+'/' + filename
+        var src = '{% static ''%}'+ '{{ path }}'+'/' + filename
+
         console.log(src)
         $('#audio').attr('src',src)
         audio = document.getElementById("audio");

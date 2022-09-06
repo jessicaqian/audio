@@ -113,6 +113,15 @@ def record_status(request):
 @login_required
 def system_config(request):
     config.read("web.ini",encoding='utf-8')
+    i = 0
+    channelname = ['未知'] * 64
+    audiomode = ['未知'] * 64
+    channel = ['未知'] * 64
+    while i < 64:
+        channelname[i] = config.get("configinfo", "channel" + str(i + 1))
+        audiomode[i] = config.get("configinfo", "audiomode" + str(i + 1))
+        channel[i] = [channelname[i],audiomode[i]]
+        i = i + 1
     if request.method == 'POST':
         form = SysconfigForm(request.POST)
         now = datetime.datetime.now()
@@ -124,6 +133,7 @@ def system_config(request):
 
             audiotype = form.cleaned_data['audiotype']
             filepath = form.cleaned_data['path']
+            filepath = filepath.replace('\\', '/')
             infolist = {'mp3':'1','wav':'0','全时段录音':'1','自动录音':'0'}
 
             datadict = {'MSG_TYPE':'RECORDCONFIG','FORMAT':infolist[audiotype],'LOCATION':filepath}
@@ -152,11 +162,6 @@ def system_config(request):
         form = SysconfigForm()
         audiotype = config.get("configinfo","audiotype")
         filepath = config.get("configinfo", "filepath")
-        i = 0
-        channel = ['未知']*64
-        while i < 64:
-            channel[i] =  config.get("configinfo", "channel" + str(i+1))
-            i = i + 1
 
         if permiss == '管理员':
             return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'filepath':filepath,
@@ -573,12 +578,12 @@ def audio_file(request):
         permiss = request.GET.get('permiss', default='10000000')
         try:
 
-            path = path_conf + dir
+
             lists = f_lists[dir]
         except:
             path = path_conf + dir
             lists =  os.listdir(path)
-        return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
+        return render(request, 'system/audiofile.html', {'lists': lists, 'path': dir,'name':name,'permiss':permiss})
 
 
 def send_data(data):

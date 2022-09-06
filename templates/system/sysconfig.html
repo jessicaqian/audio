@@ -62,9 +62,9 @@
             </colgroup>
             <thead>
                 <tr>
-                    <th>#</th>
                     <th>通道号</th>
                     <th>通道名</th>
+                    <th>录音模式</th>
                     <th>配置</th>
                 </tr>
             </thead>
@@ -80,8 +80,8 @@
             {% for channel in channels %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>channel{{ forloop.counter }}</td>
-                    <td>{{channel}}</td>
+                    <td>{{channel.0}}</td>
+                    <td>{{channel.1}}</td>
                     <td class="config">
                         <a class="btn config" href="/system/channelconfig.html?no={{ forloop.counter }}&name={{ name }}&permiss={{ permiss }}">
                             <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
@@ -114,7 +114,7 @@
         $('#myalter').attr('style','display:none')
     });
 
-    if('{{ method }}'=='get')
+    if('{{ method }}'=='get'){
         $('input#id_path').val("{{ filepath }}")
         $('select#id_audiotype').val('{{audiotype}}')
 
@@ -158,4 +158,6 @@ $('a#scan').click(function () {
 
 </script>
 {% endblock %}
+
+
 
