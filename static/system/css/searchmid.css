@@ -12,3 +12,8 @@ li#search_mid > a{
 label.time{
     margin-left: 40px;
 }
+
+audio{
+    width: 95%;
+    margin-left: 15px;
+}
