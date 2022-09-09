@@ -27,21 +27,18 @@ div.channel{
     border-radius: 6px;
 }
 
-div.channel_in{
-    margin-left: 5px;
-    height: 25px;
-    background:url("../image/28754.gif") center left;
-    background-color: white;
-    background-size: 210%;
-    border-radius: 4px;
-}
+
 
 div.channel_in_off{
     margin-left: 5px;
-    height: 25px;
+    height: 20px;
     background-color: #e3e3e3;
-    background-size: 50%;
+    /*background-size: 50%;*/
     border-radius: 4px;
+}
+
+div.progress{
+    background-color: white;
 }
 
 a.record,a.stop{

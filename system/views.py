@@ -6,9 +6,6 @@ import os,hashlib,json,re
 import time,datetime,configparser,requests
 import ctypes
 
-
-
-
 time.time()
 now = datetime.datetime.now()
 timestr = now.strftime("%Y-%m-%d")
@@ -78,17 +75,18 @@ def main(request):
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         with open(file=file_path, mode="a", encoding="utf-8") as f:
             f.write(f'{time} {name}登录\n')
-        print(r_status)
+        # print(r_status)
         return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel,'r_status':r_status})
 
 def btn_action(request):
     data = request.POST['mes']
     print(data)
     mark = send_data(data)
-    if mark == True:
-        return JsonResponse({'msg': 'success'})
-    else:
+    if mark == False:
         return JsonResponse({'msg': 'failed'})
+    else:
+        return JsonResponse({'msg': 'success'})
+
 
 def get_diskstatus(request):
     free_bytes = ctypes.c_ulonglong(0)
@@ -96,6 +94,24 @@ def get_diskstatus(request):
     no = round(free_bytes.value / 1024 / 1024 / 1024,2)
 
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
+
+def get_val(request):
+
+    no = request.POST['no']
+
+    datadict = {'MSG_TYPE': 'GETCHANNELDB', 'CHANNELINDEX':no}
+    data = json.dumps(datadict)
+    rest = send_data(data)
+    if rest == False:
+        return JsonResponse({'msg': 'error'})
+    else:
+        return JsonResponse({'msg': 'OK','val': rest})
+
+
+
+
+
+
 
 def record_status(request):
     if request.method == 'POST':
@@ -184,6 +200,17 @@ def channel_config(request):
                 channelname = form.cleaned_data['channelname']
                 recordval = form.cleaned_data['recordval']
                 mutetime = form.cleaned_data['mutetime']
+
+                infolist = {'全时段录音': '1', '自动录音': '0'}
+
+                datadict = {"MSG_TYPE": "RECORDCONFIGONE", "CHANNELINFO":{"CHANNELINDEX":no,"CHANNELNAME":"ch"+no,"MOD":infolist[audiomode],"PCMDB":mutetime,"PCMPERIOD":recordval} }
+                data = json.dumps(datadict)
+                rest = send_data(data)
+                if rest == False:
+                    return render(request, 'system/channelconfig.html',
+                                  {'form': form, 'name': name, 'permiss': permiss, 'res': 'failed'})
+
+
 
                 config.set("configinfo", "audiomode"+no, audiomode)
                 config.set("configinfo", "channel" + no, channelname)
@@ -589,14 +616,14 @@ def audio_file(request):
 def send_data(data):
 
     try:
-        r = requests.post("http://10.25.16.200:8090", data=data)
+        r = requests.post("http://10.25.16.158:8090", data=data)
         res = r.json()
         print(res)
     except Exception as e:
         print(e)
         return False
-    if res['ret_msg']=='OK':
-        return True
+    if res['ret_code']=='200':
+        return res['ret_msg']
     else:
         return False
 
