@@ -71,12 +71,14 @@ def main(request):
             i = i + 1
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
+        audiotype = config.get("configinfo", "audiotype")
+        print(audiotype)
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         with open(file=file_path, mode="a", encoding="utf-8") as f:
             f.write(f'{time} {name}登录\n')
-        # print(r_status)
-        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel,'r_status':r_status})
+
+        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel,'r_status':r_status,'type':audiotype})
 
 def btn_action(request):
     data = request.POST['mes']
@@ -106,12 +108,6 @@ def get_val(request):
         return JsonResponse({'msg': 'error'})
     else:
         return JsonResponse({'msg': 'OK','val': rest})
-
-
-
-
-
-
 
 def record_status(request):
     if request.method == 'POST':

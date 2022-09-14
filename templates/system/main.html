@@ -17,7 +17,7 @@
             </div>
             <div class="row1 row" >
                 <div class="col-md-12">
-                    当前存储音频格式:<label id="a_mode"></label>
+                    当前存储音频格式:<label id="a_mode">{{ type }}</label>
 
                 </div>
             </div>
@@ -924,7 +924,6 @@
 
 {% block js %}
 <script type="text/javascript">
-    $('label#a_mode').html('{{ audiomode }}')
 {% for channel in channels %}
     $('label#c{{ forloop.counter }}_name').html(':{{ channel }}')
 {% endfor %}
