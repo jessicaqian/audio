@@ -929,12 +929,15 @@
 {% endfor %}
 
     var no = 0
+    var intervalarr = []
 
 {% for r_statu in r_status %}
     if ('{{ r_statu }}' == 'on'){
         start('{{ forloop.counter }}')
+        intervalarr[{{ forloop.counter }}] =  setInterval(showval,300,'{{ forloop.counter }}')
     }else if('{{ r_statu }}' == 'off'){
         stop('{{ forloop.counter }}')
+        clearInterval(intervalarr[{{ forloop.counter }}])
 
     }
 
@@ -997,8 +1000,21 @@
 
     }
 
+    function showval(id){
+        showbar(Math.floor(Math.random()*100+1),id)
+        $.post('getval',{'no':id}).done(function (info) {
+            if(info.msg == "OK"){
+                //console.log(Math.floor(Math.random()*100+1))
+                console.log(info.val)
+                showbar(info.val,id)
+            }
+        }).fail(function () {
+
+        })
+    }
+
     $('a.btn').click(function () {
-        var show
+
         var id = $(this).attr('id')
         var mark = $(this).attr('class')
         wait(id)
@@ -1007,6 +1023,9 @@
             var data = {'MSG_TYPE':'STARTRECORD','CHANNELINDEX':id}
             var jsonstr = JSON.stringify(data)
 
+            start(id)
+            intervalarr[id] =  setInterval(showval,300,id)
+
             $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
 
@@ -1014,23 +1033,7 @@
 
     	            $.post('recordStatus',{'no':id,'act':'on'}).done(function () {
                         start(id)
-
-                        show =  setInterval(function(){
-                            $.post('getval',{'no':id}).done(function (info) {
-                                if(info.msg == "OK"){
-                                    //console.log(Math.floor(Math.random()*100+1))
-                                    console.log(info.val)
-                                    showbar(info.val,id)
-                                }
-
-
-
-
-                            }).fail(function () {
-
-                            })
-
-                        },300)
+                        intervalarr[id] =  setInterval(showval,300,id)
                     }).fail(function (info) {
 
 
@@ -1076,7 +1079,7 @@
                    
                 $.post('recordStatus',{'no':id,'act':'off'}).done(function () {
                     stop(id)
-                    clearInterval(show)
+                    clearInterval(intervalarr[id])
 
 
 
@@ -1118,6 +1121,7 @@
         $('a.btn').attr('disabled','disabled')
         var data = {'MSG_TYPE':'STARTRECORD','CHANNELINDEX':'ALL'}
         var jsonstr = JSON.stringify(data);
+
         $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
             if(info.msg == 'success'){
@@ -1126,7 +1130,15 @@
                     $('a.btn').removeAttr('disabled')
                     $('a.btn').attr('class','btn btn-default stop')
                     $('a.btn>span').attr('class','glyphicon glyphicon-stop')
-                    $('div.channel_in_off').attr('class','row channel_in')
+                    $('div.progress').attr('style','display:block')
+                    for(var i=1;i<33;i++){
+                        if(intervalarr[i]==null){
+                            intervalarr[i]=setInterval(showval,300,i)
+
+                        }
+
+                    }
+
                 }).fail(function (info) {
 
 
@@ -1153,10 +1165,13 @@
     })
 
     $('#stopall').click(function () {
+
+
         $('a.btn>span').attr('class','glyphicon glyphicon-option-horizontal')
         $('a.btn').attr('disabled','disabled')
         var data = {'MSG_TYPE':'STOPRECORD','CHANNELINDEX':'ALL'}
         var jsonstr = JSON.stringify(data);
+
         $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
             if(info.msg == 'success'){
@@ -1165,7 +1180,11 @@
                     $('a.btn').removeAttr('disabled')
                     $('a.btn').attr('class','btn btn-danger record')
                     $('a.btn>span').attr('class','glyphicon glyphicon-record')
-                    $('div.channel_in').attr('class','row channel_in_off')
+                    $('div.progress').attr('style','display:none')
+                    for(var i=1;i<33;i++){
+                        clearInterval(intervalarr[i])
+
+                    }
 
                 }).fail(function () {
 

@@ -19,7 +19,7 @@ print(file_path)
 f_lists={}
 config = configparser.ConfigParser()
 
-r_status = ['off']*64
+r_status = ['off']*32
 
 def sudoCMD(command,password):
     str = os.system('echo %s | sudo -S %s' % (password,command))
@@ -91,8 +91,10 @@ def btn_action(request):
 
 
 def get_diskstatus(request):
+    config.read("web.ini", encoding='utf-8')
+    diskspace = config.get("configinfo", "diskspace")
     free_bytes = ctypes.c_ulonglong(0)
-    ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p('C:/'), None, None, ctypes.pointer(free_bytes))
+    ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskspace), None, None, ctypes.pointer(free_bytes))
     no = round(free_bytes.value / 1024 / 1024 / 1024,2)
 
     return JsonResponse({'no': no, 'msg': 'success'})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
