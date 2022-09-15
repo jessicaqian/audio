@@ -6,3 +6,19 @@ div.selebox{
      margin:30px -15px 30px 50px;
     font-size: 15px;
 }
+
+div#myalter{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+}
+
+li#config>a{
+    background-color: #eee;
+    color: #23527c;
+}
+
+li#dev_configed > a{
+    color: #efb041;
+    padding-left: 30px;
+}

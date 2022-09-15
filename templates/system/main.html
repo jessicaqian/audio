@@ -1023,9 +1023,6 @@
             var data = {'MSG_TYPE':'STARTRECORD','CHANNELINDEX':id}
             var jsonstr = JSON.stringify(data)
 
-            start(id)
-            intervalarr[id] =  setInterval(showval,300,id)
-
             $.post('btnAction',{'mes':jsonstr}).done(function (info) {
 
 

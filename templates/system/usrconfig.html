@@ -9,6 +9,14 @@
 {% endblock %}
 
 {% block content %}
+<div class="alert alert-danger " role="alert" id="myalter" style="display: none">
+    <button type="button" class="close" id="close" >
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <strong id="tips" >确定删除该用户么</strong>?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="btn btn-danger" type="button" id="makesure">确定</button>
+    <button class="btn btn-default" type="button" id="cancle">取消</button>
+</div>
 <div class="row sparse"><label class="head">用户配置&nbsp&nbsp&nbsp&nbsp</label></div>
 <div class="row sparse" id="head_bar">
     <div class="col-md-3">
@@ -47,7 +55,8 @@
             <td  id="name_{{ forloop.counter }}">{{usrinfo.0}}</td>
             <td>{{usrinfo.1}}</td>
             <td class="delete">
-                <a class="btn config" href="/system/delete.html?usrname={{ usrinfo.0}}&name={{ name }}&permiss={{ permiss }}">
+{#                <a class="btn config" href="/system/delete.html?usrname={{ usrinfo.0}}&name={{ name }}&permiss={{ permiss }}">#}
+                <a class="btn config dele" id="{{ usrinfo.0 }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                 </a>
             </td>
@@ -70,6 +79,31 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
+    $('a.dele').click(function () {
+        var name = $(this).attr('id')
+        $('button#makesure').attr('name',name)
+        $('#myalter').attr('style','display:block')
+    })
+    $('button#close').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
+    $('button#cancle').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
+    $('button#makesure').click(function () {
+        var mark = $(this).attr('name')
+        $.get('delete.html?usrname='+mark+'&name={{ name }}&permiss={{ permiss }}').done(function (info) {
+            if(info.msg=='success'){
+                location.reload()
+            }
+
+        }).fail(function (info) {
+
+
+        })
+        $('#myalter').attr('style','display:none')
+
+    })
 
 
 </script>

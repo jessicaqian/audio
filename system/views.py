@@ -116,7 +116,7 @@ def record_status(request):
         no = int(request.POST['no'])-1
         act = request.POST['act']
         if no ==99:
-            for i in range(64):
+            for i in range(32):
                 r_status[i] = act
         else:
             r_status[no] = act
@@ -201,7 +201,7 @@ def channel_config(request):
 
                 infolist = {'全时段录音': '1', '自动录音': '0'}
 
-                datadict = {"MSG_TYPE": "RECORDCONFIGONE", "CHANNELINFO":{"CHANNELINDEX":no,"CHANNELNAME":"ch"+no,"MOD":infolist[audiomode],"PCMDB":mutetime,"PCMPERIOD":recordval} }
+                datadict = {"MSG_TYPE": "RECORDCONFIGONE", "CHANNELINFO":{"CHANNELINDEX":no,"CHANNELNAME":"ch"+no,"MOD":infolist[audiomode],"PCMDB":recordval,"PCMPERIOD":mutetime} }
                 data = json.dumps(datadict)
                 rest = send_data(data)
                 if rest == False:
@@ -360,7 +360,7 @@ def del_usr(request):
 
         config.write(open("web.ini", "w",encoding='utf-8'))
 
-        return HttpResponseRedirect('/system/usrconfig.html?name='+name+'&permiss='+permiss)
+        return JsonResponse({'msg': 'success'})
 
 
 def remote_control(request):

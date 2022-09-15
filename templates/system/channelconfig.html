@@ -13,7 +13,7 @@
         <button type="button" class="close" id="close" >
           <span aria-hidden="true">&times;</span>
         </button>
-      <strong id="tips" >IP地址不合法</strong>
+      <strong id="tips" >录音阈值或录音时长格式错误</strong>，该值只能为正整数，请重新输入。
     </div>
     <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
 
@@ -21,7 +21,7 @@
     <div class="row tips">
         <label>通道配置</label>
     </div>
-    <form method="post">
+    <form method="post" onsubmit="return checknum()">
         <div class="row1 row selebox">
             <div class="col-md-4">
                 {{ form.channelNo.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;channel{{ form.channelNo}}
@@ -68,6 +68,19 @@
     $('div#collapseExample').attr('class','collapse in');
     $('input#id_usrname_n').val("{{ name }}")
     $('input#id_usr_perssions_n').val("{{ permiss }}")
+
+    function checknum() {
+        var val = $('input#id_recordval').val()
+        var time = $('input#id_mutetime').val()
+        if ((/(^[1-9]\d*$)/.test(val))&&(/(^[1-9]\d*$)/.test(time))) {
+            return true
+        }else {
+            $('#myalter').attr('style','display:block')
+            return false　　　　　　
+        }
+
+
+    }
 
     if('{{ method }}'=='get'){
 
