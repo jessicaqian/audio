@@ -79,7 +79,9 @@
 
             $.ajax({
                 type: 'GET',
+                dataType:'json',
                 url: 'heartbeat',
+                data:{'name':'{{name}}'},
 
 
               success: function(result) {
@@ -89,7 +91,7 @@
 
             })
     }
-    setInterval(heartbeat,10000)
+    setInterval(heartbeat,5000)
 </script>
 </body>
 </html>

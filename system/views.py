@@ -28,7 +28,7 @@ def sudoCMD(command,password):
 def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
         timenow = datetime.datetime.now()
-        T_Now = timenow.minute + timenow.hour * 60
+        T_Now = timenow.minute*60 + timenow.hour * 60*60 + timenow.second
         config.read("web.ini",encoding='utf-8')
 
         name = request.GET.get('name', default='e')
@@ -36,12 +36,13 @@ def login_required(func):  # 自定义登录验证装饰器
             return HttpResponseRedirect("/") #没有名字，直接跳转登录页
         else:
             try:
-                T_logout = int(config.get(name,'T_current')) #名字正确继续执行
+                T_logout = int(config.get(name,'t_current')) #名字正确继续执行
                 interval = int(T_Now - T_logout)
-                if interval>1000:
+                print(interval)
+                if interval>6:
                     config.set(name,'is_login','false')
                 else:
-                    config.set(name, 'T_current',str(T_Now))
+                    config.set(name, 't_current',str(T_Now))
                 config.write(open("web.ini", "w",encoding='utf-8'))
             except:
                 return HttpResponseRedirect("/")
@@ -146,25 +147,28 @@ def system_config(request):
             u_permiss = form.cleaned_data['usr_perssions_n']
 
             audiotype = form.cleaned_data['audiotype']
-            filepath = form.cleaned_data['path']
-            filepath = filepath.replace('\\', '/')
-            infolist = {'mp3':'1','wav':'0','全时段录音':'1','自动录音':'0'}
+            audiotime0 = form.cleaned_data['audiotime']
+            audiotime1 = int(audiotime0)*60
+            audiotime = str(audiotime1)
 
-            datadict = {'MSG_TYPE':'RECORDCONFIG','FORMAT':infolist[audiotype],'LOCATION':filepath}
+            infolist = {'mp3':'0','wav':'1','全时段录音':'1','自动录音':'0'}
+
+            datadict = {'MSG_TYPE':'RECORDCONFIG','FORMAT':infolist[audiotype],'PERIOD':audiotime}
             data = json.dumps(datadict)
             rest = send_data(data)
             if rest == False:
-                return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'res':'failed'})
+                return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'res':'failed','channels':channel})
 
             raudiotype = config.get("configinfo", "audiotype")
             config.set("configinfo", "audiotype", audiotype)
-            config.set("configinfo", "filepath", filepath)
+            config.set("configinfo", "audiotime", audiotime0)
+
             with open(file=file_path, mode="a", encoding="utf-8") as f:
                 f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}\n')
 
             config.write(open("web.ini","w",encoding='utf-8'))
 
-            return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss})
+            return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'channels':channel})
         else:
 
             return render(request, 'system/sysconfig.html', {'form': form})
@@ -175,10 +179,11 @@ def system_config(request):
         permiss = request.GET.get('permiss', default='10000000')
         form = SysconfigForm()
         audiotype = config.get("configinfo","audiotype")
-        filepath = config.get("configinfo", "filepath")
+        audiotime = config.get("configinfo","audiotime")
+
 
         if permiss == '管理员':
-            return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'filepath':filepath,
+            return render(request, 'system/sysconfig.html',{'form': form,'method':'get','name':name,'permiss':permiss,'audiotype':audiotype,'audiotime':audiotime,
                                                         'channels':channel})
         else:
             return render(request, 'system/error.html',{'name':name,'permiss':permiss,'ecode':0})
@@ -201,7 +206,7 @@ def channel_config(request):
 
                 infolist = {'全时段录音': '1', '自动录音': '0'}
 
-                datadict = {"MSG_TYPE": "RECORDCONFIGONE", "CHANNELINFO":{"CHANNELINDEX":no,"CHANNELNAME":"ch"+no,"MOD":infolist[audiomode],"PCMDB":recordval,"PCMPERIOD":mutetime} }
+                datadict = {"MSG_TYPE": "RECORDCONFIGONE", "CHANNELINFO":{"CHANNELINDEX":no,"CHANNELNAME":channelname,"MOD":infolist[audiomode],"PCMDB":recordval,"PCMPERIOD":mutetime} }
                 data = json.dumps(datadict)
                 rest = send_data(data)
                 if rest == False:
@@ -383,7 +388,7 @@ def remote_control(request):
 @login_required
 def search_mid(request):
     config.read("web.ini",encoding='utf-8')
-    path_conf = config.get("configinfo", "filepath")
+
     chan_list=[]
     num =1
     while num<65:
@@ -410,7 +415,7 @@ def search_mid(request):
 
 #处理start_date
         if channel_no == 'all':
-            path0 = path_conf + start_date
+            path0 = 'static/record/' + start_date
             if not os.path.exists(path0):
                 pass
             else:
@@ -418,7 +423,7 @@ def search_mid(request):
                 i = 1
 
                 while i < 65:
-                    path = path_conf + start_date + '/ch' + str(i)
+                    path = 'static/record/' + start_date + '/ch' + str(i)
                     if not os.path.exists(path):
                         pass
 
@@ -450,11 +455,11 @@ def search_mid(request):
                     i = i + 1
 
         else:
-            path0 = path_conf + start_date
+            path0 = 'static/record/' + start_date
             if not os.path.exists(path0):
                 pass
             else:
-                path = path_conf + start_date + '/ch' + channel_no
+                path = 'static/record/' + start_date + '/ch' + channel_no
                 if not os.path.exists(path):
                     pass
 
@@ -485,14 +490,14 @@ def search_mid(request):
                 datestart += datetime.timedelta(days=1)
                 startdate = datetime.datetime.strftime(datestart, '%Y-%m-%d')
                 if channel_no == 'all':
-                    path0 = path_conf + startdate
+                    path0 = 'static/record/' + startdate
                     if not os.path.exists(path0):
                         pass
                     else:
                         i = 1
 
                         while i < 65:
-                            path = path_conf + startdate + '/ch' + str(i)
+                            path = 'static/record/' + startdate + '/ch' + str(i)
                             if not os.path.exists(path):
                                 pass
 
@@ -504,11 +509,11 @@ def search_mid(request):
 
 
                 else:
-                    path0 = path_conf + startdate
+                    path0 = 'static/record/' + startdate
                     if not os.path.exists(path0):
                         pass
                     else:
-                        path = path_conf + startdate + '/ch' + channel_no
+                        path = 'static/record/' + startdate + '/ch' + channel_no
                         if not os.path.exists(path):
                             pass
 
@@ -521,7 +526,7 @@ def search_mid(request):
 
         if dateend >= datestart + datetime.timedelta(days=1):
             if channel_no == 'all':
-                path0 = path_conf + end_date
+                path0 = 'static/record/' + end_date
                 if not os.path.exists(path0):
                     pass
                 else:
@@ -529,7 +534,7 @@ def search_mid(request):
                     i = 1
 
                     while i < 65:
-                        path = path_conf + end_date + '/ch' + str(i)
+                        path = 'static/record/' + end_date + '/ch' + str(i)
                         if not os.path.exists(path):
                             pass
 
@@ -552,11 +557,11 @@ def search_mid(request):
                         i = i + 1
 
             else:
-                path0 = path_conf + end_date
+                path0 = 'static/record/' + end_date
                 if not os.path.exists(path0):
                     pass
                 else:
-                    path = path_conf + end_date + '/ch' + channel_no
+                    path = 'static/record/' + end_date + '/ch' + channel_no
                     if not os.path.exists(path):
                         pass
 
@@ -595,7 +600,7 @@ def audio_file(request):
 
     else:
         config.read("web.ini", encoding='utf-8')
-        path_conf = config.get("configinfo", "filepath")
+
 
 
         dir = request.GET.get('dir', default='10000000')
@@ -603,12 +608,12 @@ def audio_file(request):
         permiss = request.GET.get('permiss', default='10000000')
         try:
 
-
+            path = 'static/record/' + dir
             lists = f_lists[dir]
         except:
-            path = path_conf + dir
+            path = 'static/record/' + dir
             lists =  os.listdir(path)
-        return render(request, 'system/audiofile.html', {'lists': lists, 'path': dir,'name':name,'permiss':permiss})
+        return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
 
 
 def send_data(data):
@@ -633,6 +638,13 @@ def heartbeat(request):
     # res = udp.heartbeat()
     # if res==0:
     #     return JsonResponse({'msg': 'failed'})
+    timenow = datetime.datetime.now()
+    T_Now = timenow.minute*60 + timenow.hour * 60*60 + timenow.second
+    name = request.GET.get('name', default='10000000')
+    config.read("web.ini", encoding='utf-8')
+    config.set(name, 't_current',str(T_Now))
+    config.write(open("web.ini", "w", encoding='utf-8'))
+    print(T_Now)
 
     return JsonResponse({'msg': 'success'})
 

@@ -46,8 +46,8 @@
     $('div#collapseExample1').attr('class','collapse in');
     $('a.file').click(function () {
         var filename = $(this).attr('id')
-        //var src ='file:///'+ '{{ path }}'+'/' + filename
-        var src = '{% static ''%}'+ '{{ path }}'+'/' + filename
+
+        var src ='../' + '{{ path }}'+'/' + filename
 
         console.log(src)
         $('#audio').attr('src',src)
