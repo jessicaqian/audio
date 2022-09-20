@@ -27,9 +27,9 @@
         <tbody>
         {% for list in lists %}
             <tr id="id{{ forloop.counter }}">
-                <td><input name="download" type="checkbox"  value="{% static ''%}{{ path }}/{{ list }}" filename="{{ list }}"/></td>
+                <td><input name="download" type="checkbox"  value="../{{ path }}/{{ list }}" filename="{{ list }}"/></td>
                 <td><a href="#"  class="file" id="{{ list }}">{{list}}&nbsp;&nbsp;<span class="glyphicon glyphicon-play" aria-hidden="true"></span></a></td>
-                <td><a href="{% static ''%}{{ path }}/{{ list }}" download="{{list}}">下载&nbsp;&nbsp;<span class=" glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
+                <td><a href="../{{ path }}/{{ list }}" download="{{list}}">下载&nbsp;&nbsp;<span class=" glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
 
             </tr>
         {% endfor %}

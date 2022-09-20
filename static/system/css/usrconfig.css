@@ -34,7 +34,7 @@ a#new{
     margin-top: 30px;
 }
 
-div#myalter{
+div#myalter,div#myalter1{
     position: absolute;
     z-index: 100;
     width: 90%;

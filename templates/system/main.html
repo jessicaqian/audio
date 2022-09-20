@@ -1001,7 +1001,7 @@
     }
 
     function showval(id){
-        showbar(Math.floor(Math.random()*100+1),id)
+
         $.post('getval',{'no':id}).done(function (info) {
             if(info.msg == "OK"){
                 //console.log(Math.floor(Math.random()*100+1))
@@ -1182,6 +1182,8 @@
                         clearInterval(intervalarr[i])
 
                     }
+                intervalarr = []
+
 
                 }).fail(function () {
 

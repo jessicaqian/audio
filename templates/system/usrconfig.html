@@ -17,6 +17,12 @@
     <button class="btn btn-danger" type="button" id="makesure">确定</button>
     <button class="btn btn-default" type="button" id="cancle">取消</button>
 </div>
+<div class="alert alert-danger " role="alert" id="myalter1" style="display: none">
+    <button type="button" class="close" id="close1" >
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <strong id="tips" >无法删除当前正在使用的用户!</strong>
+</div>
 <div class="row sparse"><label class="head">用户配置&nbsp&nbsp&nbsp&nbsp</label></div>
 <div class="row sparse" id="head_bar">
     <div class="col-md-3">
@@ -81,12 +87,25 @@
     $('div#collapseExample').attr('class','collapse in');
     $('a.dele').click(function () {
         var name = $(this).attr('id')
-        $('button#makesure').attr('name',name)
-        $('#myalter').attr('style','display:block')
+        if(name=="{{ name }}"){
+            $('#myalter1').attr('style','display:block')
+
+        }
+        else {
+            $('button#makesure').attr('name',name)
+            $('#myalter').attr('style','display:block')
+
+        }
+
+
     })
     $('button#close').click(function () {
         $('#myalter').attr('style','display:none')
     });
+    $('button#close1').click(function () {
+        $('#myalter1').attr('style','display:none')
+    });
+
     $('button#cancle').click(function () {
         $('#myalter').attr('style','display:none')
     });
