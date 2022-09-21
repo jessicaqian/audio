@@ -13,7 +13,7 @@
     <button type="button" class="close" id="close">
       <span aria-hidden="true">&times;</span>
     </button>
-  <strong>两次输入密码不一致</strong> 请重新输入。
+  <strong>原始密码输入错误！</strong> 设置失败！
 </div>
 
 <div class="row sparse"><label class="head">用户编辑&nbsp&nbsp&nbsp&nbsp</label></div>
@@ -23,22 +23,20 @@
         {{ error_msg }}
         <div class="row sparse_min">
             <div class="col-md-6">
-            {{ form.usrname.label_tag }}&nbsp&nbsp
-            {{ form.usrname}}
+            <label>用户名:&nbsp&nbsp{{ usrname }}</label>
             </div>
             <div class="col-md-6">
-            {{ form.password_one.label_tag }}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            {{ form.password_one.label_tag }}&nbsp&nbsp
             {{ form.password_one}}
             </div>
 
         </div>
         <div class="row sparse_min">
-           <div class="col-md-6">
-            {{ form.usr_perssions.label_tag }}&nbsp&nbsp
-            {{ form.usr_perssions}}
+            <div class="col-md-6">
+                <label>用户权限:&nbsp&nbsp{{ usrpermiss }}</label>
             </div>
             <div class="col-md-6">
-            {{ form.password_two.label_tag }}&nbsp&nbsp
+            {{ form.password_two.label_tag }}&nbsp&nbsp&nbsp&nbsp&nbsp
             {{ form.password_two}}
             </div>
         </div>

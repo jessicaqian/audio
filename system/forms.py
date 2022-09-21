@@ -49,7 +49,12 @@ class NetForm(forms.Form):
     usrname_n = forms.CharField(widget=forms.TextInput)
     usr_perssions_n = forms.CharField(widget=forms.TextInput)
 
+class UsreditForm(forms.Form):
 
+    password_one = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'请输入原始密码','class':'single_line'}), label='原始密码', max_length=100,required=True)
+    password_two = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'请输入新密码','class':'single_line'}), label='新密码', max_length=100,required=True)
+    usrname_n = forms.CharField(widget=forms.TextInput)
+    usr_perssions_n = forms.CharField(widget=forms.TextInput)
 
 
 

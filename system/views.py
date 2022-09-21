@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
-from .forms import SysconfigForm,UsrForm,NetForm,ChannelForm
+from .forms import SysconfigForm,UsrForm,NetForm,ChannelForm,UsreditForm
 import os,hashlib,json,re
 import time,datetime,configparser,requests
 import ctypes
@@ -295,6 +295,7 @@ def usr_config(request):
         config.read("web.ini",encoding='utf-8')
         usrinfo = config.items('usrinfo')
 
+
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         if permiss == '管理员':
@@ -386,7 +387,19 @@ def remote_control(request):
 
 @login_required
 def edit_usr(request):
-    pass
+    if request.method == 'POST':
+        pass
+    else:
+        form = UsreditForm()
+        usrname = request.GET.get('usrname')
+        usrpermiss = request.GET.get('usrpermiss')
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        if permiss == '管理员':
+
+            return render(request, 'system/usredit.html', {'name': name, 'permiss': permiss, 'form': form,'usrname':usrname,'usrpermiss':usrpermiss})
+        else:
+            return render(request, 'system/error.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
 
 @login_required
