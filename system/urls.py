@@ -21,6 +21,8 @@ urlpatterns = [
     path('netconfig.html',views.net_config),
     path('remotectr.html',views.remote_control),
     path('channelconfig.html',views.channel_config),
-    path('getval',views.get_val)
+    path('getval',views.get_val),
+    path('edit.html',views.edit_usr)
+
 
 ]

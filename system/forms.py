@@ -8,7 +8,7 @@ class SysconfigForm(forms.Form):
 
 
     audiotype = forms.ChoiceField(label='音频存储格式',choices=CHOICES)
-    audiotime = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=False,label='音频文件存储时间')
+    audiotime = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=False,label='音频文件时长')
 
     usrname_n = forms.CharField(widget=forms.TextInput)
     usr_perssions_n = forms.CharField(widget=forms.TextInput)

@@ -36,7 +36,7 @@
 <div id="table_box">
      <table class="table table-hover table-condensed table-striped" id="configed_table">
         <colgroup>
-            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
+            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 15%">
         </colgroup>
         <thead>
             <tr>
@@ -51,7 +51,7 @@
 <div id="configed_table_body">
     <table class="table table-hover table-condensed table-striped" id="table_body">
         <colgroup>
-            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
+            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 15%">
         </colgroup>
     <tbody>
 
@@ -61,7 +61,6 @@
             <td  id="name_{{ forloop.counter }}">{{usrinfo.0}}</td>
             <td>{{usrinfo.1}}</td>
             <td class="delete">
-{#                <a class="btn config" href="/system/delete.html?usrname={{ usrinfo.0}}&name={{ name }}&permiss={{ permiss }}">#}
                 <a class="btn config dele" id="{{ usrinfo.0 }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                 </a>

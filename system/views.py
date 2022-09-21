@@ -66,14 +66,14 @@ def main(request):
         config.read("web.ini",encoding='utf-8')
 
         i = 0
-        channel = ['未知']*64
-        while i < 64:
+        channel = ['未知']*32
+        while i < 32:
             channel[i] =  config.get("configinfo", "channel" + str(i+1))
             i = i + 1
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         audiotype = config.get("configinfo", "audiotype")
-        print(audiotype)
+
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         with open(file=file_path, mode="a", encoding="utf-8") as f:
@@ -129,10 +129,10 @@ def record_status(request):
 def system_config(request):
     config.read("web.ini",encoding='utf-8')
     i = 0
-    channelname = ['未知'] * 64
-    audiomode = ['未知'] * 64
-    channel = ['未知'] * 64
-    while i < 64:
+    channelname = ['未知'] * 32
+    audiomode = ['未知'] * 32
+    channel = ['未知'] * 32
+    while i < 32:
         channelname[i] = config.get("configinfo", "channel" + str(i + 1))
         audiomode[i] = config.get("configinfo", "audiomode" + str(i + 1))
         channel[i] = [channelname[i],audiomode[i]]
@@ -384,6 +384,10 @@ def remote_control(request):
         permiss = request.GET.get('permiss', default='10000000')
         return render(request, 'system/remotectr.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
+@login_required
+def edit_usr(request):
+    pass
+
 
 @login_required
 def search_mid(request):
@@ -391,7 +395,7 @@ def search_mid(request):
 
     chan_list=[]
     num =1
-    while num<65:
+    while num<33:
         channel = config.get("configinfo", "channel"+str(num))
         chan_list.append(channel)
         num = num+1
@@ -422,7 +426,7 @@ def search_mid(request):
 
                 i = 1
 
-                while i < 65:
+                while i < 33:
                     path = 'static/record/' + start_date + '/ch' + str(i)
                     if not os.path.exists(path):
                         pass
@@ -435,6 +439,8 @@ def search_mid(request):
                             Flist1 = re.sub('.mp3','',Flist)
                             Flist0 = re.sub('.wav', '', Flist1)
                             Flist2 = re.sub('-', '', Flist0)
+                            Flist2 = Flist2[-6:]
+
 
 
 
@@ -472,6 +478,7 @@ def search_mid(request):
                         Flist1 = re.sub('.mp3', '', Flist)
                         Flist0 = re.sub('.wav', '', Flist1)
                         Flist2 = re.sub('-', '', Flist0)
+                        Flist2 = Flist2[-6:]
 
 
                         if (int(start_time) - int(Flist2)) <= 0:
@@ -496,7 +503,7 @@ def search_mid(request):
                     else:
                         i = 1
 
-                        while i < 65:
+                        while i < 33:
                             path = 'static/record/' + startdate + '/ch' + str(i)
                             if not os.path.exists(path):
                                 pass
@@ -533,7 +540,7 @@ def search_mid(request):
 
                     i = 1
 
-                    while i < 65:
+                    while i < 33:
                         path = 'static/record/' + end_date + '/ch' + str(i)
                         if not os.path.exists(path):
                             pass
@@ -546,6 +553,7 @@ def search_mid(request):
                                 Flist1 = re.sub('.mp3', '', Flist)
                                 Flist0 = re.sub('.wav', '', Flist1)
                                 Flist2 = re.sub('-', '', Flist0)
+                                Flist2 = Flist2[-6:]
 
                                 if (int(end_time) - int(Flist2)) >= 0:
                                     F_lists.append(Flist)
@@ -574,6 +582,7 @@ def search_mid(request):
                             Flist1 = re.sub('.mp3', '', Flist)
                             Flist0 = re.sub('.wav', '', Flist1)
                             Flist2 = re.sub('-', '', Flist0)
+                            Flist2 = Flist2[-6:]
 
 
                             if (int(end_time) - int(Flist2)) >= 0:
@@ -597,12 +606,7 @@ def search_mid(request):
 def audio_file(request):
     if request.method == 'POST':
         pass
-
     else:
-        config.read("web.ini", encoding='utf-8')
-
-
-
         dir = request.GET.get('dir', default='10000000')
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
@@ -617,9 +621,11 @@ def audio_file(request):
 
 
 def send_data(data):
+    config.read("web.ini", encoding='utf-8')
+    ip = config.get("systeminfo", "serverip")
 
     try:
-        r = requests.post("http://10.25.16.158:8090", data=data)
+        r = requests.post("http://"+ip, data=data)
         res = r.json()
         print(res)
     except Exception as e:
@@ -629,8 +635,6 @@ def send_data(data):
         return res['ret_msg']
     else:
         return False
-
-
 
 
 
@@ -644,7 +648,7 @@ def heartbeat(request):
     config.read("web.ini", encoding='utf-8')
     config.set(name, 't_current',str(T_Now))
     config.write(open("web.ini", "w", encoding='utf-8'))
-    print(T_Now)
+
 
     return JsonResponse({'msg': 'success'})
 
