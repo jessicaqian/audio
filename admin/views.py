@@ -20,12 +20,12 @@ def login(request):
             usrname = info['usrname']
 
             config = configparser.ConfigParser()
-            config.read("web.ini",encoding='utf-8')
+            config.read("web.ini",encoding='utf-8-sig')
             config.set(usrname, "is_login", 'true')
             config.set(usrname, "t_current", str(T_Now))
 
             usrpermiss = config.get('usrinfo', usrname)
-            config.write(open("web.ini", "w",encoding='utf-8'))
+            config.write(open("web.ini", "w",encoding='utf-8-sig'))
 
             # conn = sqlite3.connect('db.sqlite3')
             # cursor = conn.cursor()

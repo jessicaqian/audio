@@ -5,7 +5,7 @@
 {% block title %}用户配置{% endblock %}
 
 {% block css %}
-<link href="{% static  "system/css/newusr.css" %}" rel="stylesheet">
+<link href="{% static  "system/css/editusr.css" %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -18,22 +18,24 @@
 
 <div class="row sparse"><label class="head">用户编辑&nbsp&nbsp&nbsp&nbsp</label></div>
 <div class="col-md-10 col-md-offset-1">
-    <form method="post" onsubmit="return checkInfo()">
+    <form method="post">
     {% csrf_token %}
         {{ error_msg }}
         <div class="row sparse_min">
             <div class="col-md-6">
-            <label>用户名:&nbsp&nbsp{{ usrname }}</label>
+                {{ form.usrname.label_tag }}&nbsp&nbsp
+                {{ form.usrname}}
             </div>
             <div class="col-md-6">
-            {{ form.password_one.label_tag }}&nbsp&nbsp
-            {{ form.password_one}}
+                {{ form.password_one.label_tag }}&nbsp&nbsp
+                {{ form.password_one}}
             </div>
 
         </div>
         <div class="row sparse_min">
             <div class="col-md-6">
-                <label>用户权限:&nbsp&nbsp{{ usrpermiss }}</label>
+            {{ form.usr_perssions.label_tag }}&nbsp&nbsp
+            {{ form.usr_perssions}}
             </div>
             <div class="col-md-6">
             {{ form.password_two.label_tag }}&nbsp&nbsp&nbsp&nbsp&nbsp
@@ -60,27 +62,21 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
+
     $('input#id_usrname_n').val("{{ name }}")
     $('input#id_usr_perssions_n').val("{{ permiss }}")
     $('button#close').click(function () {
         $('#myalter').attr('style','display:none')
     });
-    var pswd1='pswd1'
-    var pswd2='pswd2'
-    function checkInfo() {
-        pswd1 =$('#id_password_one').val()
-        pswd2 =$('#id_password_two').val()
-        if(pswd1==pswd2){
-            return true
-        }
-        else{
-            $('#myalter').attr('style','display:block')
-            return false;
+    if('{{ method }}'==='get'){
+            $('input#id_usrname').val("{{ usrname }}")
+            $('input#id_usr_perssions').val("{{ usrpermiss }}")
 
-        }
-
+    }else if('{{ method }}'==='error'){
+        $('#myalter').attr('style','display:block')
 
     }
+
 
 
 

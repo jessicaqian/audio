@@ -29,7 +29,7 @@ def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
         timenow = datetime.datetime.now()
         T_Now = timenow.minute*60 + timenow.hour * 60*60 + timenow.second
-        config.read("web.ini",encoding='utf-8')
+        config.read("web.ini",encoding='utf-8-sig')
 
         name = request.GET.get('name', default='e')
         if name == 'e':
@@ -43,7 +43,7 @@ def login_required(func):  # 自定义登录验证装饰器
                     config.set(name,'is_login','false')
                 else:
                     config.set(name, 't_current',str(T_Now))
-                config.write(open("web.ini", "w",encoding='utf-8'))
+                config.write(open("web.ini", "w",encoding='utf-8-sig'))
             except:
                 return HttpResponseRedirect("/")
         is_login = config.get(name,'is_login')
@@ -63,7 +63,7 @@ def main(request):
 
 
     else:
-        config.read("web.ini",encoding='utf-8')
+        config.read("web.ini",encoding='utf-8-sig')
 
         i = 0
         channel = ['未知']*32
@@ -76,7 +76,7 @@ def main(request):
 
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
-        with open(file=file_path, mode="a", encoding="utf-8") as f:
+        with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
             f.write(f'{time} {name}登录\n')
 
         return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel,'r_status':r_status,'type':audiotype})
@@ -92,7 +92,7 @@ def btn_action(request):
 
 
 def get_diskstatus(request):
-    config.read("web.ini", encoding='utf-8')
+    config.read("web.ini", encoding='utf-8-sig')
     diskspace = config.get("configinfo", "diskspace")
     free_bytes = ctypes.c_ulonglong(0)
     ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskspace), None, None, ctypes.pointer(free_bytes))
@@ -127,7 +127,7 @@ def record_status(request):
 
 @login_required
 def system_config(request):
-    config.read("web.ini",encoding='utf-8')
+    config.read("web.ini",encoding='utf-8-sig')
     i = 0
     channelname = ['未知'] * 32
     audiomode = ['未知'] * 32
@@ -163,10 +163,10 @@ def system_config(request):
             config.set("configinfo", "audiotype", audiotype)
             config.set("configinfo", "audiotime", audiotime0)
 
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
+            with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
                 f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}\n')
 
-            config.write(open("web.ini","w",encoding='utf-8'))
+            config.write(open("web.ini","w",encoding='utf-8-sig'))
 
             return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'channels':channel})
         else:
@@ -220,7 +220,7 @@ def channel_config(request):
                 config.set("configinfo", "recordval" + no, recordval)
                 config.set("configinfo", "mutetime" + no, mutetime)
 
-                config.write(open("web.ini", "w", encoding='utf-8'))
+                config.write(open("web.ini", "w", encoding='utf-8-sig'))
 
                 return HttpResponseRedirect('/system/sysconfig.html?name=' + name + '&permiss=' + permiss)
 
@@ -250,7 +250,7 @@ def net_config(request):
             ip = form.cleaned_data['ip']
             mask = form.cleaned_data['mask']
             gateway = form.cleaned_data['netgate']
-            config.read("web.ini",encoding='utf-8')
+            config.read("web.ini",encoding='utf-8-sig')
             dev = config.get("systeminfo", "netdev")
             pw = config.get("systeminfo", "syspw")
             path0 = config.get("systeminfo", "path")
@@ -258,7 +258,7 @@ def net_config(request):
             sudoCMD('chmod 777 '+ path,pw)
             sudoCMD('touch ' + path+'cp', pw)
             sudoCMD('chmod 777 ' + path+'cp', pw)
-            with open(path+'cp', mode='w', encoding='utf-8') as fw, open(path, mode='r', encoding='utf-8') as fr:
+            with open(path+'cp', mode='w', encoding='utf-8-sig') as fw, open(path, mode='r', encoding='utf-8-sig') as fr:
                 for line in fr:
                     if 'BOOTPROTO' in line:
                         line = 'BOOTPROTO=static\n'
@@ -273,7 +273,7 @@ def net_config(request):
                     fw.write(line)
             fr.close()
             fw.close()
-            with open(path+'cp', mode='r', encoding='utf-8') as fr1, open(path, mode='w', encoding='utf-8') as fw1:
+            with open(path+'cp', mode='r', encoding='utf-8-sig') as fr1, open(path, mode='w', encoding='utf-8-sig') as fw1:
                 for line in fr1:
                     fw1.write(line)
             fr1.close()
@@ -292,7 +292,7 @@ def usr_config(request):
         pass
 
     else:
-        config.read("web.ini",encoding='utf-8')
+        config.read("web.ini",encoding='utf-8-sig')
         usrinfo = config.items('usrinfo')
 
 
@@ -317,17 +317,17 @@ def new_usr(request):
             m = password + "{{sdtzzq}}"
             pw = hashlib.md5(m.encode())
 
-            config.read("web.ini",encoding='utf-8')
+            config.read("web.ini",encoding='utf-8-sig')
             try:
                 config.add_section(name)
                 config.set(name, "name", name)
                 config.set(name, "pw", pw.hexdigest())
                 config.set("usrinfo", name, perssions)
-                config.write(open("web.ini", "w",encoding='utf-8'))
+                config.write(open("web.ini", "w",encoding='utf-8-sig'))
 
                 now = datetime.datetime.now()
                 time = now.strftime("%Y-%m-%d %H:%M:%S")
-                with open(file=file_path, mode="a", encoding="utf-8") as f:
+                with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
                     f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
                 return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
 
@@ -355,23 +355,23 @@ def del_usr(request):
         usrname = request.GET.get('usrname')
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
-        with open(file=file_path, mode="a", encoding="utf-8") as f:
+        with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
             f.write(f'{time} {name}用户 删除用户{usrname}权限:{permiss}\n')
 
 
 
-        config.read("web.ini",encoding='utf-8')
+        config.read("web.ini",encoding='utf-8-sig')
         config.remove_section(usrname)
         config.remove_option("usrinfo",usrname)
 
-        config.write(open("web.ini", "w",encoding='utf-8'))
+        config.write(open("web.ini", "w",encoding='utf-8-sig'))
 
         return JsonResponse({'msg': 'success'})
 
 
 def remote_control(request):
     if request.method == 'POST':
-        config.read("web.ini",encoding='utf-8')
+        config.read("web.ini",encoding='utf-8-sig')
         pw = config.get("systeminfo", "syspw")
         method = request.POST.get('mark')
         if method == 'shutdown':
@@ -388,7 +388,34 @@ def remote_control(request):
 @login_required
 def edit_usr(request):
     if request.method == 'POST':
-        pass
+        form = UsreditForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['usrname']
+            password = form.cleaned_data['password_one']
+            n_password = form.cleaned_data['password_two']
+            u_name = form.cleaned_data['usrname_n']
+            u_permiss = form.cleaned_data['usr_perssions_n']
+            m = password + "{{sdtzzq}}"
+            pw = hashlib.md5(m.encode())
+
+            config.read("web.ini",encoding='utf-8-sig')
+
+            pw_conf = config.get(name,"pw")
+            if pw.hexdigest() == pw_conf:
+                m1 = n_password + "{{sdtzzq}}"
+                pw1 = hashlib.md5(m1.encode())
+                config.set(name, "pw", pw1.hexdigest())
+
+                config.write(open("web.ini", "w",encoding='utf-8-sig'))
+
+                now = datetime.datetime.now()
+                time = now.strftime("%Y-%m-%d %H:%M:%S")
+                # with open(file=file_path, mode="a", encoding="utf-8") as f:
+                #     f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
+                return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
+            else:
+                return render(request,'system/usredit.html',{'form':form,'name':u_name,'permiss':u_permiss,'method':'error'})
+
     else:
         form = UsreditForm()
         usrname = request.GET.get('usrname')
@@ -397,14 +424,14 @@ def edit_usr(request):
         permiss = request.GET.get('permiss', default='10000000')
         if permiss == '管理员':
 
-            return render(request, 'system/usredit.html', {'name': name, 'permiss': permiss, 'form': form,'usrname':usrname,'usrpermiss':usrpermiss})
+            return render(request, 'system/usredit.html', {'name': name, 'permiss': permiss, 'form': form,'usrname':usrname,'usrpermiss':usrpermiss,'method':'get'})
         else:
             return render(request, 'system/error.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
 
 @login_required
 def search_mid(request):
-    config.read("web.ini",encoding='utf-8')
+    config.read("web.ini",encoding='utf-8-sig')
 
     chan_list=[]
     num =1
@@ -634,7 +661,7 @@ def audio_file(request):
 
 
 def send_data(data):
-    config.read("web.ini", encoding='utf-8')
+    config.read("web.ini", encoding='utf-8-sig')
     ip = config.get("systeminfo", "serverip")
 
     try:
@@ -658,9 +685,9 @@ def heartbeat(request):
     timenow = datetime.datetime.now()
     T_Now = timenow.minute*60 + timenow.hour * 60*60 + timenow.second
     name = request.GET.get('name', default='10000000')
-    config.read("web.ini", encoding='utf-8')
+    config.read("web.ini", encoding='utf-8-sig')
     config.set(name, 't_current',str(T_Now))
-    config.write(open("web.ini", "w", encoding='utf-8'))
+    config.write(open("web.ini", "w", encoding='utf-8-sig'))
 
 
     return JsonResponse({'msg': 'success'})
@@ -682,10 +709,10 @@ def free_logs(request):
         channel_no = data.get("channel_no")
         channel_name = data.get("channel_name")
         if end_time is None:
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
+            with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
                 f.write(f'{start_time} 用户:{user_name}开始录音 通道号:{channel_no} 通道名:{channel_name}\n')
         else:
-            with open(file=file_path, mode="a", encoding="utf-8") as f:
+            with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
                 f.write(f'{end_time} 用户:{user_name}停止录音 通道号:{channel_no} 通道名:{channel_name}\n')
         return JsonResponse({'mes':"ok"})
     else:
@@ -724,7 +751,7 @@ def free_count(request):
             for i in listdir:
                 time_os = i[0:10]
                 if time_os >= st and time_os<=et:
-                    with open(file=dir+'/'+i, mode="r", encoding="utf-8") as f:
+                    with open(file=dir+'/'+i, mode="r", encoding="utf-8-sig") as f:
                         data =f.readlines()
                         listdivd.extend(data)
 
@@ -745,7 +772,7 @@ def devices(request):
     if request.method =="POST":
         pass
     else:
-        config.read("web.ini",encoding='utf-8')
+        config.read("web.ini",encoding='utf-8-sig')
 
         audiotype = config.get("configinfo", "audiotype")
         channel1 = config.get("configinfo", "channel1")
