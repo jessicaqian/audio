@@ -39,7 +39,7 @@
         <div class="hidden">{{ form.usr_perssions_n}}</div>
         <div class="row">
             <div class="col-md-2 col-md-offset-10">
-                <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
+                <input type="submit" value="保存并重启" id="save" class="btn btn-primary">
             </div>
         </div>
     </form>
@@ -125,7 +125,12 @@
             $('#tips').html('设置失败')
             $('#myalter').attr('class','alert alert-danger')
             $('#myalter').attr('style','display:block')
-        }else {
+        }else if('{{ res }}'=='online'){
+            $('#tips').html('无法执行设置操作，请先关闭所有录音通道')
+            $('#myalter').attr('class','alert alert-danger')
+            $('#myalter').attr('style','display:block')
+        }
+        else {
             $('#tips').html('保存成功')
             $('#myalter').attr('class','alert alert-success')
             $('#myalter').attr('style','display:block')

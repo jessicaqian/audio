@@ -15,9 +15,15 @@
         </button>
       <strong id="tips" >录音阈值或录音时长格式错误</strong>，该值只能为正整数，请重新输入。
     </div>
+    <div class="alert alert-danger " role="alert" id="myalter1" style="display: none">
+        <button type="button" class="close" id="close1" >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      <strong id="tips1" >无法执行设置操作</strong>，请先关闭所有录音通道。
+    </div>
+
+
     <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
-
-
     <div class="row tips">
         <label>通道配置</label>
     </div>
@@ -31,23 +37,26 @@
             <div class="col-md-6">
                 {{ form.channelname.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channelname}}
             </div>
-            <div class="col-md-6">
-                {{ form.recordval.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.recordval}}
+            <div class="col-md-6" id="recordval">
+                {{ form.recordval.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.recordval}}db
             </div>
         </div>
         <div class="row1 row selebox">
             <div class="col-md-6">
                 {{ form.audiomode.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiomode}}
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" id="mutetime">
                 {{ form.mutetime.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.mutetime}}秒
             </div>
         </div>
         <div class="hidden">{{ form.usrname_n}}</div>
         <div class="hidden">{{ form.usr_perssions_n}}</div>
         <div class="row">
-            <div class="col-md-2 col-md-offset-10">
-                <input type="submit" value="保&nbsp&nbsp存" id="save" class="btn btn-primary">
+            <div class="col-md-2 col-md-offset-8">
+                <a   id="reset" class="btn btn-primary">还原配置</a>
+            </div>
+            <div class="col-md-2">
+                <input type="submit" value="保存配置" id="save" class="btn btn-primary">
             </div>
         </div>
     </form>
@@ -64,40 +73,70 @@
 
 {% block js %}
 <script type="text/javascript">
-    $('a#flow').attr('aria-expanded','true');
-    $('div#collapseExample').attr('class','collapse in');
-    $('input#id_usrname_n').val("{{ name }}")
-    $('input#id_usr_perssions_n').val("{{ permiss }}")
+$('a#flow').attr('aria-expanded','true');
+$('div#collapseExample').attr('class','collapse in');
+$('input#id_usrname_n').val("{{ name }}")
+$('input#id_usr_perssions_n').val("{{ permiss }}")
 
-    function checknum() {
-        var val = $('input#id_recordval').val()
-        var time = $('input#id_mutetime').val()
-        if ((/(^[1-9]\d*$)/.test(val))&&(/(^[1-9]\d*$)/.test(time))) {
-            return true
-        }else {
-            $('#myalter').attr('style','display:block')
-            return false　　　　　　
-        }
+if('{{ method }}'=='get'){
 
+    $('input#id_channelNo').val("{{ channelno }}")
+    $('input#id_channelname').val("{{ channelname }}")
+    $('input#id_recordval').val("{{ recordval }}")
+    $('input#id_mutetime').val("{{ mutetime }}")
+    $('select#id_audiomode').val('{{audiomode}}')
+}else {
+    if('{{ res }}'=='online'){
+        $('#myalter1').attr('class','alert alert-danger')
+        $('#myalter1').attr('style','display:block')
+    }
+
+}
+
+checkmode()
+
+$('button#close').click(function () {
+    $('#myalter').attr('style','display:none')
+});
+
+$('button#close1').click(function () {
+    $('#myalter1').attr('style','display:none')
+});
+
+
+
+$('select#id_audiomode').change(function () {
+    checkmode()
+
+})
+
+$('a#reset').click(function () {
+
+})
+
+
+function checknum() {
+    var val = $('input#id_recordval').val()
+    var time = $('input#id_mutetime').val()
+    if ((/(^[1-9]\d*$)/.test(val))&&(/(^[1-9]\d*$)/.test(time))) {
+        return true
+    }else {
+        $('#myalter').attr('style','display:block')
+        return false　　　　　　
+    }
+
+}
+
+function checkmode() {
+    var audiomode = $('select#id_audiomode').val()
+    if(audiomode == "全时段录音"){
+        $('div#mutetime').attr('style','display:none')
+    }else{
+        $('div#mutetime').attr('style','display:block')
 
     }
 
-    if('{{ method }}'=='get'){
-
-        $('input#id_channelNo').val("{{ channelno }}")
-        $('input#id_channelname').val("{{ channelname }}")
-        $('input#id_recordval').val("{{ recordval }}")
-        $('input#id_mutetime').val("{{ mutetime }}")
-        $('select#id_audiomode').val('{{audiomode}}')
-    }
-
-    $('button#close').click(function () {
-        $('#myalter').attr('style','display:none')
-    });
-
-
-
-
+}
 
 
 </script>

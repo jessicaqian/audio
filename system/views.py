@@ -19,11 +19,17 @@ print(file_path)
 f_lists={}
 config = configparser.ConfigParser()
 
-r_status = ['off']*32
+r_status = ['on']*32
 
 def sudoCMD(command,password):
     str = os.system('echo %s | sudo -S %s' % (password,command))
     print(str)
+
+def checkstatus():
+    for status in r_status:
+        if status == 'on':
+            return False
+    return True
 
 def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
@@ -73,13 +79,14 @@ def main(request):
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         audiotype = config.get("configinfo", "audiotype")
+        diskwarn = config.get("configinfo", "diskwarn")
 
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
             f.write(f'{time} {name}登录\n')
 
-        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel,'r_status':r_status,'type':audiotype})
+        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channels':channel,'r_status':r_status,'type':audiotype,'diskwarn':diskwarn})
 
 def btn_action(request):
     data = request.POST['mes']
@@ -138,6 +145,7 @@ def system_config(request):
         channel[i] = [channelname[i],audiomode[i]]
         i = i + 1
     if request.method == 'POST':
+
         form = SysconfigForm(request.POST)
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -145,6 +153,15 @@ def system_config(request):
 
             u_name = form.cleaned_data['usrname_n']
             u_permiss = form.cleaned_data['usr_perssions_n']
+
+            val = checkstatus()
+            if val:
+                pass
+            else:
+                return render(request, 'system/sysconfig.html', {'form': form,'name':u_name,'permiss':u_permiss,'res':'online','channels':channel})
+
+
+
 
             audiotype = form.cleaned_data['audiotype']
             audiotime0 = form.cleaned_data['audiotime']
@@ -198,6 +215,14 @@ def channel_config(request):
                 permiss = form.cleaned_data['usr_perssions_n']
 
                 no = form.cleaned_data['channelNo']
+
+                if checkstatus():
+                    pass
+                else:
+                    return render(request, 'system/channelconfig.html',
+                                  {'form': form, 'name': name, 'permiss': permiss, 'res': 'online'})
+
+
 
                 audiomode = form.cleaned_data['audiomode']
                 channelname = form.cleaned_data['channelname']

@@ -35,8 +35,9 @@
 
             </div>
             <div class="row1 row">
-                <div class="col-md-5">
-                    磁盘剩余空间:<label class="disk-info" id="space">....G</label>
+                <div class="col-md-11">
+                    磁盘剩余空间:<label class="disk-info" id="space">....G</label>&nbsp&nbsp&nbsp&nbsp
+                    <span id="warntip" style="display:inline;">磁盘剩余空间不足</span>
 
                 </div>
             </div>
@@ -1208,6 +1209,20 @@
 
     })
 
+    function shine() {
+        var mark = $('label#space').attr('class')
+        if(mark == 'disk-info-warn'){
+            $('label#space').attr('class','disk-info-warn1')
+
+        }else{
+            $('label#space').attr('class','disk-info-warn')
+
+        }
+
+    }
+
+    var shinelight
+
     function getdiskStatus(){
         $.get('getdiskStatus').done(function (info) {
             if(no == info.no){
@@ -1215,6 +1230,18 @@
             }else{
                 $('label#space').html(info.no + 'G')
                 no = info.no
+                if(no<{{ diskwarn }}){
+                    shinelight = setInterval(shine,500)
+                    $('#warntip').attr('style','display:inline;')
+
+
+                }else {
+                    clearInterval(shinelight)
+                    $('label#space').attr('class','disk-info')
+                    $('#warntip').attr('style','display:none;')
+
+
+                }
             }
 
         }).fail(function () {

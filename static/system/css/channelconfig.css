@@ -13,6 +13,12 @@ div#myalter{
     width: 90%;
 }
 
+div#myalter1{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+}
+
 li#config>a{
     background-color: #eee;
     color: #23527c;
