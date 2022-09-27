@@ -29,6 +29,7 @@ class ChannelForm(forms.Form):
     mutetime = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='停止录音时长')
     usrname_n = forms.CharField(widget=forms.TextInput)
     usr_perssions_n = forms.CharField(widget=forms.TextInput)
+    rightnow = forms.CharField(widget=forms.TextInput(attrs={'value':'false'}))
 
 class UsrForm(forms.Form):
     CHOICES = (

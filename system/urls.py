@@ -25,4 +25,5 @@ urlpatterns = [
     path('edit.html',views.edit_usr)
 
 
+
 ]

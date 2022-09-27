@@ -28,3 +28,7 @@ li#dev_configed > a{
     color: #efb041;
     padding-left: 30px;
 }
+
+span.savetip{
+    color:#c9302c;
+}

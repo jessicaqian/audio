@@ -59,7 +59,7 @@
     <div id="table_box">
          <table class="table table-hover table-condensed table-striped" id="configed_table">
             <colgroup>
-                <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
+                <col style="width: 40px"><col style="width: 20%"><col style="width: 20%"><col style="width: 70px"><col style="width: 20%">
             </colgroup>
             <thead>
                 <tr>
@@ -67,6 +67,7 @@
                     <th>通道名</th>
                     <th>录音模式</th>
                     <th>配置</th>
+                    <th>配置提示</th>
                 </tr>
             </thead>
         </table>
@@ -74,7 +75,7 @@
     <div id="configed_table_body">
         <table class="table table-hover table-condensed table-striped" id="table_body">
             <colgroup>
-                <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
+                <col style="width: 40px"><col style="width: 20%"><col style="width: 20%"><col style="width: 70px"><col style="width: 20%">
             </colgroup>
             <tbody>
 
@@ -88,6 +89,8 @@
                             <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                         </a>
                     </td>
+                    <td><span class="glyphicon glyphicon-exclamation-sign savetip" aria-hidden="true" id="save{{ forloop.counter }}" style="display: none">&nbsp;配置尚未生效</span></td>
+
                 </tr>
             {% endfor %}
 
@@ -110,6 +113,18 @@
     $('div#collapseExample').attr('class','collapse in');
     $('input#id_usrname_n').val("{{ name }}")
     $('input#id_usr_perssions_n').val("{{ permiss }}")
+
+    {% for channel in channels %}
+        if ('{{channel.2}}'=='false'){
+            $('span#save{{ forloop.counter }}').attr('style','display:inline')
+        }
+        else {
+            $('span#save{{ forloop.counter }}').attr('style','display:none')
+
+        }
+
+    {% endfor %}
+
 
     $('button#close').click(function () {
         $('#myalter').attr('style','display:none')

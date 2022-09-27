@@ -19,13 +19,16 @@
         <button type="button" class="close" id="close1" >
           <span aria-hidden="true">&times;</span>
         </button>
-      <strong id="tips1" >无法执行设置操作</strong>，请先关闭所有录音通道。
+      <strong id="tips1" ></strong>
     </div>
 
 
     <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
     <div class="row tips">
         <label>通道配置</label>
+        <span class="glyphicon glyphicon-exclamation-sign savetip" aria-hidden="true" style="display: none"></span>
+        <span class="sr-only">Error:</span>
+        <span style="display: none" class="savetip">该通道配置尚未生效</span>
     </div>
     <form method="post" onsubmit="return checknum()">
         <div class="row1 row selebox">
@@ -51,12 +54,16 @@
         </div>
         <div class="hidden">{{ form.usrname_n}}</div>
         <div class="hidden">{{ form.usr_perssions_n}}</div>
+        <div class="hidden">{{ form.rightnow }}</div>
         <div class="row">
-            <div class="col-md-2 col-md-offset-8">
-                <a   id="reset" class="btn btn-primary">还原配置</a>
+            <div class="col-md-1 col-md-offset-8">
+                <a id="reset" class="btn btn-primary" href="">还原配置</a>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <input type="submit" value="保存配置" id="save" class="btn btn-primary">
+            </div>
+            <div class="col-md-1">
+                <input type="submit" value="立即生效" id="rightnow" class="btn btn-warning">
             </div>
         </div>
     </form>
@@ -85,8 +92,23 @@ if('{{ method }}'=='get'){
     $('input#id_recordval').val("{{ recordval }}")
     $('input#id_mutetime').val("{{ mutetime }}")
     $('select#id_audiomode').val('{{audiomode}}')
+    if('{{ save }}'=='false'){
+        $('span.savetip').attr('style','display:inline')
+
+    }else {
+        $('span.savetip').attr('style','display:none')
+    }
 }else {
     if('{{ res }}'=='online'){
+        $('#tips1').html('无法执行设置操作，请先关闭所有录音通道')
+        $('#myalter1').attr('class','alert alert-danger')
+        $('#myalter1').attr('style','display:block')
+    }else if('{{ res }}'=='failed'){
+        $('#tips1').html('设置失败')
+        $('#myalter1').attr('class','alert alert-danger')
+        $('#myalter1').attr('style','display:block')
+    }else if('{{ res }}'=='same'){
+        $('#tips1').html('参数未发生改变')
         $('#myalter1').attr('class','alert alert-danger')
         $('#myalter1').attr('style','display:block')
     }
@@ -94,6 +116,7 @@ if('{{ method }}'=='get'){
 }
 
 checkmode()
+
 
 $('button#close').click(function () {
     $('#myalter').attr('style','display:none')
@@ -103,7 +126,13 @@ $('button#close1').click(function () {
     $('#myalter1').attr('style','display:none')
 });
 
+$('input#rightnow').click(function () {
+    $('input#id_rightnow').val('true')
+});
 
+$('input#save').click(function () {
+    $('input#id_rightnow').val('false')
+});
 
 $('select#id_audiomode').change(function () {
     checkmode()
@@ -111,9 +140,13 @@ $('select#id_audiomode').change(function () {
 })
 
 $('a#reset').click(function () {
+    var no = $('input#id_channelNo').val()
+    $.get('channelconfig.html?no=' + no + '&name={{name}}&permiss={{permiss}}&reset=true').done(function (info) {
 
+    }).fail(function () {
+
+    })
 })
-
 
 function checknum() {
     var val = $('input#id_recordval').val()

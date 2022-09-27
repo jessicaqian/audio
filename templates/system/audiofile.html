@@ -14,11 +14,14 @@
         <audio controls="controls" src="" id="audio"></audio>
     </div>
     <div class="row sparse">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <h5 class="modal-title" >文件列表</h5>
         </div>
         <div class="col-md-3">
             <a class="btn-primary btn" id="download-btn">批量文件下载</a>
+        </div>
+        <div class="col-md-3">
+            <a class="btn-primary btn" id="play-btn">顺序播放</a>
         </div>
     </div>
 
@@ -75,6 +78,7 @@
 
         })
         for (let index = 0; index < audioarr.length; index++) {
+
           download(audioname[index], audioarr[index]);
         }
         audioarr = [];
@@ -82,7 +86,27 @@
     })
 
 
+    var audio = document.getElementById("audio")
 
+
+    $('#play-btn').click(function () {
+        $("input:checkbox[name='download']:checked").each(function () {
+            audioarr.push($(this).val())
+            audioname.push($(this).attr("filename"))
+
+        })
+        for (let index = 0; index < audioarr.length; index++) {
+            $('#audio').attr('src',audioarr[index])
+            audio.play()
+            audio.addEventListener('ended',function () {
+                alert(1)
+
+            })
+
+        }
+        audioarr = [];
+        audioname = [];
+    })
 
 
 
