@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
-from .forms import SysconfigForm,UsrForm,NetForm
+from .forms import SysconfigForm,UsrForm,NetForm,UsreditForm
 import os,hashlib,json,threading,re
 import time,datetime,configparser
 from . import udp
@@ -25,13 +25,14 @@ file_path = dir + '/'+timestr+'.txt'
 f_lists={}
 
 config = configparser.ConfigParser()
+config1 = configparser.ConfigParser()
 config.read("web.ini")
 pw = config.get("systeminfo", "syspw")
 mpath = config.get("systeminfo", "mpath")
 
 
 r_status = ['off','off','off','off']
-modedict={'mp3':1,'wav':0,'全时段录音':0,'自动录音':1}
+modedict={'mp3':1,'wav':0,'全时段录音':0,'自动录音':1}##
 
 
 def init():
@@ -86,7 +87,7 @@ def sudoCMD(command,password):
     str = os.system('echo %s | sudo -S %s' % (password,command))
     print(str)
 
-def pcmtowav(input,output):
+def pcmtowav(input,output):  #pcm转wav
 
     file1 = bytes(input, encoding='utf-8')
     file2 = bytes(output, encoding='utf-8')
@@ -100,10 +101,10 @@ def pcmtowav(input,output):
     except:
         return 0
 
-def checkpcm(ch_no):
-    current_time = time.strftime("%Y-%m-%d", time.localtime())
-    path = mpath + current_time + '/' + ch_no + '/'
-    lists = os.listdir(path)
+def checkpcm(ch_no):  #检查pcm文件
+    current_time = time.strftime("%Y-%m-%d", time.localtime()) #获取当前时间
+    path = mpath + current_time + '/' + ch_no + '/' #文件存储路径
+    lists = os.listdir(path) #路径文件列表
     sudoCMD('chmod 777 -R ' + path, pw)
     for list in lists:
         if ('pcm' in list):
@@ -178,6 +179,7 @@ def main(request):
     else:
         # config.read("web.ini")
         audiomode = config.get("configinfo", "audiomode")
+        audiotype = config.get("configinfo","audiotype")
         channel1 =  config.get("configinfo", "channel1")
         channel2 =  config.get("configinfo", "channel2")
         channel3 = config.get("configinfo", "channel3")
@@ -189,7 +191,7 @@ def main(request):
         # with open(file=file_path, mode="a", encoding="utf-8") as f:
         #     f.write(f'{time} {name}登录\n')
 
-        return render(request, 'system/main.html',{'name':name,'permiss':permiss,'channel1':channel1,'channel2':channel2,'channel3':channel3,'channel4':channel4,'audiomode':audiomode,'r_status':r_status})
+        return render(request, 'system/main.html',locals())
 
 def get_diskstatus(request):
     st = os.statvfs('/home')
@@ -516,7 +518,6 @@ def search_mid(request):
 
         start = request.POST['start']
         start_date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
-
         start_time = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%H%M00')
         end = request.POST['end']
         end_date = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
@@ -872,3 +873,46 @@ def devices(request):
                 "status":r_status[3],
                 "fileType":audiotype}]}
     return JsonResponse(listd)
+
+@login_required
+def edit_usr(request):
+    if request.method == 'POST':
+        form = UsreditForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['usrname']
+            password = form.cleaned_data['password_one']
+            n_password = form.cleaned_data['password_two']
+            u_name = form.cleaned_data['usrname_n']
+            u_permiss = form.cleaned_data['usr_perssions_n']
+            m = password + "{{sdtzzq}}"
+            pw = hashlib.md5(m.encode())
+
+            config1.read("admin.ini",encoding='utf-8-sig')
+
+            pw_conf = config1.get(name,"pw")
+            if pw.hexdigest() == pw_conf:
+                m1 = n_password + "{{sdtzzq}}"
+                pw1 = hashlib.md5(m1.encode())
+                config1.set(name, "pw", pw1.hexdigest())
+
+                config1.write(open("admin.ini", "w",encoding='utf-8-sig'))
+
+                now = datetime.datetime.now()
+                time = now.strftime("%Y-%m-%d %H:%M:%S")
+                # with open(file=file_path, mode="a", encoding="utf-8") as f:
+                #     f.write(f'{time} {u_name}用户 新建用户{name}权限:{perssions}\n')
+                return HttpResponseRedirect('/system/usrconfig.html?name='+u_name+'&permiss='+u_permiss)
+            else:
+                return render(request,'system/usredit.html',{'form':form,'name':u_name,'permiss':u_permiss,'method':'error'})
+
+    else:
+        form = UsreditForm()
+        usrname = request.GET.get('usrname')
+        usrpermiss = request.GET.get('usrpermiss')
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        if permiss == '管理员':
+
+            return render(request, 'system/usredit.html', {'name': name, 'permiss': permiss, 'form': form,'usrname':usrname,'usrpermiss':usrpermiss,'method':'get'})
+        else:
+            return render(request, 'system/error.html', {'name': name, 'permiss': permiss, 'ecode': 0})

@@ -5,5 +5,5 @@ app_name ='admin'
 
 urlpatterns = [
     path('', views.login),
-
+    #path('register/',views.register),
 ]

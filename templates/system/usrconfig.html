@@ -9,6 +9,21 @@
 {% endblock %}
 
 {% block content %}
+<div class="alert alert-danger" role="alert" id="myalter" style="display: none" >
+    <button type="button" class="close" id="close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <strong id="tips" >您确定删除该用户吗</strong>？
+    <button class="btn btn-danger" type="button" id="makesure">确定</button>
+    <button class="btn btn-default" type="button" id="cancle">取消</button>
+</div>
+<div class="alert alert-danger" role="alert" id="myalter1" style="display: none">
+    <button type="button" class="close" id="close1">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <strong id="tips" >无法删除当前登录的用户!</strong>
+</div>
+
 <div class="row sparse"><label class="head">用户配置&nbsp&nbsp&nbsp&nbsp</label></div>
 <div class="row sparse" id="head_bar">
     <div class="col-md-3">
@@ -22,14 +37,15 @@
 <div id="table_box">
      <table class="table table-hover table-condensed table-striped" id="configed_table">
         <colgroup>
-            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
+            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 15%"><col style="width: 15%">
         </colgroup>
         <thead>
             <tr>
-                <th>#</th>
+                <th>序号</th>
                 <th>用户名</th>
                 <th>用户权限</th>
                 <th>删除</th>
+                <th>编辑</th>
             </tr>
         </thead>
     </table>
@@ -37,7 +53,7 @@
 <div id="configed_table_body">
     <table class="table table-hover table-condensed table-striped" id="table_body">
         <colgroup>
-            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 70px">
+            <col style="width: 40px"><col style="width: 30%"><col style="width: 25%"><col style="width: 15%"><col style="width: 15%">
         </colgroup>
     <tbody>
 
@@ -47,8 +63,13 @@
             <td  id="name_{{ forloop.counter }}">{{usrinfo.0}}</td>
             <td>{{usrinfo.1}}</td>
             <td class="delete">
-                <a class="btn config" href="/system/delete.html?usrname={{ usrinfo.0}}&name={{ name }}&permiss={{ permiss }}">
+                <a class="btn config dele" id="{{ usrinfo.0 }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                </a>
+            </td>
+            <td class="edit">
+                <a class="btn config" href="/system/edit.html?usrname={{ usrinfo.0 }}&usrpermiss={{ usrinfo.1 }}&name={{ name }}&permiss={{ permiss }}">
+                    <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                 </a>
             </td>
         </tr>
@@ -70,8 +91,41 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
+    $('a.dele').click(function () {
+        var name =$(this).attr('id')
+        if (name=='{{ name }}'){
+            $('#myalter1').attr('style','display:block')
+        }
+        else{
+            $('button#makesure').attr('name',name)
+            $('#myalter').attr('style','display:block')
+        }
+    })
+
+    $('button#close').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
+    $('button#close1').click(function () {
+        $('#myalter1').attr('style','display:none')
+    });
+
+    $('button#cancle').click(function () {
+        $('#myalter').attr('style','display:none')
+    });
+    $('button#makesure').click(function () {
+        var mark = $(this).attr('name')
+        $.get('delete.html?usrname='+mark+'&name={{ name }}&permiss={{ permiss }}').done(function (info) {
+            if(info.msg=='success'){
+                location.reload()
+            }
+
+        }).fail(function (info) {
 
 
+        })
+        $('#myalter').attr('style','display:none')
+
+    })
 </script>
 {% endblock %}
 

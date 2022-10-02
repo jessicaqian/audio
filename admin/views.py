@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import NameForm
+from . import forms
 # import sqlite3
 import configparser
 import time,datetime,os
@@ -53,3 +54,26 @@ def login(request):
     else:
         form = NameForm()
     return render(request, 'admin/login.html', {'form': form})
+
+def register(request):
+    if request.method=='POST':
+        register_form = forms.RegisterRorm(request.POST)
+
+        message = '请仔细检查填写内容！'
+        if register_form.is_valid():
+           username = register_form.cleaned_data('username')
+           password = register_form.cleaned_data('password')
+           password1 = register_form.cleaned_data('password1')
+           email = register_form.cleaned_data('email')
+           sex = register_form.cleaned_data('sex')
+
+           if password!=password1:
+               message = '两次密码输入不同'
+               return render(request,'admin/register.html',locals())
+           else:
+               return render(request,'admin/login.html',locals())
+        else:
+             return render(request, 'admin/register.html', locals())
+    register_form = forms.RegisterRorm()
+    return render(request,'admin/register.html',locals())
+
