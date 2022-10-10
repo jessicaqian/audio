@@ -41,6 +41,10 @@ li#dev_configed > a{
 a#save{
     margin-top: 40px;
 }
+/×新增×/
+a#save1{
+    margin-top: 40px;
+}
 
 label#tips{
     margin-left: 50px;
@@ -49,6 +53,12 @@ label#tips{
 }
 
 div#myalter1{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+}
+/×新增×/
+div#myalter22{
     position: absolute;
     z-index: 100;
     width: 90%;
