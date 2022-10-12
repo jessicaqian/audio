@@ -155,7 +155,7 @@
             if ((/^(\+|-)?\d+$/.test( audiotime ))&&audiotime>=1 && audiotime<60) {//若是数字则提交表单
                 $('#form').submit()
             } else {//否则弹出错误提示窗口
-                $('#tips22').html('音频文件存储时间输入错误，该值只能为正整数且需大于等于1小于60。')
+                $('#tips22').html('音频文件存储时间输入错误，该值只能为1-60的正整数。')
                 $('#myalter22').attr('class','alert alert-danger ')
                 $('#myalter22').attr('style', 'display:block')
             }
