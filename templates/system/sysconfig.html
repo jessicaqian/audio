@@ -151,8 +151,9 @@
 
         if((audiomode=='{{audiomode}}')&&audiotype=='{{audiotype}}'&&audiotime=='{{audiotime}}'){
             $('#form').submit()
-        }else{//否则的话就弹出小窗口，“修改这些配置将会自动停止录音，请在修改成功后重新手动开启录音，仍然继续吗”
-            if ((/^(\+|-)?\d+$/.test( audiotime ))&&audiotime>=1 && audiotime<60) {//若是数字则提交表单
+        }else{
+            if ((/^(\+|-)?\d+$/.test( audiotime )) && audiotime>=1 && audiotime<60) {//若是满足对应条件则提交表单
+                $('#myalter').attr('style', 'display:block')
                 $('#form').submit()
             } else {//否则弹出错误提示窗口
                 $('#tips22').html('音频文件存储时间输入错误，该值只能为1-60的正整数。')
