@@ -9,7 +9,7 @@ li#remo_control > a{
 }
 
 #shutdown{
-    background:url("../image/shutdown.jpg") center no-repeat;
+    background:url("../image/shutdown.png") center no-repeat;
     height: 120px;
     width: 120px;
     background-size: 100%;
@@ -18,7 +18,7 @@ li#remo_control > a{
 }
 
 #reboot{
-    background:url("../image/reboot.jpg") center no-repeat;
+    background:url("../image/reboot.png") center no-repeat;
     height: 120px;
     width: 120px;
     background-size: 100%;

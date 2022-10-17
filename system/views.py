@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import JsonResponse, HttpResponseRedirect
 from .forms import SysconfigForm,UsrForm,NetForm,UsreditForm
 import os,hashlib,json,threading,re
@@ -18,9 +18,10 @@ time.time()
 now = datetime.datetime.now()
 timestr = now.strftime("%Y-%m-%d")
 dir = os.getcwd() + '/logs'
-if not os.path.exists(dir):
+if not os.path.exists(dir): #判断日志文件路径是否存在，不存在就创建一个logs的文件夹
     os.mkdir(dir)
-file_path = dir + '/'+timestr+'.txt'
+file_path = dir + '/'+timestr+'.txt'  #当天日志文件路径
+
 
 f_lists={}
 
@@ -32,7 +33,7 @@ mpath = config.get("systeminfo", "mpath")
 
 
 r_status = ['off','off','off','off']
-modedict={'mp3':1,'wav':0,'全时段录音':0,'自动录音':1}##
+modedict={'mp3':1,'wav':0,'全时段录音':0,'自动录音':1}
 
 
 def init():
@@ -85,7 +86,7 @@ def init():
 
 def sudoCMD(command,password):
     str = os.system('echo %s | sudo -S %s' % (password,command))
-    print(str)
+    print('啥字符串啊',str)
 
 def pcmtowav(input,output):  #pcm转wav
 
@@ -95,7 +96,6 @@ def pcmtowav(input,output):  #pcm转wav
     try:
 
         no = target.swich(file1, file2)
-        print(no)
         sudoCMD('rm -f '+ input,pw)
         return 1
     except:
@@ -108,8 +108,9 @@ def checkpcm(ch_no):  #检查pcm文件
     sudoCMD('chmod 777 -R ' + path, pw)
     for list in lists:
         if ('pcm' in list):
-            list0 = re.sub('.pcm', '', list) + '.wav'
-            pcmtowav(path+list,path+list0)
+            # re.sub用于替换字符串中的匹配项
+            list0 = re.sub('.pcm', '', list) + '.wav'  #将list中的.pcm替换为’‘
+            pcmtowav(path+list,path+list0) #调用pcmtowav函数，path+list为pcm格式，ath+list0为wav格式
 
 
 def login_required(func):  # 自定义登录验证装饰器
@@ -119,6 +120,10 @@ def login_required(func):  # 自定义登录验证装饰器
         config.read("web.ini")
 
         name = request.GET.get('name', default='e')
+
+        ####时间：10.2 ###
+
+
         if name == 'e':
             return HttpResponseRedirect("/") #没有名字，直接跳转登录页
         else:
@@ -138,7 +143,6 @@ def login_required(func):  # 自定义登录验证装饰器
         if is_login == 'true':
             return func(request, *args, **kwargs)
         else:
-
             return HttpResponseRedirect("/")
     return warpper
 
@@ -202,7 +206,7 @@ def get_diskstatus(request):
 
     return JsonResponse({'no': no, 'msg': 'success','time':time})#pcm 一个通道：采样率*2*s B  mp3 目标比特率*s bite
 
-def record_status(request):
+def record_status(request):  #录音状态
     if request.method == 'POST':
         strno = request.POST['no']
         no = int(strno)-1
@@ -248,7 +252,7 @@ def system_config(request):
                 try:
                     udp.senddata(data)
                     res = udp.getdata()
-                    print(res)
+                    print('这是res:',res)
                     if res == 0:
                         return render(request, 'system/sysconfig.html',{'form': form, 'name': u_name, 'permiss': u_permiss, 'audiotype': raudiotype,'audiomode': raudiomode, 'audiotime': raudiotime,'res':'failed'})
                 except:
@@ -501,31 +505,32 @@ def remote_control(request):
 @login_required
 def search_mid(request):
     config.read("web.ini")
-    chan_list=[]
+    chan_list=[] #通道列表
     num =1
     while num<5:
-        channel = config.get("configinfo", "channel"+str(num))
-        chan_list.append(channel)
-        num = num+1
+        channel = config.get("configinfo", "channel"+str(num)) #获取web.ini中configinfo中的channel数
+        chan_list.append(channel) #将通道数加入chan_list
+        num = num+1 #数+1,等+4之后就自动退出循环
     # print(chan_list)
 
     if request.method == 'POST':
         lists = []
         f_lists.clear()
 
-        name = request.POST['usrname_n']
-        permiss = request.POST['usr_perssions_n']
+        name = request.POST['usrname_n'] #从前端表单中获取用户姓名
+        permiss = request.POST['usr_perssions_n'] #从前端列表中获取用户权限
 
-        start = request.POST['start']
+        start = request.POST['start'] #起始查询时间
         start_date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
         start_time = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%H%M00')
-        end = request.POST['end']
+        end = request.POST['end'] #终止查询时间
         end_date = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
         end_time = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%H%M00')
-        channel_no = request.POST['no']
+        channel_no = request.POST['no'] #查询通道数
 
 #处理start_date
-        if channel_no == 'all':
+        if channel_no == 'all': #若查询的通道为全部通道
+            #mpath：/home/hanpu/Git_File/static
             path0 = mpath + start_date
             if not os.path.exists(path0):
                 pass
@@ -534,8 +539,9 @@ def search_mid(request):
                 i = 1
 
                 while i < 5:
-                    path = mpath + start_date + '/' + str(i)
-                    if not os.listdir(path):
+                    #path:工程目录文件+开始日期+通道数
+                    path = mpath + start_date + '/' + str(i)  #/home/hanpu/Git_File/static2022-10-11/1
+                    if not os.listdir(path): #os.listdir:返回path路径下的文件和文件夹列表
                         pass
 
                     else:
@@ -543,7 +549,7 @@ def search_mid(request):
                         F_lists = []
                         Flists = os.listdir(path)
                         for Flist in Flists:
-                            Flist1 = re.sub('.mp3','',Flist)
+                            Flist1 = re.sub('.mp3','',Flist) #re.sub匹配替换为选择的文本
                             Flist0 = re.sub('.wav','',Flist1)
                             Flist2 = re.sub('-', '', Flist0)
                             Flist_str = list(Flist2)
@@ -569,7 +575,7 @@ def search_mid(request):
 
                     i = i + 1
 
-        else:
+        else: #查询通道为某一通道
             path0 = mpath + start_date
             if not os.path.exists(path0):
                 pass
@@ -715,7 +721,7 @@ def search_mid(request):
         return render(request, 'system/searchmid.html',
                       {'name':name,'permiss':permiss,'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date,'chanlist':chan_list})
 
-    else:
+    else: #若请求的方法为
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
 
@@ -746,9 +752,9 @@ def audio_file(request):
         return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
 
 
-def send_data(request):
+def send_data(request):# 这里应该是与板子进行对接
     data =json.loads(request.POST['mes'])
-    # print(data)
+    #print('我不知道這是什麼數據',data)
 
     udp.senddata(data)
     res = udp.getdata()
@@ -757,7 +763,7 @@ def send_data(request):
 
     return JsonResponse({'msg': 'success'})
 
-def heartbeat(request):
+def heartbeat(request): #控制与板子的联系
     res = udp.heartbeat()
     if res==0:
         return JsonResponse({'msg': 'failed'})
@@ -809,39 +815,37 @@ def free_count(request):
         pass
 
     else:
-        name = request.GET.get('name', default='10000000')
+        name = request.GET.get('name', default='10000000')# 在前端表单中寻找名字为name的GET参数，
+        # 成功的话返回请求的name，否则返回1000000
         permiss = request.GET.get('permiss', default='10000000')
-        page_num = request.GET.get('page',1)
-        st = request.GET.get('start')
-        et = request.GET.get('end')
+        page_num = request.GET.get('page',1)  #从前端表单页面中获取当前日志的页数
+        st = request.GET.get('start')#查询日志的开始时间
+        et = request.GET.get('end') #查询日志的截止时间
         if st is not None and et is not None:
 
             page_num = request.GET.get('page', 1)
             listdivd =[]
-            listdir =os.listdir(dir)
+            listdir =os.listdir(dir)  #log下的日期的日志文件.txt
+
             for i in listdir:
                 time_os = i[0:10]
-                if time_os >= st and time_os<=et:
+                if time_os >= st and time_os<=et: #若在开始查询时间和结束查询时间之内的
                     with open(file=dir+'/'+i, mode="r", encoding="utf-8") as f:
-                        data =f.readlines()
+                        data =f.readlines() #读取返回列表中的所有行，简单点来说，就是日志的数据
                         listdivd.extend(data)
 
             paginator = Paginator(listdivd, 25)
             try:
-                # print(page)
+                # print(page)  可能产生异常的语句
                 book_list = paginator.page(int(page_num))  # 获取当前页码的记录
-            except PageNotAnInteger:
+            except PageNotAnInteger: #处理异常的代码块1
                 book_list = paginator.page(1)  # 如果用户输入的页码不是整数时,显示第1页的内容
-            except EmptyPage:
+            except EmptyPage:#处理异常的代码快2
                 book_list = paginator.page(paginator.num_pages)  # 如果用户输入的页数不在系统的页`码列表中时,显示最后一页的内容
 
             return render(request,'system/free.html',{'name':name,'permiss':permiss,'start':st,'end':et,'mark':'reload','page_num':page_num,'locals':locals()})
         else:
             return render(request, 'system/free.html',{'name': name, 'permiss': permiss})
-
-
-
-
 
 def devices(request):
     if request.method =="POST":

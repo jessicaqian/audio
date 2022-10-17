@@ -69,10 +69,10 @@
         var mark = $('#sure').attr('name')
         if(mark == 'shutdown'){
             $.post('remotectr.html',{'mark':mark}).done(function (info) {
-                $('#myModalLabel').html('关机中......')
-                $('#sure').attr('disabled','disabled')
+                $('#myModalLabel').html('正在关机...')
+                $('#sure').attr('style','display:none') // $('#sure').attr('disabled','disabled')
                 $('#close').attr('style','display:none')
-                $('#cancle').attr('disabled','disabled')
+                $('#cancle').attr('style','display:none')// $('#cancle').attr('disabled','disabled')
                 $('#progress').attr('style','display:block')
                 var i=0
                 var f = setInterval(function () {
@@ -100,10 +100,10 @@
             }).fail(function () {
 
             })
-            $('#myModalLabel').html('重启中......')
-            $('#sure').attr('disabled','disabled')
+            $('#myModalLabel').html('正在重启...')
+            $('#sure').attr('style','display:none') //$('#sure').attr('disabled','disabled')
             $('#close').attr('style','display:none')
-            $('#cancle').attr('disabled','disabled')
+            $('#cancle').attr('style','display:none') //$('#cancle').attr('disabled','disabled')
             $('#progress').attr('style','display:block')
             var i=0
             var f = setInterval(function () {
