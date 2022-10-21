@@ -86,7 +86,7 @@ def init():
 
 def sudoCMD(command,password):
     str = os.system('echo %s | sudo -S %s' % (password,command))
-    print('啥字符串啊',str)
+    print(str)
 
 def pcmtowav(input,output):  #pcm转wav
 
@@ -95,7 +95,7 @@ def pcmtowav(input,output):  #pcm转wav
 
     try:
 
-        no = target.swich(file1, file2)
+        no = target.swich(file1, file2) #调用pcm转wav文件进行格式转换
         sudoCMD('rm -f '+ input,pw)
         return 1
     except:
@@ -197,8 +197,8 @@ def main(request):
 
         return render(request, 'system/main.html',locals())
 
-def get_diskstatus(request):
-    st = os.statvfs('/home')
+def get_diskstatus(request): #获取磁盘状态
+    st = os.statvfs('/home') #os.statvfs() 方法用于返回包含文件描述符fd的文件的文件系统的信息
     status = st.f_bavail * st.f_frsize/(1024*1024*1024)
     no = round(status,2)
     time = round(st.f_bavail * st.f_frsize/(60*60*16),2)
@@ -208,11 +208,11 @@ def get_diskstatus(request):
 
 def record_status(request):  #录音状态
     if request.method == 'POST':
-        strno = request.POST['no']
-        no = int(strno)-1
+        strno = request.POST['no'] #录音通道
+        no = int(strno)-1 #这里-1是为了跟板子相匹配，因为板子上是从0开始到3结束
         act = request.POST['act']
         r_status[no] = act
-        if act == 'off':
+        if act == 'off': #现在是录音关闭以后才会进行转换，
             checkpcm(strno)
 
     else:
@@ -252,7 +252,7 @@ def system_config(request):
                 try:
                     udp.senddata(data)
                     res = udp.getdata()
-                    print('这是res:',res)
+                    print('软件与录音板之间的链接状态为:',res)
                     if res == 0:
                         return render(request, 'system/sysconfig.html',{'form': form, 'name': u_name, 'permiss': u_permiss, 'audiotype': raudiotype,'audiomode': raudiomode, 'audiotime': raudiotime,'res':'failed'})
                 except:
@@ -530,41 +530,51 @@ def search_mid(request):
 
 #处理start_date
         if channel_no == 'all': #若查询的通道为全部通道
-            #mpath：/home/hanpu/Git_File/static
-            path0 = mpath + start_date
+            #mpath：/home/hanpu/Git_File/static/record
+            path0 = mpath + start_date  #path0 录音文件路径 /home/hanpu/Git_File/static/record/2022-10-19
+
             if not os.path.exists(path0):
                 pass
             else:
 
                 i = 1
 
-                while i < 5:
+                while i < 5:  #i就是通道数
                     #path:工程目录文件+开始日期+通道数
-                    path = mpath + start_date + '/' + str(i)  #/home/hanpu/Git_File/static2022-10-11/1
+                    path = mpath + start_date + '/' + str(i)  #/home/hanpu/Git_File/static/record/2022-10-19/1
                     if not os.listdir(path): #os.listdir:返回path路径下的文件和文件夹列表
                         pass
 
                     else:
                         mark = False
-                        F_lists = []
+                        F_lists = [] #路径文件列表
                         Flists = os.listdir(path)
+                        print('Flists:',Flists)
                         for Flist in Flists:
-                            Flist1 = re.sub('.mp3','',Flist) #re.sub匹配替换为选择的文本
-                            Flist0 = re.sub('.wav','',Flist1)
-                            Flist2 = re.sub('-', '', Flist0)
-                            Flist_str = list(Flist2)
+                            # re.sub匹配替换为选择的文本
+                            Flist1 = re.sub('.mp3','',Flist) #去掉后缀.mp3
+                            Flist0 = re.sub('.wav','',Flist1)#去掉后缀.wav
+                            Flist2 = re.sub('-', '', Flist0) #去掉-
+                            #Flist2这就是一串数字
+                            Flist_str = list(Flist2) #将数字串转换为单个的字符
+                            #['1', '_', '2', '0', '2', '2', '1', '0', '1', '9', '1', '8', '5', '3', '2', '3']
+                            print('Flist_str的值为：',Flist_str)
+                            if('.' in Flist_str):
+                                continue
                             j = 0
                             while j<10:
-                                Flist_str.pop(0)
+                                Flist_str.pop(0) #j超过10以后，自动去掉0
                                 j = j + 1
-                            Flist3 = ''.join(Flist_str)
-
-                            if start_date == end_date:
+                            Flist3 = ''.join(Flist_str) #185323：也就是录音文件时分秒
+                            if start_date == end_date: #查询同一天的录音文件
+                                # 同一天的录音文件肯定在开始时间个和结束时间之内
                                 if (int(start_time)-int(Flist3))<=0 and (int(end_time)-int(Flist3))>=0:
-                                    F_lists.append(Flist)
+                                    # Flist的值为: 1_2022-10-19-18-53-23.wav
+                                    F_lists.append(Flist) #Flist append后的值为: ['1_2022-10-19-18-53-23.wav']
+                                    #f_lists就是前端界面中的文件夹列表
                                     f_lists[start_date + '/' + str(i)] = F_lists
                                     mark = True
-                            else:
+                            else:#不是同一天的录音文件
 
                                 if (int(start_time)-int(Flist3))<=0:
                                     F_lists.append(Flist)
@@ -576,6 +586,7 @@ def search_mid(request):
                     i = i + 1
 
         else: #查询通道为某一通道
+            #mpath: /home/hanpu/Git_File/static/record
             path0 = mpath + start_date
             if not os.path.exists(path0):
                 pass
@@ -594,6 +605,8 @@ def search_mid(request):
                         Flist0 = re.sub('.wav', '', Flist1)
                         Flist2 = re.sub('-', '', Flist0)
                         Flist_str = list(Flist2)
+                        if ('.' in Flist_str):
+                            continue
                         j = 0
                         while j < 10:
                             Flist_str.pop(0)
@@ -616,19 +629,21 @@ def search_mid(request):
                 datestart += datetime.timedelta(days=1)
                 startdate = datetime.datetime.strftime(datestart, '%Y-%m-%d')
                 if channel_no == 'all':
-                    path0 = mpath + startdate
+                    #mpath: /home/hanpu/Git_File/static/record
+                    path0 = mpath + startdate  #/home/hanpu/Git_File/static/record/2022-10-19
                     if not os.path.exists(path0):
                         pass
                     else:
-                        i = 1
+                        i = 1 #通道数字：1
 
                         while i < 5:
-                            path = mpath + startdate + '/' + str(i)
+                            path = mpath + startdate + '/' + str(i) ##/home/hanpu/Git_File/static/record/2022-10-19/1
                             if not os.listdir(path):
                                 pass
 
 
                             else:
+
                                 lists.append(startdate + '/' + str(i))
 
                             i = i + 1
@@ -673,6 +688,8 @@ def search_mid(request):
                                 Flist0 = re.sub('.wav', '', Flist1)
                                 Flist2 = re.sub('-', '', Flist0)
                                 Flist_str = list(Flist2)
+                                if ('.' in Flist_str):
+                                    continue
                                 j = 0
                                 while j < 10:
                                     Flist_str.pop(0)
@@ -707,6 +724,8 @@ def search_mid(request):
                             Flist0 = re.sub('.wav','',Flist1)
                             Flist2 = re.sub('-', '', Flist0)
                             Flist_str = list(Flist2)
+                            if ('.' in Flist_str):
+                                continue
                             j = 0
                             while j < 10:
                                 Flist_str.pop(0)
@@ -743,31 +762,37 @@ def audio_file(request):
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         try:
-            # print(f_lists[dir])
+            #print(f_lists[dir])
             path = mpath + dir
             lists = f_lists[dir]
+            print('audio_file中的lists为：',lists)
         except:
             path = mpath + dir
             lists =  os.listdir(path)
         return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
 
 
-def send_data(request):# 这里应该是与板子进行对接
+def send_data(request):# 这里应该向板子进行发送data
     data =json.loads(request.POST['mes'])
-    #print('我不知道這是什麼數據',data)
-
-    udp.senddata(data)
-    res = udp.getdata()
+    print('send_data函数中json.loads数据是：',data)
+    #{'cmdCheck': 2, 'Seq': 21, 'audioPara': {'audioFunc': 1, 'audioType': 1,
+    # 'recordType': 0, 'recordTime': 20, 'nDevNo': 1, 'nCapNo': 0,
+    # 'mp3Bps': 128, 'sampleRate': 48000,
+    # 'timeInterval': 10, 'fileName': '1', 'isStereoSaveFlag': 0}}
+    udp.senddata(data) #给板子发送数据
+    res = udp.getdata() #获取板子发送过来的数据
+    print('send_data函数中getdata返回结果res为：',res)
     if res == 0:
         return JsonResponse({'msg': 'failed'})
 
-    return JsonResponse({'msg': 'success'})
+    return JsonResponse({'msg': 'success'}) #res！=0只是代表，录音板发送数据成功了，具体是什么数据？这个咋弄的？
 
-def heartbeat(request): #控制与板子的联系
+def heartbeat(request): #控制与板子联系的状态，看看是连接还是断开，0就是断开，其他的数字就是连接
     res = udp.heartbeat()
-    if res==0:
+    print('heartbeat函数中返回结果的res为：',res)
+    if res==0: #res=0的话就是与板子链接断开，每隔5s发送信息给录音板
         return JsonResponse({'msg': 'failed'})
-
+    # res等于其他的值的话就是与板子链接正常
     return JsonResponse({'msg': 'success'})
 
 
@@ -780,7 +805,9 @@ def heartbeat(request): #控制与板子的联系
 # """
 def free_logs(request):
     if request.method == 'POST':
-        data =json.loads(request.POST['mes'])
+        data =json.loads(request.POST['mes']) #将str类型转换为字典类型
+        #这个数据包括：结束时间，通道号，通道名，操作人的姓名
+#data： {'end_time': '2022-10-18 16:19:20', 'channel_no': '1', 'channel_name': '大厅一', 'name': 'admin'}
         start_time = data.get('start_time')
         end_time = data.get("end_time")
         user_name = data.get("name")
