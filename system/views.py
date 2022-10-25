@@ -7,6 +7,7 @@ import time,datetime,configparser
 from . import udp
 from ctypes import *
 
+
 # Create your views here.
 
 target = cdll.LoadLibrary("./pcmToWavqq.so")
@@ -210,7 +211,7 @@ def record_status(request):  #录音状态
     if request.method == 'POST':
         strno = request.POST['no'] #录音通道
         no = int(strno)-1 #这里-1是为了跟板子相匹配，因为板子上是从0开始到3结束
-        act = request.POST['act']
+        act = request.POST['act'] #act就是录音开启与关闭按钮 分别为：on，off
         r_status[no] = act
         if act == 'off': #现在是录音关闭以后才会进行转换，
             checkpcm(strno)
@@ -548,8 +549,7 @@ def search_mid(request):
                     else:
                         mark = False
                         F_lists = [] #路径文件列表
-                        Flists = os.listdir(path)
-                        print('Flists:',Flists)
+                        Flists = os.listdir(path)#['1_2022-10-21-14-34-55.pcm']
                         for Flist in Flists:
                             # re.sub匹配替换为选择的文本
                             Flist1 = re.sub('.mp3','',Flist) #去掉后缀.mp3
@@ -558,14 +558,14 @@ def search_mid(request):
                             #Flist2这就是一串数字
                             Flist_str = list(Flist2) #将数字串转换为单个的字符
                             #['1', '_', '2', '0', '2', '2', '1', '0', '1', '9', '1', '8', '5', '3', '2', '3']
-                            print('Flist_str的值为：',Flist_str)
+                            #print('全部通道的Flist_str的值为：',Flist_str)
                             if('.' in Flist_str):
                                 continue
                             j = 0
                             while j<10:
                                 Flist_str.pop(0) #j超过10以后，自动去掉0
                                 j = j + 1
-                            Flist3 = ''.join(Flist_str) #185323：也就是录音文件时分秒
+                            Flist3 = ''.join(Flist_str) #185323：也就是录音文件时分秒 join将列表转为字符串
                             if start_date == end_date: #查询同一天的录音文件
                                 # 同一天的录音文件肯定在开始时间个和结束时间之内
                                 if (int(start_time)-int(Flist3))<=0 and (int(end_time)-int(Flist3))>=0:
@@ -591,6 +591,7 @@ def search_mid(request):
             if not os.path.exists(path0):
                 pass
             else:
+                mark1 = False
                 path = mpath + start_date + '/' + channel_no
                 if not os.listdir(path):
                     pass
@@ -612,11 +613,12 @@ def search_mid(request):
                             Flist_str.pop(0)
                             j = j + 1
                         Flist3 = ''.join(Flist_str)
-
                         if (int(start_time) - int(Flist3)) <= 0:
                             F_lists.append(Flist)
                             f_lists[start_date + '/' + channel_no] = F_lists
-                    lists.append(start_date + '/' + channel_no)
+                            mark1 = True
+                    if mark1==True:
+                        lists.append(start_date + '/' + channel_no)
 
 
 #处理既不是start_date也不是end_date的中间日期
@@ -635,36 +637,56 @@ def search_mid(request):
                         pass
                     else:
                         i = 1 #通道数字：1
-
+                        mark = False
                         while i < 5:
                             path = mpath + startdate + '/' + str(i) ##/home/hanpu/Git_File/static/record/2022-10-19/1
                             if not os.listdir(path):
                                 pass
 
-
                             else:
+                                F_lists = []
+                                Flists3 = os.listdir(path)
 
-                                lists.append(startdate + '/' + str(i))
-
+                                for MyFlists in Flists3:
+                                    my_str = "".join(MyFlists)
+                                    if '.pcm' in my_str:
+                                        continue
+                                    else:
+                                        F_lists.append(MyFlists)
+                                        f_lists[startdate + '/' + str(i)] = F_lists
+                                        mark = True
+                                if mark == True:
+                                    lists.append(startdate + '/' + str(i))
                             i = i + 1
-
 
                 else:
                     path0 = mpath + startdate
                     if not os.path.exists(path0):
                         pass
                     else:
+                        mark = False
                         path = mpath + startdate + '/' + channel_no
                         if not os.listdir(path):
                             pass
 
                         else:
-                            lists.append(startdate + '/' + channel_no)
+                            F_lists = []
+                            Flists3 = os.listdir(path)
+
+                            for MyFlists3 in Flists3:
+                                my_str = "".join(MyFlists3)
+                                if '.pcm' in my_str:
+                                    continue
+                                else:
+                                    F_lists.append(MyFlists3)
+                                    f_lists[startdate + '/' + channel_no] = F_lists
+                                    mark = True
+                            if mark==True:
+                                lists.append(startdate + '/' + channel_no)
 
 #处理end_data
         datestart = datetime.datetime.strptime(start_date, '%Y-%m-%d')
         dateend = datetime.datetime.strptime(end_date, '%Y-%m-%d')
-
         if dateend >= datestart + datetime.timedelta(days=1):
             if channel_no == 'all':
                 path0 = mpath + end_date
@@ -716,7 +738,7 @@ def search_mid(request):
 
 
                     else:
-
+                        mark2 = False
                         F_lists = []
                         Flists = os.listdir(path)
                         for Flist in Flists:
@@ -735,7 +757,9 @@ def search_mid(request):
                             if (int(end_time) - int(Flist3)) >= 0:
                                 F_lists.append(Flist)
                                 f_lists[end_date + '/' + channel_no] = F_lists
-                        lists.append(end_date + '/' + channel_no)
+                                mark2 = True
+                        if(mark2 == True):
+                            lists.append(end_date + '/' + channel_no)
 
         return render(request, 'system/searchmid.html',
                       {'name':name,'permiss':permiss,'lists': lists, 'start_a': start, 'end_a': end, 'channel_no_a': channel_no,'mark':'post','start_data':start_date,'end_data':end_date,'chanlist':chan_list})
@@ -758,23 +782,21 @@ def audio_file(request):
     else:
 
 
-        dir = request.GET.get('dir', default='10000000')
+        dir = request.GET.get('dir', default='10000000') #2022-10-18/1
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         try:
             #print(f_lists[dir])
-            path = mpath + dir
-            lists = f_lists[dir]
-            print('audio_file中的lists为：',lists)
+            path = mpath + dir #/home/hanpu/Git_File/static/record/2022-10-19/2
+            lists = f_lists[dir]  #['1_2022-10-18-15-35-16.mp3']
         except:
             path = mpath + dir
-            lists =  os.listdir(path)
+            lists = os.listdir(path)
         return render(request, 'system/audiofile.html', {'lists': lists, 'path': path,'name':name,'permiss':permiss})
 
 
 def send_data(request):# 这里应该向板子进行发送data
     data =json.loads(request.POST['mes'])
-    print('send_data函数中json.loads数据是：',data)
     #{'cmdCheck': 2, 'Seq': 21, 'audioPara': {'audioFunc': 1, 'audioType': 1,
     # 'recordType': 0, 'recordTime': 20, 'nDevNo': 1, 'nCapNo': 0,
     # 'mp3Bps': 128, 'sampleRate': 48000,
