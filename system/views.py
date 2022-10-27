@@ -103,16 +103,15 @@ def pcmtowav(input,output):  #pcm转wav
         return 0
 
 def checkpcm(ch_no):  #检查pcm文件
-    current_time = time.strftime("%Y-%m-%d", time.localtime()) #获取当前时间
-    path = mpath + current_time + '/' + ch_no + '/' #文件存储路径
-    lists = os.listdir(path) #路径文件列表
+    current_time = time.strftime("%Y-%m-%d", time.localtime()) #获取当前日期
+    path = mpath + current_time + '/' + ch_no + '/' #文件存储路径 具体到某一通道
+    lists = os.listdir(path) #某一通道下的音频文件列表
     sudoCMD('chmod 777 -R ' + path, pw)
     for list in lists:
         if ('pcm' in list):
             # re.sub用于替换字符串中的匹配项
             list0 = re.sub('.pcm', '', list) + '.wav'  #将list中的.pcm替换为’‘
-            pcmtowav(path+list,path+list0) #调用pcmtowav函数，path+list为pcm格式，ath+list0为wav格式
-
+            pcmtowav(path+list,path+list0) #调用pcmtowav函数，path+list为pcm格式，path+list0为wav格式
 
 def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
@@ -209,7 +208,7 @@ def get_diskstatus(request): #获取磁盘状态
 
 def record_status(request):  #录音状态
     if request.method == 'POST':
-        strno = request.POST['no'] #录音通道
+        strno = request.POST['no'] #录音通道 strno的值为:1
         no = int(strno)-1 #这里-1是为了跟板子相匹配，因为板子上是从0开始到3结束
         act = request.POST['act'] #act就是录音开启与关闭按钮 分别为：on，off
         r_status[no] = act
@@ -543,6 +542,7 @@ def search_mid(request):
                 while i < 5:  #i就是通道数
                     #path:工程目录文件+开始日期+通道数
                     path = mpath + start_date + '/' + str(i)  #/home/hanpu/Git_File/static/record/2022-10-19/1
+                    path111 = mpath + start_date + '/' + str(i) + '/'
                     if not os.listdir(path): #os.listdir:返回path路径下的文件和文件夹列表
                         pass
 
@@ -550,22 +550,23 @@ def search_mid(request):
                         mark = False
                         F_lists = [] #路径文件列表
                         Flists = os.listdir(path)#['1_2022-10-21-14-34-55.pcm']
+                        pw = config.get("systeminfo", "syspw")
+                        sudoCMD('chmod 777 -R ' + path111, pw)
                         for Flist in Flists:
+                            if 'pcm' in Flist:
+                                list0 = re.sub('.pcm', '', Flist) + '.wav'
+                                pcmtowav(path111 + Flist, path111 + list0)
+                                continue
                             # re.sub匹配替换为选择的文本
                             Flist1 = re.sub('.mp3','',Flist) #去掉后缀.mp3
                             Flist0 = re.sub('.wav','',Flist1)#去掉后缀.wav
-                            Flist2 = re.sub('-', '', Flist0) #去掉-
-                            #Flist2这就是一串数字
+                            Flist2 = re.sub('-', '', Flist0) #去掉-Flist2这就是一串数字
                             Flist_str = list(Flist2) #将数字串转换为单个的字符
-                            #['1', '_', '2', '0', '2', '2', '1', '0', '1', '9', '1', '8', '5', '3', '2', '3']
-                            #print('全部通道的Flist_str的值为：',Flist_str)
-                            if('.' in Flist_str):
-                                continue
                             j = 0
                             while j<10:
                                 Flist_str.pop(0) #j超过10以后，自动去掉0
                                 j = j + 1
-                            Flist3 = ''.join(Flist_str) #185323：也就是录音文件时分秒 join将列表转为字符串
+                            Flist3 = ''.join(Flist_str) #185323：也就是录音文件时分秒 join将Flist_str列表转为Flist3字符串
                             if start_date == end_date: #查询同一天的录音文件
                                 # 同一天的录音文件肯定在开始时间个和结束时间之内
                                 if (int(start_time)-int(Flist3))<=0 and (int(end_time)-int(Flist3))>=0:
@@ -593,6 +594,7 @@ def search_mid(request):
             else:
                 mark1 = False
                 path = mpath + start_date + '/' + channel_no
+                path111 = mpath + start_date + '/' + channel_no + '/'
                 if not os.listdir(path):
                     pass
 
@@ -601,13 +603,17 @@ def search_mid(request):
 
                     F_lists = []
                     Flists = os.listdir(path)
+                    pw = config.get("systeminfo", "syspw")
+                    sudoCMD('chmod 777 -R ' + path111, pw)
                     for Flist in Flists:
+                        if 'pcm' in Flist:
+                            list0 = re.sub('.pcm', '', Flist) + '.wav'
+                            pcmtowav(path111 + Flist, path111 + list0)
+                            continue
                         Flist1 = re.sub('.mp3', '', Flist)
                         Flist0 = re.sub('.wav', '', Flist1)
                         Flist2 = re.sub('-', '', Flist0)
                         Flist_str = list(Flist2)
-                        if ('.' in Flist_str):
-                            continue
                         j = 0
                         while j < 10:
                             Flist_str.pop(0)
@@ -640,16 +646,19 @@ def search_mid(request):
                         mark = False
                         while i < 5:
                             path = mpath + startdate + '/' + str(i) ##/home/hanpu/Git_File/static/record/2022-10-19/1
+                            path111 = mpath + startdate + '/' + str(i) + '/'
                             if not os.listdir(path):
                                 pass
 
                             else:
                                 F_lists = []
                                 Flists3 = os.listdir(path)
-
+                                pw = config.get("systeminfo", "syspw")
+                                sudoCMD('chmod 777 -R ' + path111, pw)
                                 for MyFlists in Flists3:
-                                    my_str = "".join(MyFlists)
-                                    if '.pcm' in my_str:
+                                    if 'pcm' in MyFlists:
+                                        list0 = re.sub('.pcm', '', MyFlists) + '.wav'
+                                        pcmtowav(path111 + MyFlists, path111 + list0)
                                         continue
                                     else:
                                         F_lists.append(MyFlists)
@@ -666,16 +675,19 @@ def search_mid(request):
                     else:
                         mark = False
                         path = mpath + startdate + '/' + channel_no
+                        path111 = mpath + startdate + '/' + channel_no+ '/'
                         if not os.listdir(path):
                             pass
 
                         else:
                             F_lists = []
                             Flists3 = os.listdir(path)
-
+                            pw = config.get("systeminfo", "syspw")
+                            sudoCMD('chmod 777 -R ' + path111, pw)
                             for MyFlists3 in Flists3:
-                                my_str = "".join(MyFlists3)
-                                if '.pcm' in my_str:
+                                if 'pcm' in MyFlists3:
+                                    list0 = re.sub('.pcm', '', MyFlists3) + '.wav'
+                                    pcmtowav(path111 + MyFlists3, path111 + list0)
                                     continue
                                 else:
                                     F_lists.append(MyFlists3)
@@ -698,6 +710,7 @@ def search_mid(request):
 
                     while i < 5:
                         path = mpath + end_date + '/' + str(i)
+                        path111 = mpath + end_date + '/' + str(i) + '/'
                         if not os.listdir(path):
                             pass
 
@@ -705,19 +718,22 @@ def search_mid(request):
                             mark = False
                             F_lists = []
                             Flists = os.listdir(path)
+                            pw = config.get("systeminfo", "syspw")
+                            sudoCMD('chmod 777 -R ' + path111, pw)
                             for Flist in Flists:
+                                if 'pcm' in Flist:
+                                    list0 = re.sub('.pcm', '', Flist) + '.wav'
+                                    pcmtowav(path111 + Flist, path111 + list0)
+                                    continue
                                 Flist1 = re.sub('.mp3', '', Flist)
                                 Flist0 = re.sub('.wav', '', Flist1)
                                 Flist2 = re.sub('-', '', Flist0)
                                 Flist_str = list(Flist2)
-                                if ('.' in Flist_str):
-                                    continue
                                 j = 0
                                 while j < 10:
                                     Flist_str.pop(0)
                                     j = j + 1
                                 Flist3 = ''.join(Flist_str)
-
                                 if (int(end_time) - int(Flist3)) >= 0:
                                     F_lists.append(Flist)
                                     f_lists[end_date + '/' + str(i)] = F_lists
@@ -733,6 +749,7 @@ def search_mid(request):
                     pass
                 else:
                     path = mpath + end_date + '/' + channel_no
+                    path111 = mpath + end_date + '/' + channel_no + '/'
                     if not os.listdir(path):
                         pass
 
@@ -741,13 +758,17 @@ def search_mid(request):
                         mark2 = False
                         F_lists = []
                         Flists = os.listdir(path)
+                        pw = config.get("systeminfo", "syspw")
+                        sudoCMD('chmod 777 -R ' + path111, pw)
                         for Flist in Flists:
+                            if 'pcm' in Flist:
+                                list0 = re.sub('.pcm', '', Flist) + '.wav'
+                                pcmtowav(path111 + Flist, path111 + list0)
+                                continue
                             Flist1 = re.sub('.mp3', '', Flist)
                             Flist0 = re.sub('.wav','',Flist1)
                             Flist2 = re.sub('-', '', Flist0)
                             Flist_str = list(Flist2)
-                            if ('.' in Flist_str):
-                                continue
                             j = 0
                             while j < 10:
                                 Flist_str.pop(0)
@@ -797,10 +818,9 @@ def audio_file(request):
 
 def send_data(request):# 这里应该向板子进行发送data
     data =json.loads(request.POST['mes'])
-    #{'cmdCheck': 2, 'Seq': 21, 'audioPara': {'audioFunc': 1, 'audioType': 1,
-    # 'recordType': 0, 'recordTime': 20, 'nDevNo': 1, 'nCapNo': 0,
-    # 'mp3Bps': 128, 'sampleRate': 48000,
-    # 'timeInterval': 10, 'fileName': '1', 'isStereoSaveFlag': 0}}
+    print('发送的数据为：',data)
+    #{'cmdCheck': 2, 'Seq': 21,'audioPara': {'audioFunc': 1, 'audioType': 1, 'recordType': 0, 'recordTime': 20, 'nDevNo': 1, 'nCapNo': 0,
+     #              'mp3Bps': 128, 'sampleRate': 48000, 'timeInterval': 10, 'fileName': '1', 'isStereoSaveFlag': 0}}
     udp.senddata(data) #给板子发送数据
     res = udp.getdata() #获取板子发送过来的数据
     print('send_data函数中getdata返回结果res为：',res)
@@ -815,7 +835,7 @@ def heartbeat(request): #控制与板子联系的状态，看看是连接还是�
     if res==0: #res=0的话就是与板子链接断开，每隔5s发送信息给录音板
         return JsonResponse({'msg': 'failed'})
     # res等于其他的值的话就是与板子链接正常
-    return JsonResponse({'msg': 'success'})
+    return JsonResponse({'msg': 'success'}) #(b'{\n\t"msg_type":\t"AudioPong",\n\t"seq":\t1\n}', ('10.25.16.120', 53242))
 
 
 
