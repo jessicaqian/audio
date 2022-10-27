@@ -723,7 +723,7 @@ def search_mid(request):
                             for Flist in Flists:
                                 if 'pcm' in Flist:
                                     list0 = re.sub('.pcm', '', Flist) + '.wav'
-                                    pcmtowav(path111 + Flist, path111 + list0)
+                                    pcmtowav(path111 + Flist, path111 + list0)#进行格式转换
                                     continue
                                 Flist1 = re.sub('.mp3', '', Flist)
                                 Flist0 = re.sub('.wav', '', Flist1)
