@@ -17,7 +17,6 @@
     </div>
     <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
 
-
     <div class="row tips">
         <label>音频配置</label>
     </div>
@@ -32,9 +31,7 @@
 {#            <div class="col-md-4" id="filepath">#}
 {#                {{ form.path.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.path}}#}
 {#            </div>#}
-
         </div>
-
         <div class="hidden">{{ form.usrname_n}}</div>
         <div class="hidden">{{ form.usr_perssions_n}}</div>
         <div class="row">
@@ -50,9 +47,7 @@
     <div class="row sparse" id="head_bar">
         <div class="col-md-3">
             <label>通道列表</label>
-
         </div>
-
         <div class="col-md-9"></div>
     </div>
 
@@ -78,7 +73,6 @@
                 <col style="width: 40px"><col style="width: 20%"><col style="width: 20%"><col style="width: 70px"><col style="width: 20%">
             </colgroup>
             <tbody>
-
             {% for channel in channels %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
@@ -90,19 +84,11 @@
                         </a>
                     </td>
                     <td><span class="glyphicon glyphicon-exclamation-sign savetip" aria-hidden="true" id="save{{ forloop.counter }}" style="display: none">&nbsp;配置尚未生效</span></td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
-
     </div>
-
-
-
-
-
 
 
 {% endblock %}
@@ -120,21 +106,16 @@
         }
         else {
             $('span#save{{ forloop.counter }}').attr('style','display:none')
-
         }
-
     {% endfor %}
-
 
     $('button#close').click(function () {
         $('#myalter').attr('style','display:none')
     });
 
     if('{{ method }}'=='get'){
-
         $('select#id_audiotype').val('{{audiotype}}')
         $('input#id_audiotime').val('{{audiotime}}')
-
     }else {
         if('{{ res }}'=='failed'){
             $('#tips').html('设置失败')
@@ -147,9 +128,9 @@
         }
         else {
             $('#tips').html('保存成功')
-            $('#myalter').attr('class','alert alert-success')
-            $('#myalter').attr('style','display:block')
-
+            $('#myalter').attr('class','alert alert-success');
+            $('#myalter').attr('style','display:block');
+            $('span.savetip').attr('style','display:none');
         }
     }
 

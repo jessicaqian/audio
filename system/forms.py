@@ -6,15 +6,11 @@ class SysconfigForm(forms.Form):
         ("wav", "WAV"),
     )
 
-
     audiotype = forms.ChoiceField(label='音频存储格式',choices=CHOICES)
     audiotime = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=False,label='音频文件时长')
 
     usrname_n = forms.CharField(widget=forms.TextInput)
     usr_perssions_n = forms.CharField(widget=forms.TextInput)
-
-
-
 
 class ChannelForm(forms.Form):
     CHOICES = (
@@ -22,14 +18,17 @@ class ChannelForm(forms.Form):
         ("自动录音", "自动录音"),
     )
 
-    channelNo = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}), required=True,label='通道号')
+    channelNo = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}), required=True, label='通道号')
     audiomode = forms.ChoiceField(label='录音模式',choices=CHOICES)
-    channelname = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='通道名')
-    recordval = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='开始录音阈值')
-    mutetime = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True,label='停止录音时长')
+    channelname = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True, label='通道名')
+    recordval = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True, label='开始录音阈值')
+    mutetime = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), required=True, label='停止录音时长')
+    main_comment = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), max_length=50, required=False, label='备注一')
+    sub_comment = forms.CharField(widget=forms.TextInput(attrs={'class':'single_line'}), max_length=50, required=False, label='备注二')
     usrname_n = forms.CharField(widget=forms.TextInput)
     usr_perssions_n = forms.CharField(widget=forms.TextInput)
-    rightnow = forms.CharField(widget=forms.TextInput(attrs={'value':'false'}))
+    saveconfig = forms.CharField(widget=forms.TextInput(attrs={'value':'false'}))
+    goback = forms.CharField(widget=forms.TextInput(attrs={'value':'false'}))
 
 class UsrForm(forms.Form):
     CHOICES = (

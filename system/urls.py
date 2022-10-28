@@ -7,6 +7,7 @@ urlpatterns = [
     path('main.html', views.main),
     path('btnAction', views.btn_action),
     path('getdiskStatus', views.get_diskstatus),
+    path('getServerStatus', views.get_serverstatus),
     path('sysconfig.html', views.system_config),
     path('usrconfig.html', views.usr_config),
     path('newusr.html', views.new_usr),
@@ -23,7 +24,4 @@ urlpatterns = [
     path('channelconfig.html',views.channel_config),
     path('getval',views.get_val),
     path('edit.html',views.edit_usr)
-
-
-
 ]

@@ -40,21 +40,31 @@
             <div class="col-md-6">
                 {{ form.channelname.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channelname}}
             </div>
-            <div class="col-md-6" id="recordval">
-                {{ form.recordval.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.recordval}}db
-            </div>
-        </div>
-        <div class="row1 row selebox">
             <div class="col-md-6">
                 {{ form.audiomode.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiomode}}
+            </div>
+
+        </div>
+        <div class="row1 row selebox">
+            <div class="col-md-6" id="recordval">
+                {{ form.recordval.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.recordval}}db
             </div>
             <div class="col-md-6" id="mutetime">
                 {{ form.mutetime.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.mutetime}}秒
             </div>
         </div>
+        <div class="row1 row selebox">
+            <div class="col-md-6" id="main_comment">
+                {{ form.main_comment.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.main_comment }}
+            </div>
+            <div class="col-md-6" id="sub_comment">
+                {{ form.sub_comment.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.sub_comment }}
+            </div>
+        </div>
         <div class="hidden">{{ form.usrname_n}}</div>
         <div class="hidden">{{ form.usr_perssions_n}}</div>
-        <div class="hidden">{{ form.rightnow }}</div>
+        <div class="hidden">{{ form.saveconfig }}</div>
+        <div class="hidden">{{ form.goback }}</div>
         <div class="row">
             <div class="col-md-1 col-md-offset-8">
                 <a id="reset" class="btn btn-primary" href="">还原配置</a>
@@ -63,17 +73,10 @@
                 <input type="submit" value="保存配置" id="save" class="btn btn-primary">
             </div>
             <div class="col-md-1">
-                <input type="submit" value="立即生效" id="rightnow" class="btn btn-warning">
+                <input type="submit" value="返回主页面" id="goback" class="btn btn-warning">
             </div>
         </div>
     </form>
-
-
-
-
-
-
-
 
 
 {% endblock %}
@@ -82,23 +85,25 @@
 <script type="text/javascript">
 $('a#flow').attr('aria-expanded','true');
 $('div#collapseExample').attr('class','collapse in');
-$('input#id_usrname_n').val("{{ name }}")
-$('input#id_usr_perssions_n').val("{{ permiss }}")
+$('input#id_usrname_n').val("{{ name }}");
+$('input#id_usr_perssions_n').val("{{ permiss }}");
 
 if('{{ method }}'=='get'){
+    $('input#id_channelNo').val("{{ channelno }}");
+    $('input#id_channelname').val("{{ channelname }}");
+    $('select#id_audiomode').val('{{audiomode}}');
+    $('input#id_recordval').val("{{ recordval }}");
+    $('input#id_mutetime').val("{{ mutetime }}");
+    $('input#id_main_comment').val("{{ main_comment }}");
+    $('input#id_sub_comment').val("{{ sub_comment }}");
 
-    $('input#id_channelNo').val("{{ channelno }}")
-    $('input#id_channelname').val("{{ channelname }}")
-    $('input#id_recordval').val("{{ recordval }}")
-    $('input#id_mutetime').val("{{ mutetime }}")
-    $('select#id_audiomode').val('{{audiomode}}')
     if('{{ save }}'=='false'){
         $('span.savetip').attr('style','display:inline')
 
     }else {
         $('span.savetip').attr('style','display:none')
     }
-}else {
+} else {
     if('{{ res }}'=='online'){
         $('#tips1').html('无法执行设置操作，请先关闭所有录音通道')
         $('#myalter1').attr('class','alert alert-danger')
@@ -112,7 +117,6 @@ if('{{ method }}'=='get'){
         $('#myalter1').attr('class','alert alert-danger')
         $('#myalter1').attr('style','display:block')
     }
-
 }
 
 checkmode()
@@ -126,17 +130,16 @@ $('button#close1').click(function () {
     $('#myalter1').attr('style','display:none')
 });
 
-$('input#rightnow').click(function () {
-    $('input#id_rightnow').val('true')
+$('input#goback').click(function () {
+    $('input#id_goback').val('true')
 });
 
 $('input#save').click(function () {
-    $('input#id_rightnow').val('false')
+    $('input#id_saveconfig').val('false')
 });
 
 $('select#id_audiomode').change(function () {
     checkmode()
-
 })
 
 $('a#reset').click(function () {
@@ -149,26 +152,23 @@ $('a#reset').click(function () {
 })
 
 function checknum() {
-    var val = $('input#id_recordval').val()
-    var time = $('input#id_mutetime').val()
+    var val = $('input#id_recordval').val();
+    var time = $('input#id_mutetime').val();
     if ((/(^[1-9]\d*$)/.test(val))&&(/(^[1-9]\d*$)/.test(time))) {
         return true
     }else {
-        $('#myalter').attr('style','display:block')
+        $('#myalter').attr('style','display:block');
         return false　　　　　　
     }
-
 }
 
 function checkmode() {
-    var audiomode = $('select#id_audiomode').val()
+    var audiomode = $('select#id_audiomode').val();
     if(audiomode == "全时段录音"){
         $('div#mutetime').attr('style','display:none')
     }else{
         $('div#mutetime').attr('style','display:block')
-
     }
-
 }
 
 

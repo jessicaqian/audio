@@ -25,7 +25,6 @@
         </div>
     </div>
 
-
     <table class="table table-hover table-condensed table-striped" id="key_table_body">
         <tbody>
         {% for list in lists %}
@@ -33,7 +32,6 @@
                 <td><input name="download" type="checkbox"  value="../{{ path }}/{{ list }}" filename="{{ list }}"/></td>
                 <td><a href="#"  class="file" id="{{ list }}">{{list}}&nbsp;&nbsp;<span class="glyphicon glyphicon-play" aria-hidden="true"></span></a></td>
                 <td><a href="../{{ path }}/{{ list }}" download="{{list}}">下载&nbsp;&nbsp;<span class=" glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
-
             </tr>
         {% endfor %}
         </tbody>
@@ -45,22 +43,46 @@
 
 {% block js %}
 <script type="text/javascript">
+    var audioarr = [];
+    var audioname = [];
+    var audio = document.getElementById("audio")
+
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample1').attr('class','collapse in');
     $('a.file').click(function () {
         var filename = $(this).attr('id')
-
         var src ='../' + '{{ path }}'+'/' + filename
-
-        console.log(src)
         $('#audio').attr('src',src)
-        audio = document.getElementById("audio");
         audio.play()
-
     })
 
-    var audioarr = [];
-    var audioname = [];
+    $('#download-btn').click(function () {
+        $("input:checkbox[name='download']:checked").each(function () {
+            audioarr.push($(this).val())
+            audioname.push($(this).attr("filename"))
+        })
+        for (let index = 0; index < audioarr.length; index++) {
+          download(audioname[index], audioarr[index]);
+        }
+        audioarr = [];
+        audioname = [];
+    })
+
+    $('#play-btn').click(function () {
+        $("input:checkbox[name='download']:checked").each(function () {
+            audioarr.push($(this).val())
+            audioname.push($(this).attr("filename"))
+        })
+        for (let index = 0; index < audioarr.length; index++) {
+            $('#audio').attr('src',audioarr[index])
+            audio.play()
+            audio.addEventListener('ended',function () {
+                alert(1)
+            })
+        }
+        audioarr = [];
+        audioname = [];
+    })
 
     function download(name, href) {
         var a = document.createElement("a"), //创建a标签
@@ -70,45 +92,6 @@
         a.download = name; //设置下载文件名
         a.dispatchEvent(e); //给指定的元素，执行事件click事件//
     }
-
-    $('#download-btn').click(function () {
-        $("input:checkbox[name='download']:checked").each(function () {
-            audioarr.push($(this).val())
-            audioname.push($(this).attr("filename"))
-
-        })
-        for (let index = 0; index < audioarr.length; index++) {
-
-          download(audioname[index], audioarr[index]);
-        }
-        audioarr = [];
-        audioname = [];
-    })
-
-
-    var audio = document.getElementById("audio")
-
-
-    $('#play-btn').click(function () {
-        $("input:checkbox[name='download']:checked").each(function () {
-            audioarr.push($(this).val())
-            audioname.push($(this).attr("filename"))
-
-        })
-        for (let index = 0; index < audioarr.length; index++) {
-            $('#audio').attr('src',audioarr[index])
-            audio.play()
-            audio.addEventListener('ended',function () {
-                alert(1)
-
-            })
-
-        }
-        audioarr = [];
-        audioname = [];
-    })
-
-
 
 </script>
 {% endblock %}

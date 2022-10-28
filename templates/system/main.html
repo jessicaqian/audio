@@ -31,14 +31,20 @@
         </div>
         <div class="col-md-7" id="disk">
             <div class="row tips">
-                <label>磁盘状态</label>
-
+                <label>服务器状态</label>
+            </div>
+            <div class="row1 row">
+                <div class="col-md-4">
+                    CPU使用率:&nbsp&nbsp&nbsp&nbsp<label class="disk-info" id="cpu">获取中...</label>
+                </div>
+                <div class="col-md-8">
+                    内存使用率:&nbsp&nbsp&nbsp<label class="disk-info" id="memory">获取中...</label>
+                </div>
             </div>
             <div class="row1 row">
                 <div class="col-md-11">
-                    磁盘剩余空间:<label class="disk-info" id="space">....G</label>&nbsp&nbsp&nbsp&nbsp
+                    磁盘剩余空间:&nbsp<label class="disk-info" id="space">获取中...</label>
                     <span id="warntip" style="display:inline;">磁盘剩余空间不足</span>
-
                 </div>
             </div>
         </div>
@@ -54,6 +60,7 @@
         </button>
 
     </div>
+
     <div class="row">
         <div class="col-md-2 ">
             <div class="row channel">
@@ -911,16 +918,6 @@
     </div>
 
 
-
-
-
-
-
-
-
-
-
-
 {% endblock %}
 
 {% block js %}
@@ -1217,9 +1214,7 @@
 
         }else{
             $('label#space').attr('class','disk-info-warn')
-
         }
-
     }
 
     var shinelight
@@ -1234,28 +1229,32 @@
                 if(no<{{ diskwarn }}){
                     shinelight = setInterval(shine,500)
                     $('#warntip').attr('style','display:inline;')
-
-
                 }else {
                     clearInterval(shinelight)
                     $('label#space').attr('class','disk-info')
                     $('#warntip').attr('style','display:none;')
-
-
                 }
             }
-
         }).fail(function () {
 
         })
     }
 
+    function getServerStatus(){
+        $.get('getServerStatus').done(function (info) {
+            if(info.serverInfo !== null){
+                $('label#cpu').html(info.serverInfo.cpu_usage);
+                $('label#memory').html(info.serverInfo.mem_usage);
+            }
+        }).fail(function () {
 
+        })
+    }
+    getServerStatus();
+    setInterval(getServerStatus, 3000);
+    getdiskStatus();
+    setInterval(getdiskStatus, 30000);
 
-
-
-    getdiskStatus()
-    setInterval(getdiskStatus,30000)
 </script>
 {% endblock %}
 

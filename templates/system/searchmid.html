@@ -13,25 +13,34 @@
     <form method="post">
         <div class="row sparse">
             <div class="col-md-6">
-                <label class="time" >查询起始时间&nbsp&nbsp</label><input id="start" name="start" type="datetime-local" value="2022-01-01T00:00:00"/>
+                <label >查询起始时间:&nbsp&nbsp</label>
+                <input id="start" name="start" type="datetime-local" value="2022-01-01T00:00:00"/>
             </div>
             <div class="col-md-6">
-                <label class="time">查询截止时间&nbsp&nbsp</label><input type="datetime-local" id="end" name="end" value="2022-01-01T00:00"/>
+                <label class="time">查询截止时间:&nbsp&nbsp</label>
+                <input id="end" name="end" type="datetime-local" value="2022-01-01T00:00"/>
+            </div>
+        </div>
+        <div class="row sparse">
+            <div class="col-md-6">
+                <label >查询备注一:&nbsp&nbsp</label>
+                <input id="main_comment" name="main_comment" type="text" value=""/>
+            </div>
+            <div class="col-md-6">
+                <label class="time">查询备注二:&nbsp&nbsp</label>
+                <input id="sub_comment" name="sub_comment" type="text" value=""/>
             </div>
         </div>
         <div class="row sparse">
             <div class="col-md-12">
-                <label class="time">按通道名(通道号)查询&nbsp&nbsp
-                    <select id="sel" name="no">
-                        <option value="all" selected="selected">全部 </option>
-                        {% for chan in chanlist %}
-
-                        <option value="{{ forloop.counter }}" >{{ forloop.counter }}({{ chan }})</option>
-
-                        {% endfor %}
-                    </select>
-                </label>
+                <label>按通道名(通道号)查询:&nbsp&nbsp</label>
             </div>
+            {% for chan in chanlist %}
+                <div class="col-md-2">
+                    <input id="ch{{ forloop.counter }}" name="ch{{ forloop.counter }}" type="checkbox" value="{{ forloop.counter }}" />
+                    {{ forloop.counter }}({{ chan }})
+                </div>
+            {% endfor %}
         </div>
         <div class="hidden">
             <input id="id_usrname_n" type="text" name="usrname_n" required="required">
@@ -40,23 +49,18 @@
             <input id="id_usr_perssions_n" type="text" name="usr_perssions_n" required="required">
         </div>
         <div class="row sparse">
-             <div class="col-md-3 col-md-offset-9">
-                 <input type="submit" value="搜索" class="btn btn-primary">
-
-             </div>
+            <div class="col-md-12">
+                <input type="submit" value="查询" class="btn btn-primary">
+            </div>
         </div>
-
     </form>
 
     <h5 class="modal-title" >文件夹列表</h5>
-
         <table class="table table-hover table-condensed table-striped" id="key_table_body">
             <tbody>
             {% for list in lists %}
                 <tr id="id{{ forloop.counter }}">
                     <td><a href="audiofile.html?dir={{ list }}&name={{ name }}&permiss={{ permiss }}">{{list}}</a></td>
-
-
                 </tr>
             {% endfor %}
             </tbody>
@@ -68,21 +72,27 @@
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample1').attr('class','collapse in');
-    $('input#id_usrname_n').val("{{ name }}")
-    $('input#id_usr_perssions_n').val("{{ permiss }}")
-    if('{{ mark }}'=='post'){
-        $('#start').val('{{ start_a }}')
-        $('#end').val('{{ end_a }}')
-    }
-    else{
+    $('input#id_usrname_n').val("{{ name }}");
+    $('input#id_usr_perssions_n').val("{{ permiss }}");
+
+    if ('{{ mark }}'=='post') {
+        $('#start').val('{{ start_a }}');
+        $('#end').val('{{ end_a }}');
+        $('#main_comment').val('{{ main_comment }}');
+        $('#sub_comment').val('{{ sub_comment }}');
+        var arr = "{{ select_list }}".split("&#39;");
+        for (i=0; i<arr.length; i++) {
+            if(arr[i].indexOf('ch')!==-1) {
+                $('#' + arr[i]).prop('checked', true)
+            }
+        }
+    } else {
         var timestamp = Date.parse(new Date());
         timestamp = timestamp / 1000;
         var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
         var Y = date.getFullYear() + '-';
         var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
         var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
-//        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
-//        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes());
         var h = '00:'
         var m = '00'
         var time = Y+M+D+"T"+h+m
@@ -93,11 +103,5 @@
         $('#end').val(time)
     }
 
-    $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
-
-
-
-
 </script>
 {% endblock %}
-
