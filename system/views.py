@@ -787,7 +787,9 @@ def search_mid(request):
                                 if (sub_comment != "") & (file_name.find(sub_comment) < 0):
                                     pass
                                 else:
-                                    serch_time = datetime.datetime.strptime(file_name.split("_")[2], '%Y-%m-%dT%H:%M:%S')
+                                    temp = file_name.split("_")[2].split("T")[1].replace("-", ":")
+                                    serch_time = file_name.split("_")[2].split("T")[0] + "T" + temp
+                                    serch_time = datetime.datetime.strptime(serch_time, '%Y-%m-%dT%H:%M:%S')
                                     if start_time <= serch_time <= end_time:
                                         time = file_name.split("_")[2].split("T")[1]
                                         return_list.append(date + " " + time + " / " + file_name)
