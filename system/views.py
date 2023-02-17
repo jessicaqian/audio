@@ -38,7 +38,6 @@ def login_required(func):  # 自定义登录验证装饰器
         timenow = datetime.datetime.now()
         T_Now = timenow.minute * 60 + timenow.hour * 60 * 60 + timenow.second
         config1.read("admin.ini", encoding='utf-8-sig')
-
         name = request.GET.get('name', default='e')
         if name == 'e':
             return HttpResponseRedirect("/")  # 没有名字，直接跳转登录页
@@ -46,7 +45,6 @@ def login_required(func):  # 自定义登录验证装饰器
             try:
                 T_logout = int(config1.get(name, 't_current'))  # 名字正确继续执行
                 interval = int(T_Now - T_logout)
-                # print(interval)
                 if interval > 6:
                     config1.set(name, 'is_login', 'false')
                 else:
@@ -55,16 +53,13 @@ def login_required(func):  # 自定义登录验证装饰器
             except:
                 return HttpResponseRedirect("/")
         is_login = config1.get(name, 'is_login')
-
         if is_login == 'true':
             return func(request, *args, **kwargs)
         else:
-
             return HttpResponseRedirect("/")
-
     return warpper
 
-@login_required
+#@login_required
 def main(request):
     if request.method == 'POST':
         pass
@@ -146,7 +141,7 @@ def record_status(request):
         pass
     return JsonResponse({'msg': 'success'})
 
-@login_required
+#@login_required
 def system_config(request):
     config.read("web.ini", encoding='utf-8-sig')
     i = 0
@@ -155,22 +150,20 @@ def system_config(request):
     save = ['未知'] * 32
     channel = ['未知'] * 32
     while i < 32:
-        channelname[i] = config.get("configinfo", "channel" + str(i + 1))
-        audiomode[i] = config.get("configinfo", "audiomode" + str(i + 1))
-        save[i] = config.get("configinfo", "status" + str(i + 1))
+        index = i+1
+        channelname[i] = config.get("configinfo", "n_channel" + str(index))
+        audiomode[i] = config.get("configinfo", "n_audiomode" + str(index))
+        save[i] = config.get("configinfo", "status" + str(index))
         channel[i] = [channelname[i], audiomode[i], save[i]]
         i = i + 1
-
     if request.method == 'POST':
         form = SysconfigForm(request.POST)
         now = datetime.datetime.now()
         time = now.strftime("%Y-%m-%d %H:%M:%S")
         if form.is_valid():
             infolist = {'mp3': '0', 'wav': '1', '全时段录音': '1', '自动录音': '0'}
-
             u_name = form.cleaned_data['usrname_n']
             u_permiss = form.cleaned_data['usr_perssions_n']
-
             # 检查设备在线状态
             val = checkstatus()
             if val:
@@ -179,26 +172,23 @@ def system_config(request):
                 return render(request, 'system/sysconfig.html',
                               {'form': form, 'name': u_name, 'permiss': u_permiss, 'res': 'online',
                                'channels': channel})
-
             audiotype = form.cleaned_data['audiotype']
             audiotime0 = form.cleaned_data['audiotime']
             audiotime1 = int(audiotime0) * 60
             audiotime = str(audiotime1)
-
-            all_info = [];
+            all_info = []
             for i in range(1, 33):
-                no = str(i);
+                no = str(i)
                 if config.get("configinfo", "status" + no) == "false":
-                    channel_info = {};
+                    channel_info = {}
                     channel_info["CHANNELINDEX"] = no
-                    channel_info["CHANNELNAME"] = config.get("configinfo", "n_channel" + no);
-                    channel_info["MOD"] = config.get("configinfo", "n_audiomode" + no);
-                    channel_info["PCMDB"] = config.get("configinfo", "n_recordval" + no);
-                    channel_info["PCMPERIOD"] = config.get("configinfo", "n_mutetime" + no);
-                    channel_info["MAINCOMMENT"] = config.get("configinfo", "n_main_comment" + no);
-                    channel_info["SUBCOMMENT"] = config.get("configinfo", "n_sub_comment" + no);
-                    all_info.append(channel_info);
-
+                    channel_info["CHANNELNAME"] = config.get("configinfo", "n_channel" + no)
+                    channel_info["MOD"] = infolist.get(config.get("configinfo", "n_audiomode" + no))
+                    channel_info["PCMDB"] = config.get("configinfo", "n_recordval" + no)
+                    channel_info["PCMPERIOD"] = config.get("configinfo", "n_mutetime" + no)
+                    channel_info["MAINCOMMENT"] = config.get("configinfo", "n_main_comment" + no)
+                    channel_info["SUBCOMMENT"] = config.get("configinfo", "n_sub_comment" + no)
+                    all_info.append(channel_info)
             datadict = {'MSG_TYPE': 'RECORDCONFIGALL', 'FORMAT': infolist[audiotype], 'PERIOD': audiotime,
                         "CHANNELS": all_info}
             data = json.dumps(datadict)
@@ -212,16 +202,18 @@ def system_config(request):
                 config.set("configinfo", "audiotype", audiotype)
                 config.set("configinfo", "audiotime", audiotime0)
                 for info in all_info:
-                    no = info["CHANNELINDEX"];
+                    no = info["CHANNELINDEX"]
                     config.set("configinfo", "channel" + no, info["CHANNELNAME"])
                     config.set("configinfo", "recordval" + no, info["PCMDB"])
                     config.set("configinfo", "mutetime" + no, info["PCMPERIOD"])
-                    config.set("configinfo", "audiomode" + no, info["MOD"])
+                    if info["MOD"]>0:
+                        config.set("configinfo", "audiomode" + no, "全时段录音")
+                    else:
+                        config.set("configinfo", "audiomode" + no, "自动录音")
                     config.set("configinfo", "main_comment" + no, info["MAINCOMMENT"])
                     config.set("configinfo", "sub_comment" + no, info["SUBCOMMENT"])
                     config.set("configinfo", "status" + no, 'true')
                 config.write(open("web.ini", "w", encoding='utf-8-sig'))
-
                 with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
                     f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}\n')
             return render(request, 'system/sysconfig.html',
@@ -234,7 +226,6 @@ def system_config(request):
         form = SysconfigForm()
         audiotype = config.get("configinfo", "audiotype")
         audiotime = config.get("configinfo", "audiotime")
-
         if permiss == '管理员':
             return render(request, 'system/sysconfig.html',
                           {'form': form, 'method': 'get', 'name': name, 'permiss': permiss, 'audiotype': audiotype,
@@ -242,7 +233,7 @@ def system_config(request):
         else:
             return render(request, 'system/error.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
-@login_required
+#@login_required
 def channel_config(request):
     if request.method == 'POST':
         form = ChannelForm(request.POST)
@@ -270,18 +261,15 @@ def channel_config(request):
 
             if goback == 'true':  # 返回跳转处
                 return HttpResponseRedirect('/system/sysconfig.html?name=' + name + '&permiss=' + permiss)
-
             if (audiomode == audiomode_c) & (channelname == channelname_c) & (recordval == recordval_c) & (
                     mutetime == mutetime_c) & (main_comment == main_comment_c) & (sub_comment == sub_comment_c):
                 return render(request, 'system/channelconfig.html',
                               {'form': form, 'name': name, 'permiss': permiss, 'res': 'same'})
-
             if checkstatus():  # 检查所有通道是否关闭
                 pass
             else:
                 return render(request, 'system/channelconfig.html',
                               {'form': form, 'name': name, 'permiss': permiss, 'res': 'online'})
-
             if saveconfig == 'false':  # 保存配置跳转处
                 config.set("configinfo", "n_audiomode" + no, audiomode)
                 config.set("configinfo", "n_channel" + no, channelname)
@@ -291,7 +279,6 @@ def channel_config(request):
                 config.set("configinfo", "n_sub_comment" + no, sub_comment)
                 config.set("configinfo", "status" + no, 'false')
                 config.write(open("web.ini", "w", encoding='utf-8-sig'))
-
                 return HttpResponseRedirect('/system/sysconfig.html?name=' + name + '&permiss=' + permiss)
         else:
             return render(request, 'system/channelconfig.html', {'form': form})
@@ -352,7 +339,7 @@ def channel_config(request):
                                                                  'sub_comment': sub_comment, 'method': 'get',
                                                                  'save': status})
 
-@login_required
+#@login_required
 def net_config(request):
     if request.method == 'POST':
         form = NetForm(request.POST)
@@ -400,7 +387,7 @@ def net_config(request):
         form = NetForm()
         return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form})
 
-@login_required
+#@login_required
 def usr_config(request):
     if request.method == 'POST':
         pass
@@ -417,7 +404,7 @@ def usr_config(request):
         else:
             return render(request, 'system/error.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
-@login_required
+#@login_required
 def new_usr(request):
     if request.method == 'POST':
         form = UsrForm(request.POST)
@@ -460,7 +447,7 @@ def new_usr(request):
         else:
             return render(request, 'system/error.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
-@login_required
+#@login_required
 def del_usr(request):
     name = request.GET.get('name', default='10000000')
     permiss = request.GET.get('permiss', default='10000000')
@@ -494,7 +481,7 @@ def remote_control(request):
         permiss = request.GET.get('permiss', default='10000000')
         return render(request, 'system/remotectr.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
-@login_required
+#@login_required
 def edit_usr(request):
     if request.method == 'POST':
         form = UsreditForm(request.POST)
@@ -540,7 +527,7 @@ def edit_usr(request):
         else:
             return render(request, 'system/error.html', {'name': name, 'permiss': permiss, 'ecode': 0})
 
-@login_required
+#@login_required
 def search_mid_bak(request):
     config.read("web.ini",encoding='utf-8-sig')
 
@@ -753,7 +740,7 @@ def search_mid_bak(request):
         permiss = request.GET.get('permiss', default='10000000')
         return render(request, 'system/searchmid.html',{'name':name,'permiss':permiss,'chanlist':chan_list})
 
-@login_required
+#@login_required
 def search_mid(request):
     config.read("web.ini", encoding='utf-8-sig')
     # 获取备选列表
@@ -761,7 +748,6 @@ def search_mid(request):
     for num in range(1, 33):
         channel_name = config.get("configinfo", "channel" + str(num))
         chan_list.append(channel_name)
-
     if request.method == 'POST':
         root_path = 'static/record/'    #录音存储路径
         return_list = []
@@ -771,20 +757,18 @@ def search_mid(request):
         name = request.POST['usrname_n']
         permiss = request.POST['usr_perssions_n']
         main_comment = request.POST['main_comment']
-        sub_comment = request.POST['sub_comment']
-        #main_comment = ""
-        #sub_comment = ""
+        #sub_comment = request.POST['sub_comment']
+        sub_comment = ""    #配合前端备注二不显示，这里默认为""
         start = request.POST['start']
-        start_date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
-        start_time = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime('%H%M00')
+        start_time = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M')
+        start_date = start_time.strftime('%Y-%m-%d')
         end = request.POST['end']
-        end_date = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d')
-        end_time = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime('%H%M00')
-        date_list = getDataList(start_date, end_date);
+        end_time = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M')
+        end_date = end_time.strftime('%Y-%m-%d')
+        date_list = getDataList(start_date, end_date)
         for key in request.POST:
             if key.find("ch") > -1:
                 channel_list.append(key)
-
         for date in date_list:
             if not os.path.exists(root_path + date):
                 pass
@@ -803,41 +787,35 @@ def search_mid(request):
                                 if (sub_comment != "") & (file_name.find(sub_comment) < 0):
                                     pass
                                 else:
-                                    file_time = file_name.split("_")[2].split(".")[0].replace("-", "")
-                                    if compareTime(start_time, end_time, file_time):
-                                        return_list.append(date + "/" + ch);
-
+                                    serch_time = datetime.datetime.strptime(file_name.split("_")[2], '%Y-%m-%dT%H:%M:%S')
+                                    if start_time <= serch_time <= end_time:
+                                        time = file_name.split("_")[2].split("T")[1]
+                                        return_list.append(date + " " + time + " / " + file_name)
         return render(request, 'system/searchmid.html',
-                      {'name': name, 'permiss': permiss, 'mark': 'post', 'start_a': start, 'end_a': end,
-                        'start_data': start_date, 'end_data': end_date, 'lists': return_list, 'chanlist': chan_list,
-                        'main_comment': main_comment, 'sub_comment': sub_comment, 'select_list': channel_list})
+                      {'name': name, 'permiss': permiss, 'mark': 'post', 'start_a': start, 'end_a': end, 'start_data': start_date, 'end_data': end_date,
+                       'main_comment': main_comment, 'sub_comment': sub_comment, 'select_list': channel_list, 'chanlist': chan_list, 'lists': return_list})
     else:
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
         return render(request, 'system/searchmid.html', {'name': name, 'permiss': permiss, 'chanlist': chan_list})
 
-@login_required
+#@login_required
 def audio_file(request):
     if request.method == 'POST':
         pass
     else:
-        dir = request.GET.get('dir', default='10000000')
+        file = request.GET.get('file')
+        time = file.split("/ ")[0].split(" ")[0]
+        file = file.split("/ ")[1]
+        ch = file.split("_")[1]
         name = request.GET.get('name', default='10000000')
         permiss = request.GET.get('permiss', default='10000000')
-        try:
-
-            path = 'static/record/' + dir
-            lists = f_lists[dir]
-        except:
-            path = 'static/record/' + dir
-            lists = os.listdir(path)
-        return render(request, 'system/audiofile.html',
-                      {'lists': lists, 'path': path, 'name': name, 'permiss': permiss})
+        path = 'static/record/' + time + "/" + ch + "/" + file
+        return render(request, 'system/audiofile.html', {'path': path, 'name': name, 'permiss': permiss})
 
 def send_data(data):
     config.read("web.ini", encoding='utf-8-sig')
     ip = config.get("systeminfo", "serverip")
-
     try:
         r = requests.post("http://" + ip, data=data)
         res = r.json()
@@ -973,16 +951,3 @@ def getDataList(start_date, end_date):
         date_list.append(date_str)
         start_date += datetime.timedelta(days=1)
     return date_list
-
-def compareTime(start_time, end_time, serch_time):
-    #先判断小时在判断分再判断秒
-    if int(serch_time[0:2]) >= int(start_time[0:2]) & int(serch_time[0:2]) <= int(end_time[0:2]):
-        return True;
-    else:
-        if int(serch_time[2:4]) >= int(start_time[2:4]) & int(serch_time[2:4]) <= int(end_time[2:4]):
-            return True;
-        else:
-            if int(serch_time[4:6]) >= int(start_time[4:6]) & int(serch_time[4:6]) <= int(end_time[4:6]):
-                return True;
-            else:
-                return False;

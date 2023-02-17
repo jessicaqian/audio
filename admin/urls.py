@@ -5,5 +5,4 @@ app_name ='admin'
 
 urlpatterns = [
     path('', views.login),
-
 ]

@@ -44,13 +44,6 @@
         <label>通道信息及配置</label>
     </div>
 
-    <div class="row sparse" id="head_bar">
-        <div class="col-md-3">
-            <label>通道列表</label>
-        </div>
-        <div class="col-md-9"></div>
-    </div>
-
     <div id="table_box">
          <table class="table table-hover table-condensed table-striped" id="configed_table">
             <colgroup>
@@ -80,7 +73,7 @@
                     <td>{{channel.1}}</td>
                     <td class="config">
                         <a class="btn config" href="/system/channelconfig.html?no={{ forloop.counter }}&name={{ name }}&permiss={{ permiss }}">
-                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                         </a>
                     </td>
                     <td><span class="glyphicon glyphicon-exclamation-sign savetip" aria-hidden="true" id="save{{ forloop.counter }}" style="display: none">&nbsp;配置尚未生效</span></td>
@@ -103,8 +96,7 @@
     {% for channel in channels %}
         if ('{{channel.2}}'=='false'){
             $('span#save{{ forloop.counter }}').attr('style','display:inline')
-        }
-        else {
+        } else {
             $('span#save{{ forloop.counter }}').attr('style','display:none')
         }
     {% endfor %}
@@ -113,21 +105,20 @@
         $('#myalter').attr('style','display:none')
     });
 
-    if('{{ method }}'=='get'){
-        $('select#id_audiotype').val('{{audiotype}}')
+    if('{{ method }}'=='get') {
+        $('select#id_audiotype').val('{{audiotype}}');
         $('input#id_audiotime').val('{{audiotime}}')
-    }else {
-        if('{{ res }}'=='failed'){
-            $('#tips').html('设置失败')
-            $('#myalter').attr('class','alert alert-danger')
+    } else {
+        if('{{ res }}'=='failed') {
+            $('#tips').html('设置失败');
+            $('#myalter').attr('class','alert alert-danger');
             $('#myalter').attr('style','display:block')
-        }else if('{{ res }}'=='online'){
-            $('#tips').html('无法执行设置操作，请先关闭所有录音通道')
-            $('#myalter').attr('class','alert alert-danger')
+        } else if('{{ res }}'=='online') {
+            $('#tips').html('无法执行设置操作，请先关闭所有录音通道');
+            $('#myalter').attr('class','alert alert-danger');
             $('#myalter').attr('style','display:block')
-        }
-        else {
-            $('#tips').html('保存成功')
+        } else {
+            $('#tips').html('设置成功，服务器需要30秒左右重启生效');
             $('#myalter').attr('class','alert alert-success');
             $('#myalter').attr('style','display:block');
             $('span.savetip').attr('style','display:none');

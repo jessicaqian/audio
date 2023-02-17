@@ -2,18 +2,19 @@
 
 {% load static %}
 
-{% block title %}录音查询{% endblock %}
+{% block title %}录音播放{% endblock %}
 
 {% block css %}
 <link href="{% static  "system/css/searchmid.css" %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row sparse"><label class="head">录音播放&nbsp&nbsp&nbsp&nbsp</label></div>
     <div class="row sparse">
         <audio controls="controls" src="" id="audio"></audio>
     </div>
-    <div class="row sparse">
+
+    <!--div class="row sparse">
         <div class="col-md-6">
             <h5 class="modal-title" >文件列表</h5>
         </div>
@@ -23,9 +24,9 @@
         <div class="col-md-3">
             <a class="btn-primary btn" id="play-btn">顺序播放</a>
         </div>
-    </div>
+    </div-->
 
-    <table class="table table-hover table-condensed table-striped" id="key_table_body">
+    <!--table class="table table-hover table-condensed table-striped" id="key_table_body">
         <tbody>
         {% for list in lists %}
             <tr id="id{{ forloop.counter }}">
@@ -35,9 +36,8 @@
             </tr>
         {% endfor %}
         </tbody>
-    </table>
+    </table-->
     <div class="hidden">{{ name }}{{ permiss }}</div>
-
 
 {% endblock %}
 
@@ -45,44 +45,48 @@
 <script type="text/javascript">
     var audioarr = [];
     var audioname = [];
-    var audio = document.getElementById("audio")
+    var audio = document.getElementById("audio");
 
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample1').attr('class','collapse in');
+    var src ='../' + '{{ path }}';
+    $('#audio').attr('src', src);
+    //audio.play();
+
     $('a.file').click(function () {
-        var filename = $(this).attr('id')
-        var src ='../' + '{{ path }}'+'/' + filename
-        $('#audio').attr('src',src)
+        var filename = $(this).attr('id');
+        var src ='../' + '{{ path }}'+'/' + filename;
+        $('#audio').attr('src', src);
         audio.play()
-    })
+    });
 
     $('#download-btn').click(function () {
         $("input:checkbox[name='download']:checked").each(function () {
-            audioarr.push($(this).val())
+            audioarr.push($(this).val());
             audioname.push($(this).attr("filename"))
-        })
+        });
         for (let index = 0; index < audioarr.length; index++) {
           download(audioname[index], audioarr[index]);
         }
         audioarr = [];
         audioname = [];
-    })
+    });
 
     $('#play-btn').click(function () {
         $("input:checkbox[name='download']:checked").each(function () {
-            audioarr.push($(this).val())
+            audioarr.push($(this).val());
             audioname.push($(this).attr("filename"))
-        })
+        });
         for (let index = 0; index < audioarr.length; index++) {
-            $('#audio').attr('src',audioarr[index])
-            audio.play()
+            $('#audio').attr('src',audioarr[index]);
+            audio.play();
             audio.addEventListener('ended',function () {
                 alert(1)
             })
         }
         audioarr = [];
         audioname = [];
-    })
+    });
 
     function download(name, href) {
         var a = document.createElement("a"), //创建a标签

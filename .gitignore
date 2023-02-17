@@ -1,4 +1,10 @@
 # ---> Python
+
+# by nyf
+logs/*.txt
+CHANGELOG.md
+static/record
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

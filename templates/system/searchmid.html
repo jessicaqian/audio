@@ -14,26 +14,28 @@
         <div class="row sparse">
             <div class="col-md-6">
                 <label >查询起始时间:&nbsp&nbsp</label>
-                <input id="start" name="start" type="datetime-local" value="2022-01-01T00:00:00"/>
+                <input id="start" name="start" type="datetime-local" style="width: 50%" value="2022-01-01T00:00:00"/>
             </div>
             <div class="col-md-6">
                 <label class="time">查询截止时间:&nbsp&nbsp</label>
-                <input id="end" name="end" type="datetime-local" value="2022-01-01T00:00"/>
+                <input id="end" name="end" type="datetime-local" style="width: 50%" value="2022-01-01T00:00"/>
             </div>
         </div>
         <div class="row sparse">
             <div class="col-md-6">
-                <label >查询备注一:&nbsp&nbsp</label>
-                <input id="main_comment" name="main_comment" type="text" value=""/>
+                <label >查询备注:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+                <!--label >查询备注一:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label-->
+                <input id="main_comment" name="main_comment" type="text" style="width: 50%" value=""/>
             </div>
-            <div class="col-md-6">
-                <label class="time">查询备注二:&nbsp&nbsp</label>
+            <!-- 由于后端文件名保存的问题，只有一个备注时无法区分是备注一还是备注二，所以这里只保留一个 -->
+            <!--div class="col-md-6">
+                <label class="time">查询备注二:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
                 <input id="sub_comment" name="sub_comment" type="text" value=""/>
-            </div>
+            </div-->
         </div>
         <div class="row sparse">
             <div class="col-md-12">
-                <label>按通道名(通道号)查询:&nbsp&nbsp</label>
+                <label>查询通道号(通道名):&nbsp&nbsp</label>
             </div>
             {% for chan in chanlist %}
                 <div class="col-md-2">
@@ -55,16 +57,22 @@
         </div>
     </form>
 
-    <h5 class="modal-title" >文件夹列表</h5>
-        <table class="table table-hover table-condensed table-striped" id="key_table_body">
-            <tbody>
-            {% for list in lists %}
-                <tr id="id{{ forloop.counter }}">
-                    <td><a href="audiofile.html?dir={{ list }}&name={{ name }}&permiss={{ permiss }}">{{list}}</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <div class="row sparse"><label class="head">查询结果&nbsp&nbsp&nbsp&nbsp</label></div>
+    <table class="table table-hover table-condensed table-striped" id="key_table_body">
+        <tbody>
+        {% for list in lists %}
+            <tr id="id{{ forloop.counter }}">
+                <td>{{list}}&nbsp;&nbsp;</td>
+                <td><a href="audiofile.html?file={{ list }}&name={{ name }}&permiss={{ permiss }}" class="file" id="{{ list }}_play">播放
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+                </td>
+                <td><a href="#" onclick="file_download('{{ list }}')">下载
+                    <span class=" glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     </div>
 {% endblock %}
 
@@ -93,15 +101,28 @@
         var Y = date.getFullYear() + '-';
         var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
         var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
-        var h = '00:'
-        var m = '00'
-        var time = Y+M+D+"T"+h+m
-        $('#start').val(time)
-        h = '23:'
-        m = '59'
-        time = Y+M+D+"T"+h+m
+        var h = '00:';
+        var m = '00';
+        var time = Y+M+D+"T"+h+m;
+        $('#start').val(time);
+        h = '23:';
+        m = '59';
+        time = Y+M+D+"T"+h+m;
         $('#end').val(time)
     }
 
+    function file_download(str) {
+        var time = str.split("/ ")[0].split(" ")[0];
+        var file = str.split("/ ")[1];
+        var ch = file.split("_")[1];
+        var href ='../static/record/' + time + "/" + ch + "/" + file;
+        var name = file;
+        var a = document.createElement("a");
+        e = document.createEvent("MouseEvents");
+        e.initEvent("click", false, false);
+        a.href = href;
+        a.download = name;
+        a.dispatchEvent(e);
+    }
 </script>
 {% endblock %}
