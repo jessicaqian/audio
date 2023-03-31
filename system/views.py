@@ -206,7 +206,7 @@ def system_config(request):
                     config.set("configinfo", "channel" + no, info["CHANNELNAME"])
                     config.set("configinfo", "recordval" + no, info["PCMDB"])
                     config.set("configinfo", "mutetime" + no, info["PCMPERIOD"])
-                    if info["MOD"]>0:
+                    if info["MOD"] == "1":
                         config.set("configinfo", "audiomode" + no, "全时段录音")
                     else:
                         config.set("configinfo", "audiomode" + no, "自动录音")
@@ -781,18 +781,41 @@ def search_mid(request):
                     else:
                         file_list = os.listdir(root_path + date + "/" + ch)
                         for file_name in file_list:
-                            if (main_comment != "") & (file_name.find(main_comment) < 0):
-                                pass
+                            temp_name = file_name.replace(".mp3", "").replace(".wav", "")
+                            file_comment_list = temp_name.split("_")
+                            length = len(file_comment_list)
+                            if (main_comment != "") | ( sub_comment != ""):
+                                if length < 4:      #查询条件有备注一，文件名没有备注则pass
+                                    continue
+                                elif length == 4:    #查询条件有备注一，文件名只有备注一则只筛选备注一
+                                    if file_comment_list[3].find(main_comment) <0:
+                                        continue
+                                    else:
+                                        #没有封装函数，要改三个一起改
+                                        temp = temp_name.split("_")[2].split("T")[1].replace("-", ":")
+                                        serch_time = temp_name.split("_")[2].split("T")[0] + "T" + temp
+                                        serch_time = datetime.datetime.strptime(serch_time, '%Y-%m-%dT%H:%M:%S')
+                                        if start_time <= serch_time <= end_time:
+                                            time = temp_name.split("_")[2].split("T")[1]
+                                            return_list.append(date + " " + time + " / " + file_name)
+                                elif length == 5:    #查询条件有备注一，文件名有备注一和备注二则都筛选
+                                    if (file_comment_list[3].find(main_comment) < 0) & (file_comment_list[4].find(main_comment) < 0):
+                                        continue
+                                    else:
+                                        temp = temp_name.split("_")[2].split("T")[1].replace("-", ":")
+                                        serch_time = temp_name.split("_")[2].split("T")[0] + "T" + temp
+                                        serch_time = datetime.datetime.strptime(serch_time, '%Y-%m-%dT%H:%M:%S')
+                                        if start_time <= serch_time <= end_time:
+                                            time = temp_name.split("_")[2].split("T")[1]
+                                            return_list.append(date + " " + time + " / " + file_name)
                             else:
-                                if (sub_comment != "") & (file_name.find(sub_comment) < 0):
-                                    pass
-                                else:
-                                    temp = file_name.split("_")[2].split("T")[1].replace("-", ":")
-                                    serch_time = file_name.split("_")[2].split("T")[0] + "T" + temp
-                                    serch_time = datetime.datetime.strptime(serch_time, '%Y-%m-%dT%H:%M:%S')
-                                    if start_time <= serch_time <= end_time:
-                                        time = file_name.split("_")[2].split("T")[1]
-                                        return_list.append(date + " " + time + " / " + file_name)
+                                temp = temp_name.split("_")[2].split("T")[1].replace("-", ":")
+                                serch_time = temp_name.split("_")[2].split("T")[0] + "T" + temp
+                                serch_time = datetime.datetime.strptime(serch_time, '%Y-%m-%dT%H:%M:%S')
+                                if start_time <= serch_time <= end_time:
+                                    time = temp_name.split("_")[2].split("T")[1]
+                                    return_list.append(date + " " + time + " / " + file_name)
+
         return render(request, 'system/searchmid.html',
                       {'name': name, 'permiss': permiss, 'mark': 'post', 'start_a': start, 'end_a': end, 'start_data': start_date, 'end_data': end_date,
                        'main_comment': main_comment, 'sub_comment': sub_comment, 'select_list': channel_list, 'chanlist': chan_list, 'lists': return_list})
