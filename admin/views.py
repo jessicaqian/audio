@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import NameForm
-# import sqlite3
 import configparser
-import time,datetime,os
+import time
+import datetime
+import os
 
 # Create your views here.
 
