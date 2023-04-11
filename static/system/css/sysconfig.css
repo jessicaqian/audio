@@ -93,3 +93,19 @@ div#head_bar{
 span.savetip{
     color:#c9302c ;
 }
+
+input#id_path{
+    width:70%;
+}
+
+div#inputpath{
+    padding-left:65px;
+}
+
+div#filepath{
+    padding-right:0px;
+}
+
+div#scanbtn{
+    padding-left: 0px;
+}
