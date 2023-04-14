@@ -12,7 +12,7 @@ class NameForm(forms.Form):
         m = password + "{{sdtzzq}}"
         pw = hashlib.md5(m.encode())
         config = configparser.ConfigParser()
-        config.read("admin.ini",encoding='utf-8-sig')
+        config.read("conf/admin.ini",encoding='utf-8-sig')
         try:
             name = config.get(username, "name")
             psw = config.get(username, "pw")

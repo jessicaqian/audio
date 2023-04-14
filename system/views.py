@@ -37,7 +37,7 @@ def login_required(func):  # 自定义登录验证装饰器
     def warpper(request, *args, **kwargs):
         timenow = datetime.datetime.now()
         T_Now = timenow.minute * 60 + timenow.hour * 60 * 60 + timenow.second
-        config1.read("admin.ini", encoding='utf-8-sig')
+        config1.read("conf/admin.ini", encoding='utf-8-sig')
         name = request.GET.get('name', default='e')
         if name == 'e':
             return HttpResponseRedirect("/")  # 没有名字，直接跳转登录页
@@ -49,7 +49,7 @@ def login_required(func):  # 自定义登录验证装饰器
                     config1.set(name, 'is_login', 'false')
                 else:
                     config1.set(name, 't_current', str(T_Now))
-                config1.write(open("admin.ini", "w", encoding='utf-8-sig'))
+                config1.write(open("conf/admin.ini", "w", encoding='utf-8-sig'))
             except:
                 return HttpResponseRedirect("/")
         is_login = config1.get(name, 'is_login')
@@ -66,7 +66,7 @@ def main(request):
 
 
     else:
-        config.read("web.ini", encoding='utf-8-sig')
+        config.read("conf/web.ini", encoding='utf-8-sig')
 
         i = 0
         channel = ['未知'] * 32
@@ -97,7 +97,7 @@ def btn_action(request):
         return JsonResponse({'msg': 'success'})
 
 def get_diskstatus(request):
-    config.read("web.ini", encoding='utf-8-sig')
+    config.read("conf/web.ini", encoding='utf-8-sig')
     diskspace = config.get("configinfo", "diskspace")
     free_bytes = ctypes.c_ulonglong(0)
     ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(diskspace), None, None, ctypes.pointer(free_bytes))
@@ -143,7 +143,7 @@ def record_status(request):
 
 #@login_required
 def system_config(request):
-    config.read("web.ini", encoding='utf-8-sig')
+    config.read("conf/web.ini", encoding='utf-8-sig')
     i = 0
     channelname = ['未知'] * 32
     audiomode = ['未知'] * 32
@@ -213,7 +213,7 @@ def system_config(request):
                     config.set("configinfo", "main_comment" + no, info["MAINCOMMENT"])
                     config.set("configinfo", "sub_comment" + no, info["SUBCOMMENT"])
                     config.set("configinfo", "status" + no, 'true')
-                config.write(open("web.ini", "w", encoding='utf-8-sig'))
+                config.write(open("conf/web.ini", "w", encoding='utf-8-sig'))
                 with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
                     f.write(f'{time} {u_name}用户 将存储格式:{raudiotype}修改为存储格式{audiotype}\n')
             return render(request, 'system/sysconfig.html',
@@ -251,7 +251,7 @@ def channel_config(request):
             saveconfig = form.cleaned_data['saveconfig']
             goback = form.cleaned_data['goback']
 
-            config.read("web.ini", encoding='utf-8-sig')
+            config.read("conf/web.ini", encoding='utf-8-sig')
             audiomode_c = config.get("configinfo", "audiomode" + no)
             channelname_c = config.get("configinfo", "channel" + no)
             recordval_c = config.get("configinfo", "recordval" + no)
@@ -278,12 +278,12 @@ def channel_config(request):
                 config.set("configinfo", "n_main_comment" + no, main_comment)
                 config.set("configinfo", "n_sub_comment" + no, sub_comment)
                 config.set("configinfo", "status" + no, 'false')
-                config.write(open("web.ini", "w", encoding='utf-8-sig'))
+                config.write(open("conf/web.ini", "w", encoding='utf-8-sig'))
                 return HttpResponseRedirect('/system/sysconfig.html?name=' + name + '&permiss=' + permiss)
         else:
             return render(request, 'system/channelconfig.html', {'form': form})
     else:
-        config.read("web.ini", encoding='utf-8-sig')
+        config.read("conf/web.ini", encoding='utf-8-sig')
         form = ChannelForm()
         no = request.GET.get('no')
         name = request.GET.get('name', default='10000000')
@@ -306,7 +306,7 @@ def channel_config(request):
             config.set("configinfo", "n_sub_comment" + no, '')
             config.set("configinfo", "status" + no, 'true')
 
-            config.write(open("web.ini", "w", encoding='utf-8-sig'))
+            config.write(open("conf/web.ini", "w", encoding='utf-8-sig'))
             return render(request, 'system/channelconfig.html', {'form': form, 'name': name, 'permiss': permiss,
                                                                  'channelno': no, 'audiomode': audiomode,
                                                                  'channelname': channelname,
@@ -349,7 +349,7 @@ def net_config(request):
             ip = form.cleaned_data['ip']
             mask = form.cleaned_data['mask']
             gateway = form.cleaned_data['netgate']
-            config.read("web.ini", encoding='utf-8-sig')
+            config.read("conf/web.ini", encoding='utf-8-sig')
             dev = config.get("systeminfo", "netdev")
             pw = config.get("systeminfo", "syspw")
             path0 = config.get("systeminfo", "path")
@@ -393,7 +393,7 @@ def usr_config(request):
         pass
 
     else:
-        config1.read("admin.ini", encoding='utf-8-sig')
+        config1.read("conf/admin.ini", encoding='utf-8-sig')
         usrinfo = config1.items('usrinfo')
 
         name = request.GET.get('name', default='10000000')
@@ -417,13 +417,13 @@ def new_usr(request):
             m = password + "{{sdtzzq}}"
             pw = hashlib.md5(m.encode())
 
-            config1.read("admin.ini", encoding='utf-8-sig')
+            config1.read("conf/admin.ini", encoding='utf-8-sig')
             try:
                 config1.add_section(name)
                 config1.set(name, "name", name)
                 config1.set(name, "pw", pw.hexdigest())
                 config1.set("usrinfo", name, perssions)
-                config1.write(open("admin.ini", "w", encoding='utf-8-sig'))
+                config1.write(open("conf/admin.ini", "w", encoding='utf-8-sig'))
 
                 now = datetime.datetime.now()
                 time = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -457,17 +457,17 @@ def del_usr(request):
     with open(file=file_path, mode="a", encoding="utf-8-sig") as f:
         f.write(f'{time} {name}用户 删除用户{usrname}权限:{permiss}\n')
 
-    config1.read("admin.ini", encoding='utf-8-sig')
+    config1.read("conf/admin.ini", encoding='utf-8-sig')
     config1.remove_section(usrname)
     config1.remove_option("usrinfo", usrname)
 
-    config.write(open("admin.ini", "w", encoding='utf-8-sig'))
+    config.write(open("conf/admin.ini", "w", encoding='utf-8-sig'))
 
     return JsonResponse({'msg': 'success'})
 
 def remote_control(request):
     if request.method == 'POST':
-        config.read("web.ini", encoding='utf-8-sig')
+        config.read("conf/web.ini", encoding='utf-8-sig')
         pw = config.get("systeminfo", "syspw")
         method = request.POST.get('mark')
         if method == 'shutdown':
@@ -494,7 +494,7 @@ def edit_usr(request):
             m = password + "{{sdtzzq}}"
             pw = hashlib.md5(m.encode())
 
-            config1.read("admin.ini", encoding='utf-8-sig')
+            config1.read("conf/admin.ini", encoding='utf-8-sig')
 
             pw_conf = config1.get(name, "pw")
             if pw.hexdigest() == pw_conf:
@@ -502,7 +502,7 @@ def edit_usr(request):
                 pw1 = hashlib.md5(m1.encode())
                 config1.set(name, "pw", pw1.hexdigest())
 
-                config1.write(open("admin.ini", "w", encoding='utf-8-sig'))
+                config1.write(open("conf/admin.ini", "w", encoding='utf-8-sig'))
 
                 now = datetime.datetime.now()
                 time = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -529,7 +529,7 @@ def edit_usr(request):
 
 #@login_required
 def search_mid_bak(request):
-    config.read("web.ini",encoding='utf-8-sig')
+    config.read("conf/web.ini",encoding='utf-8-sig')
 
     chan_list=[]
     num =1
@@ -742,7 +742,7 @@ def search_mid_bak(request):
 
 #@login_required
 def search_mid(request):
-    config.read("web.ini", encoding='utf-8-sig')
+    config.read("conf/web.ini", encoding='utf-8-sig')
     # 获取备选列表
     chan_list = []
     for num in range(1, 33):
@@ -839,7 +839,7 @@ def audio_file(request):
         return render(request, 'system/audiofile.html', {'path': path, 'name': name, 'permiss': permiss})
 
 def send_data(data):
-    config.read("web.ini", encoding='utf-8-sig')
+    config.read("conf/web.ini", encoding='utf-8-sig')
     ip = config.get("systeminfo", "serverip")
     try:
         r = requests.post("http://" + ip, data=data)
@@ -860,9 +860,9 @@ def heartbeat(request):
     timenow = datetime.datetime.now()
     T_Now = timenow.minute * 60 + timenow.hour * 60 * 60 + timenow.second
     name = request.GET.get('name', default='10000000')
-    config1.read("admin.ini", encoding='utf-8-sig')
+    config1.read("conf/admin.ini", encoding='utf-8-sig')
     config1.set(name, 't_current', str(T_Now))
-    config1.write(open("admin.ini", "w", encoding='utf-8-sig'))
+    config1.write(open("conf/admin.ini", "w", encoding='utf-8-sig'))
 
     return JsonResponse({'msg': 'success'})
 
@@ -940,7 +940,7 @@ def devices(request):
     if request.method == "POST":
         pass
     else:
-        config.read("web.ini", encoding='utf-8-sig')
+        config.read("conf/web.ini", encoding='utf-8-sig')
 
         audiotype = config.get("configinfo", "audiotype")
         channel1 = config.get("configinfo", "channel1")

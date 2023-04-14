@@ -20,11 +20,11 @@ def login(request):
             T_Now = timenow.minute*60 + timenow.hour * 60*60 + timenow.second
             usrname = info['usrname']
             config = configparser.ConfigParser()
-            config.read("admin.ini",encoding='utf-8-sig')
+            config.read("conf/admin.ini",encoding='utf-8-sig')
             config.set(usrname, "is_login", 'true')
             config.set(usrname, "t_current", str(T_Now))
             usrpermiss = config.get('usrinfo', usrname)
-            config.write(open("admin.ini", "w",encoding='utf-8-sig'))
+            config.write(open("conf/admin.ini", "w",encoding='utf-8-sig'))
             return HttpResponseRedirect('/system/main.html?name='+usrname+'&permiss='+usrpermiss)
         else:
             return render(request, 'admin/login.html', {'form': form})
