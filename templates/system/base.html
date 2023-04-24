@@ -31,10 +31,12 @@
 
         </div>
         <div class="row">
-            <a id="logout" href="/">用户登出</a>
+            <a id="logout" href="/">{{ name }}登出</a>
 
         </div>
     </div>
+
+
     <div class="row">
         <div class="col-md-2">
             <ul class="nav nav-pills nav-stacked">
@@ -85,23 +87,7 @@
 
 
 {% block js %}{% endblock %}
-<script type="text/javascript">
-       function heartbeat(){
 
-            $.ajax({
-                type: 'GET',
-                url: 'heartbeat',
-
-
-              success: function(result) {
-                console.log(result.msg)
-              },
-
-
-            })
-    }
-    setInterval(heartbeat,10000)
-</script>
 </body>
 </html>
 

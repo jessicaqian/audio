@@ -23,7 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'kjn5v%vhbkv7xx&c*9r#brpi!1v8@awwid@(7uwgh8m%jnvur1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+#在生产环境中，需要将DEBUG = True，设置为DEBUG = False。因为当你的网站出错误时，别人能看到你的源代码，而我们也不需要给用户看到这些错误信息。
 
 ALLOWED_HOSTS = ['*']
 
@@ -118,8 +120,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+#STATIC_URL = '/static/'
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, '/static/'),
+#    'static',
+#]
+
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '/static/'),
-    'static',
 ]
+
+
+LOGIN_URL = "admin/login"

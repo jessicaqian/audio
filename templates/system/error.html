@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">系统错误提示&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row sparse"><label class="head">系统错误提示</label></div>
     <div class="row">
         <label id="tips"></label>
     </div>
@@ -19,11 +19,10 @@
 {% block js %}
 <script type="text/javascript">
     if("{{ ecode }}"==0){
-        $('label#tips').html('对不起！您的用户没有该项操作的权限')
-
+        $('label#tips').html('对不起！当前用户没有该项操作的权限。')
     }
     else if("{{ ecode }}"==1){
-        $('label#tips').html('该用户名已存在！无法重复添加')
+        $('label#tips').html('该用户名已存在，无法重复添加！')
 
     }
 

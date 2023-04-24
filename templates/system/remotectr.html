@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}网络配置{% endblock %}
+{% block title %}远程控制{% endblock %}
 
 {% block css %}
 <link href="{% static  "system/css/remotectr.css" %}" rel="stylesheet">
@@ -13,6 +13,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel"></h4>
     </div>
+
     <div class="modal-body">
         <div class="progress" style="display: none;" id="progress">
           <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
@@ -26,7 +27,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">远程控制&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row sparse"><label class="head">远程控制</label></div>
     <div class="row">
         <div class="col-md-3 col-md-offset-3">
             <button id="shutdown" data-toggle="modal" data-target="#myModal"></button>
@@ -47,28 +48,31 @@
     </div>
 
 
-
-
-
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample').attr('class','collapse in');
-    $('#shutdown').click(function () {
-        $('#myModalLabel').html('关机需要一分钟，确定要关机么？')
-        $('#sure').attr('name','shutdown')
-    })
-    $('#reboot').click(function () {
-        $('#myModalLabel').html('确定要重启么？')
-        $('#sure').attr('name','reboot')
-    })
 
-    $('#sure').click(function () {
+    $('#shutdown').click(function ()
+    {
+        $('#myModalLabel').html('关机需要一分钟，确定要关机吗？(关机前请确认所有录音通道均已关闭.)')
+        $('#sure').attr('name','shutdown')
+    });
+
+    $('#reboot').click(function ()
+    {
+        $('#myModalLabel').html('确定要重启吗？(重启前请确认所有录音通道均已关闭.)')
+        $('#sure').attr('name','reboot')
+    });
+
+    $('#sure').click(function ()
+    {
         var mark = $('#sure').attr('name')
         if(mark == 'shutdown'){
-            $.post('remotectr.html',{'mark':mark}).done(function (info) {
+            $.post('remotectr.html',{'mark':mark}).done(function (info)
+            {
                 $('#myModalLabel').html('正在关机...')
                 $('#sure').attr('style','display:none') // $('#sure').attr('disabled','disabled')
                 $('#close').attr('style','display:none')
@@ -83,19 +87,13 @@
                         window.location.href ='/'
                     }
                 },1000)
-
-
-
-
-            }).fail(function () {
+            }).fail(function ()
+            {
 
             })
-        }else {
+        }else
+            {
             $.post('remotectr.html',{'mark':mark}).done(function (info) {
-
-
-
-
 
             }).fail(function () {
 

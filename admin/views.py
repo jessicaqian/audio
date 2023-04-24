@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponseRedirect
 from .forms import NameForm
 from . import forms
 # import sqlite3
 import configparser
 import time,datetime,os
+import hashlib
 
 # Create your views here.
 
@@ -18,16 +19,18 @@ file_path = dir + '/' + timestr + '.txt'
 
 
 def login(request):
+    if request.session.get('is_login',None):
+        return redirect('/system/main.html/')
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = NameForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
 
-            info = form.cleaned_data
+            info = form.cleaned_data # 就是读取表单返回的值
             timenow = datetime.datetime.now()
             T_Now = timenow.minute + timenow.hour * 60
-            usrname = info['usrname']
+            usrname = info['usrname'] #表单中的姓名
 
             config = configparser.ConfigParser()
             config.read("web.ini")
@@ -37,16 +40,11 @@ def login(request):
             usrpermiss = config.get('usrinfo', usrname)
             config.write(open("web.ini", "w"))
 
-            # conn = sqlite3.connect('db.sqlite3')
-            # cursor = conn.cursor()
-            # sql = " SELECT usrpermiss FROM usradmin WHERE usrname='" + usrname + "'"
-            # cursor.execute(sql)
-            # val = cursor.fetchone()
-            # usrpermiss = val[0]
-
+            now = datetime.datetime.now()
+            now_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
             with open(file=file_path, mode="a", encoding="utf-8") as f:
-                f.write(f'{time} {usrname}登录\n')
+                f.write(f'{now_time} 用户: {usrname} 登录\n')
             print(usrpermiss)
             return HttpResponseRedirect('/system/main.html?name='+usrname+'&permiss='+usrpermiss)
         else:
@@ -54,26 +52,4 @@ def login(request):
     else:
         form = NameForm()
     return render(request, 'admin/login.html', {'form': form})
-
-def register(request):
-    if request.method=='POST':
-        register_form = forms.RegisterRorm(request.POST)
-
-        message = '请仔细检查填写内容！'
-        if register_form.is_valid():
-           username = register_form.cleaned_data('username')
-           password = register_form.cleaned_data('password')
-           password1 = register_form.cleaned_data('password1')
-           email = register_form.cleaned_data('email')
-           sex = register_form.cleaned_data('sex')
-
-           if password!=password1:
-               message = '两次密码输入不同'
-               return render(request,'admin/register.html',locals())
-           else:
-               return render(request,'admin/login.html',locals())
-        else:
-             return render(request, 'admin/register.html', locals())
-    register_form = forms.RegisterRorm()
-    return render(request,'admin/register.html',locals())
 

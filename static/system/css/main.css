@@ -1,5 +1,5 @@
 div#system{
-    height: 200px;
+    height: 190px;
     border-right: #ccc7c7 solid 1px;
 }
 
@@ -27,7 +27,7 @@ div.channel{
 div.channel_in{
     margin-left: 15px;
     height: 25px;
-    background:url("../image/28754.gif") center left;
+    background:url("../image/do.gif") center left;
     background-color: white;
     background-size: 50%;
     border-radius: 4px;
@@ -37,6 +37,15 @@ div.channel_in_off{
     margin-left: 15px;
     height: 25px;
     background-color: #e3e3e3;
+    background-size: 50%;
+    border-radius: 4px;
+}
+
+div.channel_in_change{
+    margin-left: 15px;
+    height: 25px;
+    background:url("../image/dod.gif") center left;
+    background-color: white;
     background-size: 50%;
     border-radius: 4px;
 }
@@ -61,5 +70,106 @@ li#main>a{
     background-color: #eee;
     color: #23527c;
 }
+/*磁盘空间不足弹出窗口*/
+div#alertTips{
+    margin-bottom:20px;
+    border-bottom: 1px solid #eee;
+}
+
+div#alertTips > p{
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 18px;
+    font-weight:700;
+}
+
+div#alertContext{
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: center;
+    font-size:18px;
+    font-weight:700;
+    color: #0f0f0f;
+}
+
+div#alertContext > span{
+    padding: 0 20px 0 20px;
+}
+
+div#alertSure button{
+    width: 75px;
+    height: 35px;
+    border-radius: 5px;
+    position: absolute;
+    outline: none;
+    border: none;
+    background-color: #1b4192;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 18px;
+    color: aliceblue;
+}
+
+div#popUp {
+    display: none;
+    background-color: white;
+    z-index: 11;
+    width: 290px;
+    height: 190px;
+    position:fixed;
+    top:0;
+    right:0;
+    left:0;
+    bottom:0;
+    margin:auto;
+    border-radius: 5px;
+}
+
+/*心跳弹出窗口*/
+div#heartBeatTips{
+    font-size:18px;
+    font-weight:700;
+    text-align:center;
+    border-bottom: 1px solid #ebebeb;
+    margin-bottom:20px;
+}
 
 
+div#heartWinContext{
+    width: 96%;
+    margin:4% auto;
+    text-align:center;
+    font-size:18px;
+    color: #000;
+}
+
+div#heartWinSure  button{
+    text-align: center;
+    height: 35px;
+    width: 75px;
+    color: aliceblue;
+    bottom: 18px;
+    background-color: #1b4192;
+    border-radius: 5px;
+    position: absolute;
+    outline: none;
+    border: none;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 20px;
+}
+
+div#popUpHeartWin{
+    display: none;
+    background-color: white;
+    z-index: 11;
+    width: 290px;
+    height: 190px;
+    position:fixed;
+    top:0;
+    right:0;
+    left:0;
+    bottom:0;
+    margin:auto;
+}

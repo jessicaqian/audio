@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}系统配置{% endblock %}
+{% block title %}录音配置{% endblock %}
 
 {% block css %}
 <link href="{% static  "system/css/sysconfig.css" %}" rel="stylesheet">
@@ -23,33 +23,46 @@
         <strong id="tips22" ></strong>
     </div>
 
-    <div class="row sparse"><label class="head">录音配置&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div id="hidebg"></div>
+    <div class="alert alert-warming" role="alert" id="popUpConfigWin" style="display: none">
+        <div id="configWinTips">
+            <label>温&nbsp;馨&nbsp;提&nbsp;示</label>
+        </div>
+        <div id='configWinContext'>
+            <label>配置正在生效中，请稍后...</label>
+            <strong>[在此期间请勿进行任何操作]</strong>
+        </div>
+        <div id="configWinSure">
+            <button>我知道啦</button>
+        </div>
+    </div>
 
+    <div class="row sparse"><label class="head">录音配置</label></div>
 
     <div class="row tips">
         <label>音频配置</label>
     </div>
     <form method="post" id="form">
          <div class="row1 row" id="selebox">
-                {{ form.audiotype.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotype}}
+                {{ form.audiotype.label_tag}}&nbsp;&nbsp;{{ form.audiotype}}
         </div>
         <div class="row1 row" id="audioMode">
-                {{ form.audiomode.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiomode}}
+                {{ form.audiomode.label_tag}}&nbsp;&nbsp;{{ form.audiomode}}
         </div>
-        <div class="row1 row" id="audioTime" >
-            <span>{{ form.audiotime.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.audiotime}}&nbsp;&nbsp;&nbsp;分钟</span>
+        <div class="row1 row" id="audioTime">
+            <span>{{ form.audiotime.label_tag}}&nbsp;&nbsp;{{ form.audiotime}}&nbsp;&nbsp;&nbsp;分钟</span>
         </div>
 
         <div class="row tips">
             <label>通道名称配置</label>
         </div>
         <div class="row1 row channel_name">
-            <div class="col-md-5">{{ form.channel1.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel1}}</div>
-            <div class="col-md-5">{{ form.channel2.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel2}}</div>
+            <div class="col-md-5">{{ form.channel1.label_tag}}&nbsp;&nbsp;{{ form.channel1}}</div>
+            <div class="col-md-5">{{ form.channel2.label_tag}}&nbsp;&nbsp;{{ form.channel2}}</div>
         </div>
         <div class="row1 row channel_name">
-            <div class="col-md-5">{{ form.channel3.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel3}}</div>
-            <div class="col-md-5">{{ form.channel4.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel4}}</div>
+            <div class="col-md-5">{{ form.channel3.label_tag}}&nbsp;&nbsp;{{ form.channel3}}</div>
+            <div class="col-md-5">{{ form.channel4.label_tag}}&nbsp;&nbsp;{{ form.channel4}}</div>
         </div>
         <div class="hidden">{{ form.usrname_n}}</div>
         <div class="hidden">{{ form.usr_perssions_n}}</div>
@@ -59,9 +72,8 @@
             </div>
         </div>
         <div class="alert alert-warning fade in" role="alert" id="myalter" style="display: none">
-            <button type="button" class="close" id="close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="close" id="close"><span aria-hidden="true">&times;</span></button>
+
             <strong id="tips1" >修改这些配置将会自动停止录音</strong>，请在修改成功后重新手动开启录音，仍然继续吗？
             <input class="btn btn-warning" type="submit" id="continue" value="继续">
             <button class="btn btn-default" type="button" id="cancle">取消</button>
@@ -76,28 +88,29 @@
     $('div#collapseExample').attr('class','collapse in');//
     $('input#id_usrname_n').val("{{ name }}")  //返回表单字段的值
     $('input#id_usr_perssions_n').val("{{ permiss }}")//返回表单字段的值
-    var opt = $('select#id_audiomode').val();//获取当前的录音模式，共分为2种，全时段和自动录音
+    var opt = $('select#id_audiomode').val();
     if(opt=='全时段录音'){
-        $('div#audioTime').removeAttr('style') //从audioTime移除style属性
+        $('div#audioTime').removeAttr('style')
     }else {
-        $('div#audioTime').attr('style','visibility: hidden') //获取属性值，visibility: hidden'，元素消失，占位
-    }
+        $('div#audioTime').attr('style','visibility: hidden')
+    };
+
+
     if('{{ method }}'=='get'){
-        $('input#id_channel1').val('{{ channel1 }}')
-        $('input#id_channel2').val('{{ channel2 }}')
-        $('input#id_channel3').val('{{ channel3 }}')
-        $('input#id_channel4').val('{{ channel4 }}')
-        $('select#id_audiomode').val('{{audiomode}}')
-        $('select#id_audiotype').val('{{audiotype}}')
-        if('{{audiomode}}'=='全时段录音'){ //这个if/else主要就是说明了，如果是全时段录音的话就出来录音时长，否则就不出来
-            $('select#id_audiotime').val('{{audiotime}}')
-            $('div#audioTime').removeAttr('style')
+        $('input#id_channel1').val('{{ channel1 }}');
+        $('input#id_channel2').val('{{ channel2 }}');
+        $('input#id_channel3').val('{{ channel3 }}');
+        $('input#id_channel4').val('{{ channel4 }}');
+        $('select#id_audiomode').val('{{audiomode}}');
+        $('select#id_audiotype').val('{{audiotype}}');
+        if('{{audiomode}}'=='全时段录音'){
+            $('select#id_audiotime').val('{{audiotime}}');
+            $('div#audioTime').removeAttr('style');
         }
         else {
             $('div#audioTime').attr('style','visibility: hidden')
         }
-    }
-
+    };
 
     $('select#id_audiomode').change(function () {
         var opt = $('select#id_audiomode').val();
@@ -106,34 +119,19 @@
         }
         else {
             $('div#audioTime').removeAttr('style')
-
-
-
         }
 
-    })
-
-    $('#editmode').click(function () {
-         var data = {"cmdCheck": 0x02, "Seq": 0x15,
-        "audioPara": {"audioFunc": 3, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 0, "nCapNo": 0,
-                      "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "new.mp3",
-                      "isStereoSaveFlag": 0}}
-        var jsonstr = JSON.stringify(data);
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-
-
-        }).fail(function () {
-
-        })
-    })
+    });
 
     //新增
     $('button#close22').click(function () {
        $('#myalter22').attr('style','display:none')//这个主要是为了当点击x的时候，对应窗口关闭
     });
 
+
     $('button#close1').click(function () {
        $('#myalter1').attr('style','display:none')
+
     });
 
     $('button#close').click(function () {
@@ -144,38 +142,54 @@
         $('#myalter').attr('style','display:none')
     });
 
-    function check() { //在这里检查录音模式、音频类型、录音时间是否有所改动
-         var audiomode = $('select#id_audiomode').val()
-         var audiotype = $('select#id_audiotype').val()
-         var audiotime = $('input#id_audiotime').val()
+    $('div#configWinSure').click(function () {
+       $('#popUpConfigWin').attr('style','display:none')
+    });
 
-        if((audiomode=='{{audiomode}}')&&audiotype=='{{audiotype}}'&&audiotime=='{{audiotime}}'){
+    //在配置提醒窗口
+    $('input#continue').click(function () {
+        $('#myalter').attr('style','display:none');
+        hidebg.style.display="block";  //显示隐藏层
+        hidebg.style.height=document.body.clientHeight+"px";  //设置隐藏层的高度为当前页面高度
+        document.getElementById("popUpConfigWin").style.display="block";  //显示弹出层
+    });
+
+
+
+    function check() { //在这里检查录音模式、音频类型、录音时间是否有所改动
+         var audiomode = $('select#id_audiomode').val();
+         var audiotype = $('select#id_audiotype').val();
+         var audiotime = $('input#id_audiotime').val();
+
+        if((audiomode=='{{audiomode}}')&&audiotype=='{{audiotype}}'&&audiotime=='{{audiotime}}')
+        {
             $('#form').submit()
-        }else{
-            if ((/^(\+|-)?\d+$/.test( audiotime )) && audiotime>=1 && audiotime<60) {//若是满足对应条件则提交表单
-                $('#myalter').attr('style', 'display:block')
-                $('#form').submit()
-            } else {//否则弹出错误提示窗口
-                $('#tips22').html('音频文件存储时间输入错误，该值只能为1-60的正整数。')
-                $('#myalter22').attr('class','alert alert-danger ')
-                $('#myalter22').attr('style', 'display:block')
+        }
+        else
+        {
+            if ((/^(\+|-)?\d+$/.test( audiotime )) && audiotime>=1 && audiotime<60) {
+                $('#myalter').attr('style', 'display:block');
+            }
+            else {
+                $('#tips22').html('音频文件存储时间输入错误，该值只能为1-60的正整数。');
+                $('#myalter22').attr('class','alert alert-danger ');
+                $('#myalter22').attr('style', 'display:block');
             }
         }
-
-
     }
 
+
     if('{{ res }}'=='failed'){
-        $('select#id_audiomode').val('{{audiomode}}')
-        $('select#id_audiotype').val('{{audiotype}}')
-        $('select#id_audiotime').val('{{audiotime}}')
-        $('#tips').html('设置失败')
-        $('#myalter1').attr('class','alert alert-danger')
-        $('#myalter1').attr('style','display:block')
+        $('select#id_audiomode').val('{{audiomode}}');
+        $('select#id_audiotype').val('{{audiotype}}');
+        $('select#id_audiotime').val('{{audiotime}}');
+        $('#tips').html('设置失败');
+        $('#myalter1').attr('class','alert alert-danger');
+        $('#myalter1').attr('style','display:block');
     }else if('{{ res }}'=='success'){
-        $('#tips').html('设置成功')
-        $('#myalter1').attr('class','alert alert-success')
-        $('#myalter1').attr('style','display:block')
+        $('#tips').html('设置成功');
+        $('#myalter1').attr('class','alert alert-success');
+        $('#myalter1').attr('style','display:block');
 
     }
 </script>

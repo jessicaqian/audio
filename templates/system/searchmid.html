@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">录音查询&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row sparse"><label class="head">录音查询</label></div>
     <form method="post">
         <div class="row sparse">
             <div class="col-md-6">
@@ -70,6 +70,7 @@
     $('div#collapseExample1').attr('class','collapse in');
     $('input#id_usrname_n').val("{{ name }}")
     $('input#id_usr_perssions_n').val("{{ permiss }}")
+
     if('{{ mark }}'=='post'){
         $('#start').val('{{ start_a }}')
         $('#end').val('{{ end_a }}')
@@ -81,20 +82,15 @@
         var Y = date.getFullYear() + '-';
         var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
         var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate());
-
-        var h = '00:';
-        var m = '00';
+        var h = '00:'
+        var m = '00'
         var time = Y+M+D+"T"+h+m
         $('#start').val(time)
-        h='23:'
-        m='59'
+        h = '23:'
+        m = '59'
         time = Y+M+D+"T"+h+m
         $('#end').val(time)
     }
-
-    $("#sel option[value='{{ channel_no_a }}']").attr("selected","selected")
-
-
 
 
 </script>

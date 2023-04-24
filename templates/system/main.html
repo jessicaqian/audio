@@ -9,7 +9,34 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row sparse"><label class="head">设备状态&nbsp&nbsp&nbsp&nbsp</label></div>
+    <div class="row sparse"><label class="head">设备状态</label></div>
+
+    <div class="alert alert-warming" role="alert" id="popUp" style="display: none">
+        <div id="alertTips">
+            <p>系&nbsp;统&nbsp;提&nbsp;示</p>
+        </div>
+        <div id="alertContext">
+            <span>录音服务器磁盘剩余空间不足，请及时清理磁盘空间。</span>
+        </div>
+        <div id="alertSure">
+            <button>我已知晓</button>
+        </div>
+    </div>
+
+
+    <div class="alert alert-warming" role="alert" id="popUpHeartWin" style="display: none">
+        <div id="heartBeatTips" class="tipsWindow">
+            <p>错&nbsp;误&nbsp;提&nbsp;示</p>
+        </div>
+        <div id="heartWinContext" class="tipsContext">
+            <span>与录音板心跳连接失效， 请及时重启录音服务器。</span>
+        </div>
+        <div id="heartWinSure" class="tipsSure">
+            <button>我知道啦</button>
+        </div>
+    </div>
+
+
     <div class="row">
         <div class="col-md-5" id="system">
             <div class="row tips">
@@ -18,17 +45,11 @@
             <div class="row1 row" >
                 <div class="col-md-6">
                     当前录音模式:<label id="a_mode"></label><br>
-                    当前音频格式:<label id="">{{ audiotype|upper }}</label>
+                    当前音频格式:<label id="a_type"></label><br>
+                    当前登录用户:<label>{{ name }}</label><br>
+                    当前用户权限:<label>{{ permiss }}</label>
                 </div>
             </div>
-
-            <div class="row1 row">
-                <div class="col-md-6">
-                    当前用户:<label>{{ name }}:{{ permiss }}</label>
-
-                </div>
-            </div>
-
         </div>
         <div class="col-md-7" id="disk">
             <div class="row tips">
@@ -43,7 +64,7 @@
             </div>
             <div class="row1 row">
                 <div class="col-md-6">
-                    磁盘剩余可录制时间(单通道):<label class="disk-info" id="record_time">.....h</label>
+                    磁盘剩余可录制时间(四通道):<label class="disk-info" id="record_time">.....h</label>
 
                 </div>
             </div>
@@ -60,7 +81,7 @@
 
                 </div>
                 <div class="col-md-1 col-md-offset-1">
-                    <a class="btn btn-danger record"  id="record1">
+                    <a class="btn btn-danger record" id="record1">
                             <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
                     </a>
                 </div>
@@ -152,90 +173,224 @@
 {% block js %}
 <script type="text/javascript">
     $('label#a_mode').html('{{ audiomode }}')
+    $('label#a_type').html('{{ audiotype|upper }}')
     $('label#c1_name').html('通道名：{{ channel1 }}')
     $('label#c2_name').html('通道名：{{ channel2 }}')
     $('label#c3_name').html('通道名：{{ channel3 }}')
     $('label#c4_name').html('通道名：{{ channel4 }}')
+
+
     var no = 0
 
+    let arr = [0, 0, 0, 0]
+
 {% for r_statu in r_status %}
-    if ('{{ r_statu }}' == 'on'){
+    if ('{{ r_statu }}' == 'on')
+    {
         start('{{ forloop.counter }}')
-    }else if('{{ r_statu }}' == 'off'){
-        stop('{{ forloop.counter }}')
-
     }
-
+    else if('{{ r_statu }}' == 'off')
+    {
+        stop('{{ forloop.counter }}')
+    }
 {% endfor %}
+
+    var myhearBeat = setInterval(function () {
+        $.get('heartbeat').done(function (info) {
+            if (info.status== '正常') {
+            } else {
+                $('#popUpHeartWin').attr('class','alert alert-danger ')
+                $('#popUpHeartWin').attr('style', 'display:block')
+            }
+            console.log('心跳:',info.status)
+        }).fail(function ()
+        {
+        })
+    },10000)
+
+
+    function getAudioState()
+    {
+        $.get('getAudioState').done(function (info) {
+            console.log('音频状态',info.data)
+            if([0,0,0,0]==info.data)
+            {
+                console.log('223',info.data)
+                for(let i = 0; i < arr.length; i++) {
+                    if(arr[i] != 0) {
+                        $('#channel' + (i+1)).attr('class', 'row channel_in')
+                    }
+                }
+            }else {
+                for(let i = 0;i<4;i++) {
+                    if (i == 0 && arr[2] != 0) {
+
+                        if(info.data[0] == 1) {
+                            $('#channel' + '3').attr('class', 'row channel_in_change')
+                        }
+                        else{
+                            $('#channel' + '3').attr('class', 'row channel_in')
+                        }
+                    }
+                    if (i == 1 && arr[3] != 0) {
+                        if(info.data[1] == 1) {
+                            $('#channel' + '4').attr('class', 'row channel_in_change')
+                        }
+                        else{
+                            $('#channel' + '4').attr('class', 'row channel_in')
+                        }
+                    }
+                    if (i == 2 && arr[0] != 0) {
+
+                        if(info.data[2] == 1) {
+                            $('#channel' + '1').attr('class', 'row channel_in_change')
+                        }
+                        else{
+                            $('#channel' + '1').attr('class', 'row channel_in')
+                        }
+                    }
+                    if (i == 3 && arr[1] != 0) {
+                        if(info.data[3] == 1)
+                        {
+                            $('#channel' + '2').attr('class', 'row channel_in_change')
+                        }
+                        else{
+                            $('#channel' + '2').attr('class', 'row channel_in')
+                        }
+                    }
+                }
+            }
+        }).fail(function () {
+
+        })
+    }
+    getAudioState()
+    var myAudioState = setInterval(getAudioState,4000)
+
 
     function wait(str,act) {
         $('#' + act + str +'>span').attr('class','glyphicon glyphicon-option-horizontal')
         $('#' + act + str).attr('disabled','disabled')
-
     }
 
     function re_w(str,act) {
         $('#' + act + str +'>span').attr('class','glyphicon glyphicon-'+act)
         $('#' + act + str).removeAttr('disabled')
+        alert('接收录音板开启或关闭录音消息失败，请及时联系管理员！')
+        window.location.reload()
     }
 
-    function start(str) {
+    var mylinkStatus = 0;
+    var myready = setInterval(function isRecordStatusOk()
+    {
+        $.get('isRecordStatusOk').done(function (info)
+        {
+            if (info.linkStatus=='已就绪')
+            {
+                clearInterval(myready)
+            }
+            mylinkStatus = info.linkStatus
+            console.log('录音板就绪状态：',mylinkStatus)
+        }).fail(function () {
+        })
+    },3000)
+
+
+    $('div#linkStatusSureButton').click(function () {
+       $('#linkStatusWin').attr('style','display:none')
+    });
+
+
+    function start(str)
+    {
         $('#record'+str).attr('disabled','disabled')
         $('#record'+str +'>span').attr('class','glyphicon glyphicon-record')
         $('#stop'+str).removeAttr('disabled')
-        $('#channel'+str).attr('class','row channel_in')
-
+        arr[str-1] = 1
+        getAudioState()
     }
 
-    function stop(str) {
+    function stop(str)
+    {
         $('#stop'+str).attr('disabled','disabled')
-        $('#stop'+str +'>span').attr('class','glyphicon glyphicon-stop')
+        $('#stop'+str +'>span').attr('class','glyphicon glyphicon-stop')//glyphicon 字符图标
         $('#record'+str).removeAttr('disabled')
         $('#channel'+str).attr('class','row channel_in_off')
+        arr[str-1] = 0
     }
 
-    function getdiskStatus(){
-        $.get('getdiskStatus').done(function (info) {
-            if(no == info.no){
+    $('div#alertSure').click(function () {
+       $('#popUp').attr('style','display:none')//这个主要是为了当点击x的时候，对应窗口关闭
+    });
 
-            }else{
+    function getdiskStatus(){
+        $.get('getdiskStatus').done(function (info)
+        {
+            if(info.no<=300)
+            {
                 $('label#space').html(info.no + 'G')
                 $('label#record_time').html(info.time + 'h')
-                no = info.no
+                $('#popUp').attr('class','alert alert-danger ')
+                $('#popUp').attr('style', 'display:block')
             }
-
-        }).fail(function () {
+            else
+            {
+                $('label#space').html(info.no + 'G')
+                $('label#record_time').html(info.time + 'h')
+            }
+            console.log('磁盘剩余空间:',info.no)
+        }).fail(function ()
+        {
 
         })
     }
     getdiskStatus()
-    setInterval(getdiskStatus,10000)
+    setInterval(getdiskStatus,180000) //设置定时器180s获取一次磁盘状态然后进行提示
 
 
-    $('#record1').click(function () {
-        wait('1','record')
+    $('div#heartWinSure').click(function () {
+       $('#popUpHeartWin').attr('style','display:none')//这个主要是为了当点击x的时候，对应窗口关闭
+    });
+
+
+    $('#record1').click(function ()
+    {
+        wait('1','record') //调用wait函数
+        //data就要发送给板子的数据，告诉它哪个通道开始录音了，
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 20, "nDevNo": 1, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "1",
                       "isStereoSaveFlag": 0}}
-        var jsonstr = JSON.stringify(data);
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.msg=='success'){
-                $.post('recordStatus',{'no':'1','act':'on'}).done(function () {
-                    start('1')
+        var jsonstr = JSON.stringify(data);//将JavaScript 值转换为 JSON 字符串
 
-                }).fail(function () {
+        if (mylinkStatus=='已就绪')
+        {
+             $.post('sendData',{"mes":jsonstr}).done(function (info)  //使用 AJAX 的 HTTP POST 请求从服务器加载数据
+             {
+                 if(info.msg=='success')
+                 {
+                     $.post('recordStatus',{'no':'1','act':'on'}).done(function ()
+                     {
+                         start('1')
+                     }).fail(function ()
+                     {
+                     })
+                 }
+                 else
+                 {
+                     re_w('1','record')
+                 }
+             }).fail(function () {
 
-                })
+             })
+        }
+        else
+        {
+            console.log('398',mylinkStatus)
+            alert('当前录音板状态未就绪，请稍等！')
+            window.location.reload()
+        }
 
-            }else{
-                re_w('1','record')
-
-            }
-
-        }).fail(function () {
-
-        })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
         var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -251,7 +406,6 @@
         var json_dict = JSON.stringify(dict)
         $.post('free_log',{"mes":json_dict}).done(function (info) {
 
-
         }).fail(function () {
 
         })
@@ -265,7 +419,8 @@
         "audioPara": {"audioFunc": 2, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 1, "nCapNo": 0,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "1",
                       "isStereoSaveFlag": 0}}
-        var jsonstr = JSON.stringify(data);
+        var jsonstr = JSON.stringify(data)
+
         $.post('sendData',{"mes":jsonstr}).done(function (info) {
             if(info.msg=='success'){
                 $.post('recordStatus',{'no':'1','act':'off'}).done(function () {
@@ -313,22 +468,34 @@
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "2",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.msg=='success'){
-                $.post('recordStatus',{'no':'2','act':'on'}).done(function () {
-                    start('2')
+        if (mylinkStatus=='已就绪')
+        {
+             console.log('369',mylinkStatus)
+             $.post('sendData',{"mes":jsonstr}).done(function (info)  //使用 AJAX 的 HTTP POST 请求从服务器加载数据
+             {
+                 if(info.msg=='success')
+                 {
+                     $.post('recordStatus',{'no':'2','act':'on'}).done(function ()
+                     {
+                         start('2')
+                     }).fail(function ()
+                     {
+                     })
+                 }
+                 else
+                 {
+                     re_w('2','record')
+                 }
+             }).fail(function () {
 
-                }).fail(function () {
-
-                })
-            }else {
-                re_w('2','record')
-            }
-
-
-        }).fail(function () {
-
-        })
+             })
+        }
+        else
+        {
+            console.log('503',mylinkStatus)
+            alert('当前录音板状态未就绪，请稍等！')
+            window.location.reload()
+        }
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
         var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -405,22 +572,35 @@
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "3",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-            if(info.msg=='success'){
-                 $.post('recordStatus',{'no':'3','act':'on'}).done(function () {
-                     start('3')
 
-                }).fail(function () {
+        if (mylinkStatus=='已就绪')
+        {
+             console.log('369',mylinkStatus)
+             $.post('sendData',{"mes":jsonstr}).done(function (info)  //使用 AJAX 的 HTTP POST 请求从服务器加载数据
+             {
+                 if(info.msg=='success')
+                 {
+                     $.post('recordStatus',{'no':'3','act':'on'}).done(function ()
+                     {
+                         start('3')
+                     }).fail(function ()
+                     {
+                     })
+                 }
+                 else
+                 {
+                     re_w('3','record')
+                 }
+             }).fail(function () {
 
-                })
-            }else{
-                re_w('3','record')
-            }
-
-
-        }).fail(function () {
-
-        })
+             })
+        }
+        else
+        {
+            console.log('606',mylinkStatus)
+            alert('当前录音板状态未就绪，请稍等！')
+            window.location.reload()
+        }
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
         var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -488,27 +668,40 @@
 
     $('#record4').click(function () {
         wait('4','record')
-
-
         var data = {"cmdCheck": 0x02, "Seq": 0x15,
         "audioPara": {"audioFunc": 1, "audioType": 1, "recordType": 0, "recordTime": 2, "nDevNo": 0, "nCapNo": 1,
                       "mp3Bps": 128, "sampleRate": 48000, "timeInterval": 10, "fileName": "4",
                       "isStereoSaveFlag": 0}}
         var jsonstr = JSON.stringify(data);
-        $.post('sendData',{"mes":jsonstr}).done(function (info) {
-                if(info.msg=='success'){
-                     $.post('recordStatus',{'no':'4','act':'on'}).done(function () {
-                        start('4')
-                    }).fail(function () {
 
-                    })
-                }else {
-                    re_w('4','record')
-                }
+        if (mylinkStatus=='已就绪')
+        {
+             $.post('sendData',{"mes":jsonstr}).done(function (info)  //使用 AJAX 的 HTTP POST 请求从服务器加载数据
+             {
+                 if(info.msg=='success')
+                 {
+                     $.post('recordStatus',{'no':'4','act':'on'}).done(function ()
+                     {
+                         start('4')
+                     }).fail(function ()
+                     {
+                     })
+                 }
+                 else
+                 {
+                     re_w('4','record')
+                 }
+             }).fail(function () {
 
-        }).fail(function () {
+             })
+        }
+        else
+        {
+            console.log('705',mylinkStatus)
+            alert('当前录音板状态未就绪，请稍等！')
+            window.location.reload()
+        }
 
-        })
         var timestamp = Date.parse(new Date());
         var timestamp = timestamp / 1000;
         var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
