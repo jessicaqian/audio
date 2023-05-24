@@ -30,12 +30,9 @@
             </div>
         </div>
         <div class="row1 row" id="inputpath">
-            <div class="col-md-4" id="filepath">
+
                 {{ form.path.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.path}}
-            </div>
-            <div class="col-md-8" id="scanbtn">
-                <a class="btn btn-primary" id="scan"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp;&nbsp;&nbsp;浏览</a>
-            </div>
+
         </div>
         <div class="hidden">{{ form.usrname_n}}</div>
         <div class="hidden">{{ form.usr_perssions_n}}</div>
@@ -131,7 +128,7 @@
         }
     }
 
-
+/*
 $('a#scan').click(function () {
     try {
         var Message = "\u8bf7\u9009\u62e9\u6587\u4ef6\u5939"; //选择框提示信息
@@ -154,7 +151,7 @@ $('a#scan').click(function () {
     }
 
 })
-
+*/
 
 </script>
 {% endblock %}

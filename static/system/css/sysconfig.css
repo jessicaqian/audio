@@ -95,7 +95,8 @@ span.savetip{
 }
 
 input#id_path{
-    width:70%;
+    width: 50%;
+    height: 34px;
 }
 
 div#inputpath{
@@ -109,3 +110,10 @@ div#filepath{
 div#scanbtn{
     padding-left: 0px;
 }
+
+#path{
+    /*display:none;*/
+}
+
+
+

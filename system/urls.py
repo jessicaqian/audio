@@ -14,6 +14,7 @@ urlpatterns = [
     path('heartbeat',views.heartbeat),
     path('searchmid.html',views.search_mid),
     path('audiofile.html', views.audio_file),
+    path('fileconfig.html', views.file_config),
     path('free_log', views.free_logs),
     path('free.html',views.free_count),
     path('delete.html',views.del_usr),

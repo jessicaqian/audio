@@ -63,7 +63,7 @@
         {% for list in lists %}
             <tr id="id{{ forloop.counter }}">
                 <td>{{list}}&nbsp;&nbsp;</td>
-                <td><a href="audiofile.html?file={{ list }}&name={{ name }}&permiss={{ permiss }}" class="file" id="{{ list }}_play">播放
+                <td><a href="#" id="{{ list }}" onclick="playfile('{{ list }}')">播放
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
                 </td>
                 <td><a href="#" onclick="file_download('{{ list }}')">下载
@@ -78,6 +78,9 @@
 
 {% block js %}
 <script type="text/javascript">
+
+
+
     $('a#flow').attr('aria-expanded','true');
     $('div#collapseExample1').attr('class','collapse in');
     $('input#id_usrname_n').val("{{ name }}");
@@ -123,6 +126,19 @@
         a.href = href;
         a.download = name;
         a.dispatchEvent(e);
+    }
+
+    function playfile(path) {
+        $.post('audiofile.html',{'file':path}).done(function (info) {
+
+
+
+
+
+        }).fail(function () {
+
+        })
+
     }
 </script>
 {% endblock %}

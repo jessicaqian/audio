@@ -1,0 +1,114 @@
+{% extends "system/base.html" %}
+
+{% load static %}
+
+{% block title %}文件配置{% endblock %}
+
+{% block css %}
+<link href="{% static  "system/css/fileconfig.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="alert alert-danger " role="alert" id="myalter" style="display: none">
+        <button type="button" class="close" id="close" >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      <strong id="tips" >存储路径不合法</strong> 请重新输入。
+    </div>
+    <div class="alert alert-success " role="alert" id="myalter1" style="display: none">
+        <button type="button" class="close" id="close1" >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      <strong id="tips1" >设置成功</strong>
+    </div>
+
+    <div class="row sparse"><label class="head">文件配置&nbsp&nbsp&nbsp&nbsp</label></div>
+    <form method="post" onsubmit="return checkPath()">
+        <div class="row1 row" id="inputpath">
+
+
+                {{ form.path.label_tag}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.path}}
+
+
+        </div>
+        <div class="hidden">{{ form.usrname_n}}</div>
+        <div class="hidden">{{ form.usr_perssions_n}}</div>
+        <div class="row">
+            <div class="col-md-3 col-md-offset-9">
+                <input type="submit" value="保存并重启" id="save" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $('a#flow').attr('aria-expanded','true');
+    $('div#collapseExample').attr('class','collapse in');
+    $('input#id_usrname_n').val("{{ name }}")
+    $('input#id_usr_perssions_n').val("{{ permiss }}")
+
+
+    if('{{ method }}'=='get'){
+        $('input#id_path').val("{{ path }}")
+
+    }else {
+        if('{{ res }}'=='failed'){
+            $('#tips').html('设置失败');
+            $('#myalter').attr('style','display:block');
+
+        }else{
+            $('#myalter1').attr('style','display:block');
+
+        }
+    }
+
+
+    $('button#close').click(function () {
+       $('#myalter').attr('style','display:none')
+    });
+    $('button#close1').click(function () {
+       $('#myalter1').attr('style','display:none')
+    });
+
+    function checkPath() {
+        obj = document.getElementById("id_path").value;
+        console.log(obj)
+        if(obj === '{{ path }}'){
+            $('#tips').html('地址没有发生改变')
+            $('#myalter').attr('style','display:block');
+            return false
+
+        }
+        else {
+
+            var isPath =  /^([a-zA-Z]:|\/)/.test(obj);
+            console.log(isPath);
+            if(isPath){
+                return true
+            }
+            else {
+                $('#tips').html('存储路径不合法');
+                $('#myalter').attr('style','display:block');
+                return false
+
+            }
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+</script>
+{% endblock %}
+

@@ -1,0 +1,25 @@
+li#config>a{
+    background-color: #eee;
+    color: #23527c;
+}
+
+li#file_config> a{
+    color: #efb041;
+    padding-left: 30px;
+}
+
+#inputpath{
+    padding-left: 60px;
+    padding-bottom: 20px;
+
+}
+
+#id_path{
+    width: 60%;
+}
+
+div#myalter,#myalter1{
+    position: absolute;
+    z-index: 100;
+    width: 90%;
+}

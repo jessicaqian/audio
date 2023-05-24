@@ -1,11 +1,17 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
-from .forms import SysconfigForm, UsrForm, NetForm, ChannelForm, UsreditForm
+from .forms import SysconfigForm, UsrForm, NetForm, ChannelForm, UsreditForm,FileconfigForm
 import os, hashlib, json, re
 import time, datetime, configparser, requests
 import ctypes
 import psutil
+
+
+
+
+
+
 
 time.time()
 now = datetime.datetime.now()
@@ -174,6 +180,7 @@ def system_config(request):
                                'channels': channel})
             audiotype = form.cleaned_data['audiotype']
             audiotime0 = form.cleaned_data['audiotime']
+            f_path = form.cleaned_data['file']
             audiotime1 = int(audiotime0) * 60
             audiotime = str(audiotime1)
             all_info = []
@@ -201,6 +208,7 @@ def system_config(request):
                 raudiotype = config.get("configinfo", "audiotype")
                 config.set("configinfo", "audiotype", audiotype)
                 config.set("configinfo", "audiotime", audiotime0)
+                config.set("systeminfo", "file_path", f_path)
                 for info in all_info:
                     no = info["CHANNELINDEX"]
                     config.set("configinfo", "channel" + no, info["CHANNELNAME"])
@@ -386,6 +394,40 @@ def net_config(request):
         permiss = request.GET.get('permiss', default='10000000')
         form = NetForm()
         return render(request, 'system/netconfig.html', {'name': name, 'permiss': permiss, 'form': form})
+
+
+def file_config(request):
+    if request.method == 'POST':
+        form = FileconfigForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['usrname_n']
+            permiss = form.cleaned_data['usr_perssions_n']
+            path = form.cleaned_data['path']
+
+            datadict = {'MSG_TYPE': 'SETRECORDFILEPATH', 'PATH':path}
+            data = json.dumps(datadict)
+            rest = send_data(data)
+            if rest == False:
+                return render(request, 'system/fileconfig.html',{'name': name, 'permiss': permiss,'form': form, 'res': 'failed'})
+            else:
+                path = path.replace('\\', '\\\\')
+                config.read("conf/web.ini", encoding='utf-8-sig')
+                config.set("systeminfo", "file_path", path)
+                config.write(open("conf/web.ini", "w", encoding='utf-8-sig'))
+                return render(request, 'system/fileconfig.html', {'name': name, 'permiss': permiss,'form': form})
+        else:
+            return render(request, 'system/fileconfig.html',{ 'form': form, 'res': 'failed'})
+
+
+    else:
+
+        name = request.GET.get('name', default='10000000')
+        permiss = request.GET.get('permiss', default='10000000')
+        config.read("conf/web.ini", encoding='utf-8-sig')
+        path = config.get("systeminfo", "file_path")
+
+        form = FileconfigForm()
+        return render(request, 'system/fileconfig.html', {'name': name, 'permiss': permiss,'form':form,'path':path,'method':'get'})
 
 #@login_required
 def usr_config(request):
@@ -749,7 +791,10 @@ def search_mid(request):
         channel_name = config.get("configinfo", "channel" + str(num))
         chan_list.append(channel_name)
     if request.method == 'POST':
-        root_path = 'static/record/'    #录音存储路径
+        root_path = config.get('systeminfo','file_path')    #录音存储路径
+        root_path = root_path.replace('\\\\', '/')
+        root_path = root_path + '/'
+        print(root_path)
         return_list = []
         channel_list = []               #选中的通道
         date_list = []                  #选中的日期
@@ -827,16 +872,21 @@ def search_mid(request):
 #@login_required
 def audio_file(request):
     if request.method == 'POST':
-        pass
-    else:
-        file = request.GET.get('file')
+        config.read("conf/web.ini", encoding='utf-8-sig')
+        f_path = config.get("systeminfo", "file_path")
+        file = request.POST['file']
+
         time = file.split("/ ")[0].split(" ")[0]
         file = file.split("/ ")[1]
         ch = file.split("_")[1]
-        name = request.GET.get('name', default='10000000')
-        permiss = request.GET.get('permiss', default='10000000')
-        path = 'static/record/' + time + "/" + ch + "/" + file
-        return render(request, 'system/audiofile.html', {'path': path, 'name': name, 'permiss': permiss})
+
+        path = f_path + "\\" + time + "\\" + ch + "\\" + file
+        os.system(path)
+        return JsonResponse({'msg': 'success'})
+    else:
+        return JsonResponse({'msg': 'success'})
+
+
 
 def send_data(data):
     config.read("conf/web.ini", encoding='utf-8-sig')
