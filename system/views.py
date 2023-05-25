@@ -403,6 +403,11 @@ def file_config(request):
             name = form.cleaned_data['usrname_n']
             permiss = form.cleaned_data['usr_perssions_n']
             path = form.cleaned_data['path']
+            if path[-1] == '\\':
+                pass
+            else:
+                path = path + '\\'
+            print(path)
 
             datadict = {'MSG_TYPE': 'SETRECORDFILEPATH', 'PATH':path}
             data = json.dumps(datadict)
@@ -793,7 +798,7 @@ def search_mid(request):
     if request.method == 'POST':
         root_path = config.get('systeminfo','file_path')    #录音存储路径
         root_path = root_path.replace('\\\\', '/')
-        root_path = root_path + '/'
+
         print(root_path)
         return_list = []
         channel_list = []               #选中的通道
