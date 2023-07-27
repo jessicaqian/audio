@@ -6,12 +6,7 @@ import os, hashlib, json, re
 import time, datetime, configparser, requests
 import ctypes
 import psutil
-
-
-
-
-
-
+import subprocess
 
 time.time()
 now = datetime.datetime.now()
@@ -180,7 +175,6 @@ def system_config(request):
                                'channels': channel})
             audiotype = form.cleaned_data['audiotype']
             audiotime0 = form.cleaned_data['audiotime']
-            f_path = form.cleaned_data['file']
             audiotime1 = int(audiotime0) * 60
             audiotime = str(audiotime1)
             all_info = []
@@ -208,7 +202,7 @@ def system_config(request):
                 raudiotype = config.get("configinfo", "audiotype")
                 config.set("configinfo", "audiotype", audiotype)
                 config.set("configinfo", "audiotime", audiotime0)
-                config.set("systeminfo", "file_path", f_path)
+
                 for info in all_info:
                     no = info["CHANNELINDEX"]
                     config.set("configinfo", "channel" + no, info["CHANNELNAME"])
@@ -415,7 +409,7 @@ def file_config(request):
             if rest == False:
                 return render(request, 'system/fileconfig.html',{'name': name, 'permiss': permiss,'form': form, 'res': 'failed'})
             else:
-                path = path.replace('\\', '\\\\')
+                # path = path.replace('\\', '\\\\')
                 config.read("conf/web.ini", encoding='utf-8-sig')
                 config.set("systeminfo", "file_path", path)
                 config.write(open("conf/web.ini", "w", encoding='utf-8-sig'))
@@ -797,7 +791,7 @@ def search_mid(request):
         chan_list.append(channel_name)
     if request.method == 'POST':
         root_path = config.get('systeminfo','file_path')    #录音存储路径
-        root_path = root_path.replace('\\\\', '/')
+        root_path = root_path.replace('\\', '/')
 
         print(root_path)
         return_list = []
@@ -879,14 +873,19 @@ def audio_file(request):
     if request.method == 'POST':
         config.read("conf/web.ini", encoding='utf-8-sig')
         f_path = config.get("systeminfo", "file_path")
+        path1 = config.get("systeminfo", "exe_path")
         file = request.POST['file']
+        print(path1)
 
         time = file.split("/ ")[0].split(" ")[0]
         file = file.split("/ ")[1]
         ch = file.split("_")[1]
 
-        path = f_path + "\\" + time + "\\" + ch + "\\" + file
-        os.system(path)
+        path = f_path + time + "\\" + ch + "\\" + file
+        subprocess.Popen([path1,path])
+
+
+        # os.system(path)
         return JsonResponse({'msg': 'success'})
     else:
         return JsonResponse({'msg': 'success'})
