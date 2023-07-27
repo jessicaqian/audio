@@ -409,7 +409,7 @@ def file_config(request):
             if rest == False:
                 return render(request, 'system/fileconfig.html',{'name': name, 'permiss': permiss,'form': form, 'res': 'failed'})
             else:
-                # path = path.replace('\\', '\\\\')
+                path = path.replace('\\', '\\\\')
                 config.read("conf/web.ini", encoding='utf-8-sig')
                 config.set("systeminfo", "file_path", path)
                 config.write(open("conf/web.ini", "w", encoding='utf-8-sig'))
@@ -791,7 +791,7 @@ def search_mid(request):
         chan_list.append(channel_name)
     if request.method == 'POST':
         root_path = config.get('systeminfo','file_path')    #录音存储路径
-        root_path = root_path.replace('\\', '/')
+        root_path = root_path.replace('\\\\', '/')
 
         print(root_path)
         return_list = []
@@ -880,6 +880,8 @@ def audio_file(request):
         time = file.split("/ ")[0].split(" ")[0]
         file = file.split("/ ")[1]
         ch = file.split("_")[1]
+
+        f_path = f_path.replace('\\\\', '\\')
 
         path = f_path + time + "\\" + ch + "\\" + file
         subprocess.Popen([path1,path])
